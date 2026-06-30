@@ -31,6 +31,49 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
 
 
+class ReservationStatus:
+    RESERVED = "reserved"
+    CANCELLED = "cancelled"
+    COMPLETED = "completed"
+
+
+class AiResource(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), nullable=False)
+    provider = db.Column(db.String(80), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    is_active = db.Column(db.Boolean, nullable=False, default=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(
+        db.DateTime,
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+    )
+
+    reservations = db.relationship("Reservation", back_populates="resource")
+
+
+class Reservation(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False, index=True)
+    resource_id = db.Column(db.Integer, db.ForeignKey("ai_resource.id"), nullable=False, index=True)
+    start_at = db.Column(db.DateTime, nullable=False, index=True)
+    end_at = db.Column(db.DateTime, nullable=False, index=True)
+    purpose = db.Column(db.String(255), nullable=False)
+    status = db.Column(db.String(20), nullable=False, default=ReservationStatus.RESERVED, index=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(
+        db.DateTime,
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+    )
+
+    user = db.relationship("User", backref=db.backref("reservations", lazy="dynamic"))
+    resource = db.relationship("AiResource", back_populates="reservations")
+
+
 @login_manager.user_loader
 def load_user(user_id: str) -> User | None:
     if not user_id.isdigit():
