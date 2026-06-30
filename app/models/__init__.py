@@ -74,6 +74,28 @@ class Reservation(db.Model):
     resource = db.relationship("AiResource", back_populates="reservations")
 
 
+class UsageLog(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False, index=True)
+    reservation_id = db.Column(db.Integer, db.ForeignKey("reservation.id"), nullable=True, index=True)
+    resource_id = db.Column(db.Integer, db.ForeignKey("ai_resource.id"), nullable=True, index=True)
+    work_type = db.Column(db.String(120), nullable=False)
+    summary = db.Column(db.Text, nullable=False)
+    prompt_text = db.Column(db.Text, nullable=True)
+    result_note = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc), index=True)
+    updated_at = db.Column(
+        db.DateTime,
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+    )
+
+    user = db.relationship("User", backref=db.backref("usage_logs", lazy="dynamic"))
+    reservation = db.relationship("Reservation", backref=db.backref("usage_logs", lazy="dynamic"))
+    resource = db.relationship("AiResource", backref=db.backref("usage_logs", lazy="dynamic"))
+
+
 @login_manager.user_loader
 def load_user(user_id: str) -> User | None:
     if not user_id.isdigit():
