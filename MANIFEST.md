@@ -1,0 +1,21 @@
+# Codex Packet Manifest
+
+- `CODEX_START_HERE.md`
+- `DEVELOPMENT_PLAN.md`
+- `PRD.md`
+- `PROJECT_INSTRUCTIONS.md`
+- `PROJECT_STATUS.md`
+- `README.md`
+- `SYSTEM_DESIGN.md`
+- `TASK.md`
+- `docs/adr/0001-use-flask-sqlite-docker-oci.md`
+- `docs/adr/0002-use-gemini-for-prompt-review.md`
+- `docs/adr/0003-release-freeze.md`
+- `docs/architecture/REPOSITORY_STRUCTURE.md`
+- `docs/decisions/SECURITY_DECISIONS.md`
+- `docs/decisions/TECH_STACK_DECISIONS.md`
+- `docs/deployment/OCI_DEV_SERVER_SETUP.md`
+- `docs/development/DEVELOPMENT_LOG.md`
+- `docs/development/RELEASE_CHECKLIST.md`
+- `docs/development/TEST_REPORT.md`
+- `docs/guides/CODEX_PHASE_1_PROMPT.md`

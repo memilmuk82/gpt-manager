@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}GPT Share Manager vNext{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="min-h-screen bg-zinc-50 text-zinc-900">
+    <header class="border-b border-zinc-200 bg-white">
+      <div class="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
+        <a class="text-base font-semibold" href="/">GPT Share Manager vNext</a>
+        <nav class="flex items-center gap-3 text-sm">
+          <a class="text-zinc-600 hover:text-zinc-950" href="/dashboard">Dashboard</a>
+          {% if current_user.is_authenticated %}
+            <span class="text-zinc-500">{{ current_user.name }}</span>
+            <form method="post" action="{{ url_for('auth.logout') }}">
+              <button class="rounded-md border border-zinc-300 px-3 py-1.5 text-zinc-700 hover:bg-zinc-100" type="submit">Logout</button>
+            </form>
+          {% else %}
+            <a class="text-zinc-600 hover:text-zinc-950" href="{{ url_for('auth.login') }}">Login</a>
+            <a class="rounded-md bg-teal-700 px-3 py-1.5 font-medium text-white hover:bg-teal-800" href="{{ url_for('auth.register') }}">Register</a>
+          {% endif %}
+        </nav>
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-5xl px-4 py-10">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="mb-6 space-y-2">
+            {% for category, message in messages %}
+              <div class="rounded-md border px-4 py-3 text-sm {% if category == 'error' %}border-red-200 bg-red-50 text-red-800{% elif category == 'warning' %}border-amber-200 bg-amber-50 text-amber-800{% else %}border-teal-200 bg-teal-50 text-teal-800{% endif %}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </main>
+  </body>
+</html>
