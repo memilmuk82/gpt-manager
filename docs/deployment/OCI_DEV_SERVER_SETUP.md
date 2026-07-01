@@ -297,6 +297,15 @@ services:
 
 외부 공개 시연에서 80/443 리버스 프록시를 붙이지 않는다면, OCI Security List/NSG와 Ubuntu ufw에서 사용할 포트를 명시적으로 허용해야 한다. 개발 테스트용 5000 포트는 임시로만 열고 테스트 후 닫는다.
 
+### 시연용 AI 리소스 준비
+
+fresh DB에서는 예약에 사용할 AI 리소스가 자동 생성되지 않는다. 앱 실행 후 아래 명령으로 최소 1개의 리소스를 추가한다.
+
+```bash
+docker compose exec web python -c "from app import create_app; from app.extensions import db; from app.models import AiResource; app=create_app(); ctx=app.app_context(); ctx.push(); AiResource.query.filter_by(name='GPT Pro 공용 계정 A').first() or db.session.add(AiResource(name='GPT Pro 공용 계정 A', provider='OpenAI', description='Shared AI resource')); db.session.commit(); ctx.pop()"
+```
+
+
 ---
 
 ## 13. .env 관리 원칙
@@ -323,10 +332,18 @@ GEMINI_MAX_OUTPUT_TOKENS=1200
 MAX_DAILY_AI_CALLS_PER_USER=50
 ```
 
-`APP_ENCRYPTION_KEY`는 다음 형식으로 생성한다.
+`APP_ENCRYPTION_KEY`는 Fernet 키 형식으로 생성한다.
+
+로컬/서버에 `uv sync`가 완료된 경우:
 
 ```bash
-python3 -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+uv run python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+```
+
+Docker만 사용하는 경우:
+
+```bash
+docker compose run --rm web python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
 ```
 
 Google OAuth Redirect URI 설정은 `docs/deployment/GOOGLE_OAUTH_REDIRECT_URI.md`를 기준으로 확인한다.

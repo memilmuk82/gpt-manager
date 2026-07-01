@@ -23,9 +23,10 @@ OCI/운영 예시:
 ```text
 https://<your-domain>/auth/google/callback
 http://<OCI_PUBLIC_IP>/auth/google/callback
+http://<OCI_PUBLIC_IP>:5000/auth/google/callback
 ```
 
-Google OAuth 운영 검증은 가능하면 HTTPS 도메인으로 진행합니다. IP와 HTTP만 사용하는 구성은 Google 정책이나 브라우저 보안 조건에 따라 제한될 수 있습니다.
+리버스 프록시 없이 현재 `compose.yaml`의 `5000:5000` 포트를 직접 노출해 시연하면 `:5000`이 포함된 Redirect URI를 Google Cloud Console과 `.env`에 모두 등록해야 합니다. Google OAuth 운영 검증은 가능하면 HTTPS 도메인으로 진행합니다. IP와 HTTP만 사용하는 구성은 Google 정책이나 브라우저 보안 조건에 따라 제한될 수 있습니다.
 
 ## 2. Google Cloud Console 설정
 
@@ -75,5 +76,6 @@ email_verified가 false인 Google 계정: 로그인 거부
 Google Cloud Console Authorized redirect URI
 .env GOOGLE_REDIRECT_URI
 브라우저에서 실제 접속한 scheme/host/port
+리버스 프록시 미사용 시 :5000 포함 여부
 컨테이너 재시작 여부
 ```

@@ -125,7 +125,25 @@ docker compose down
 
 5000 포트가 이미 사용 중이면 기존 Flask/Gunicorn 프로세스를 종료하거나 `compose.yaml`의 호스트 포트를 임시로 변경해 검증합니다.
 
-## 7. 기본 사용 흐름
+## 7. 시연 데이터 준비
+
+fresh DB에서는 예약에 사용할 AI 리소스가 자동 생성되지 않습니다. 예약 시연 전에 최소 1개의 리소스를 준비합니다.
+
+로컬 실행 환경:
+
+```bash
+uv run python -c "from app import create_app; from app.extensions import db; from app.models import AiResource; app=create_app(); ctx=app.app_context(); ctx.push(); AiResource.query.filter_by(name='GPT Pro 공용 계정 A').first() or db.session.add(AiResource(name='GPT Pro 공용 계정 A', provider='OpenAI', description='Shared AI resource')); db.session.commit(); ctx.pop()"
+```
+
+Docker Compose 실행 환경:
+
+```bash
+docker compose exec web python -c "from app import create_app; from app.extensions import db; from app.models import AiResource; app=create_app(); ctx=app.app_context(); ctx.push(); AiResource.query.filter_by(name='GPT Pro 공용 계정 A').first() or db.session.add(AiResource(name='GPT Pro 공용 계정 A', provider='OpenAI', description='Shared AI resource')); db.session.commit(); ctx.pop()"
+```
+
+생성 후 `/reservations/new`에서 `GPT Pro 공용 계정 A`가 보이면 예약 생성 시연을 진행할 수 있습니다.
+
+## 8. 기본 사용 흐름
 
 ### 사용자 흐름
 
@@ -148,7 +166,7 @@ docker compose down
 4. 필요 시 사용자 정지
 ```
 
-## 8. 제출 시연 흐름
+## 9. 제출 시연 흐름
 
 ```text
 1. 앱 목적 설명: 공용 AI 계정 직접 제어가 아닌 예약·기록·프롬프트 개선 도구
@@ -163,7 +181,7 @@ docker compose down
 10. 보안 제외 범위 설명: GPT 계정 ID/PW 저장 안 함, 학생 개인정보 입력 안 함
 ```
 
-## 9. 테스트
+## 10. 테스트
 
 ```bash
 uv run pytest
@@ -185,7 +203,7 @@ Gemini API Key 암호화 저장/교체/삭제/복호화 확인
 관리자 대시보드와 사용자 승인/정지
 ```
 
-## 10. 보안 원칙
+## 11. 보안 원칙
 
 ```text
 GPT 계정 ID/PW 저장 금지
@@ -199,7 +217,7 @@ Gemini API Key 프론트엔드 노출 금지
 운영 SECRET_KEY와 APP_ENCRYPTION_KEY 고정 설정
 ```
 
-## 11. 문서
+## 12. 문서
 
 ```text
 PROJECT_STATUS.md: 현재 phase와 완료 항목
