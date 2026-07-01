@@ -236,8 +236,8 @@ Tailwind 빌드 파이프라인
 
 ```text
 MVP DB: SQLite
-DB 파일: ./data/app.db
-Docker Compose에서 ./data 볼륨 마운트
+DB 파일: ./instance/app.db
+Docker Compose에서 ./instance 볼륨 마운트
 PostgreSQL 전환 가능하도록 DATABASE_URL 사용
 SQLite 전용 raw SQL에 의존하지 않음
 ```

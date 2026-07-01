@@ -227,7 +227,7 @@ TDD/테스트 관점 추가
 3일 안에 완성 가능해야 한다.
 로컬 Docker Compose로 실행 가능해야 한다.
 OCI 단일 인스턴스에서 실행 가능해야 한다.
-SQLite DB 파일은 ./data에 저장해야 한다.
+SQLite DB 파일은 ./instance에 저장해야 한다.
 사용자 비밀번호와 API Key는 평문 저장하지 않는다.
 Gemini API Key는 프론트엔드에 노출하지 않는다.
 테스트 코드가 있어야 한다.

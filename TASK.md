@@ -23,7 +23,8 @@ Phase 5 프롬프트 점검기 완료
 Phase 6 관리자 대시보드 및 계정 승인제 완료
 Phase 7 README/.env.example/OAuth Redirect URI/OCI 문서 정리 완료
 Phase 7 Docker Compose 로컬 빌드/실행/healthz 확인 완료
-uv run pytest: 46 passed
+Release Candidate 검증: pytest/Playwright/OCI 운영 로컬 로그인/CRUD/세션 유지 PASS
+uv run pytest: 47 passed
 ```
 
 ## Phase 6 결과
@@ -52,8 +53,9 @@ README, .env.example, 배포 문서, 최종 테스트를 정리하고 OCI 배포
 4. Docker Compose 최종 실행 확인 - 완료
 5. uv run pytest 최종 통과 확인 - 완료
 6. 제출용 시연 흐름 정리 - README에 반영 완료
-7. OCI 실제 서버 배포 - 남음
+7. OCI 실제 서버 배포 - 완료
 8. Google OAuth 운영 Redirect URI 수동 확인 - 남음
+9. 제출용 최종 시연 리허설 - 남음
 ```
 
 ## Phase 7 제외 범위

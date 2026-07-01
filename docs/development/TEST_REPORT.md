@@ -325,3 +325,33 @@ Release Freeze 판정:
 사유: Google OAuth 운영 검증 미완료
 ```
 
+## SQLite instance 영속성 검증
+
+```text
+날짜: 2026-07-01
+목표: SQLite DB가 컨테이너 내부 전용 저장소가 아니라 host bind mount의 ./instance/app.db에 유지되는지 확인
+
+구성 확인:
+SQLite DB 컨테이너: 없음
+Docker Compose bind mount: ./instance:/app/instance
+DATABASE_URL: sqlite:///instance/app.db
+SQLite 파일: /app/instance/app.db
+Host 파일: ./instance/app.db
+
+재기동 검증:
+docker compose down: PASS
+docker compose up -d: PASS
+/healthz: PASS, {"status":"ok"}
+
+down 전 데이터:
+users=3
+reservations=2
+
+down/up 후 데이터:
+users=3
+reservations=2
+
+pytest:
+uv run pytest: 47 passed
+```
+

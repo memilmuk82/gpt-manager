@@ -32,7 +32,7 @@ GPT 계정 ID/PW 저장하지 않음
 
 ```text
 Backend: Flask
-DB: SQLite ./data/app.db
+DB: SQLite ./instance/app.db
 ORM: SQLAlchemy
 Auth: Flask-Login + Authlib Google OAuth 구조
 API Key Encryption: cryptography.Fernet
@@ -172,7 +172,7 @@ uv run pytest: 46 passed
 완료: Google OAuth Redirect URI 설정 절차 문서화
 완료: Docker Compose 로컬 빌드/실행/healthz 확인
 완료: uv run pytest 최종 통과 확인
-남음: OCI 실제 서버 배포
+완료: OCI 실제 서버 배포 및 운영 기본 흐름 검증
 남음: Google OAuth 운영 Redirect URI 수동 확인
 남음: 제출용 최종 시연 리허설
 ```
@@ -228,7 +228,7 @@ Docker Compose build/up/healthz/down 로컬 검증 완료
 검증 결과:
 
 ```text
-uv run pytest: 46 passed
+uv run pytest: 47 passed
 docker compose build: success
 docker compose up -d: success
 curl /healthz: 200 {"status":"ok"}
@@ -238,7 +238,7 @@ docker compose down: success
 남은 작업:
 
 ```text
-OCI 실제 서버에 .env 운영값 설정
+OCI 실제 서버에 Google OAuth 운영값 설정
 Google Cloud Console에 운영 Redirect URI 등록
 OCI URL에서 Google OAuth 로그인 수동 확인
 제출 전 최종 시연 리허설
@@ -299,4 +299,17 @@ Release Freeze:
 ```text
 보류
 Google OAuth 운영 설정과 수동 로그인 검증 완료 후 전환
+```
+
+## 16. SQLite instance 영속성 검증
+
+```text
+SQLite DB 컨테이너 없음
+DB 경로: /app/instance/app.db
+Host bind mount: ./instance:/app/instance
+운영 DATABASE_URL: sqlite:///instance/app.db
+compose down/up 후 데이터 유지 확인
+users: 3 -> 3
+reservations: 2 -> 2
+uv run pytest: 47 passed
 ```

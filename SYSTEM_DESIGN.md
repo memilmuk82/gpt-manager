@@ -7,7 +7,7 @@ Browser
   ↓
 Flask App
   ↓
-SQLite ./data/app.db
+SQLite ./instance/app.db
   ↓
 Gemini API
 ```
@@ -18,7 +18,7 @@ Gemini API
 OCI Ubuntu
   ├─ Docker Compose
   │   └─ Flask + Gunicorn Container
-  ├─ ./data/app.db
+  ├─ ./instance/app.db
   └─ optional reverse proxy later
 ```
 
@@ -115,7 +115,7 @@ MVP에서는 `models.py` 단일 파일로 시작한다. 모델이 커지면 테�
 ```env
 FLASK_ENV=development
 SECRET_KEY=change-me
-DATABASE_URL=sqlite:///data/app.db
+DATABASE_URL=sqlite:///instance/app.db
 APP_ENCRYPTION_KEY=generate-fernet-key
 SESSION_COOKIE_SECURE=false
 
@@ -492,7 +492,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./data:/app/data
+      - ./instance:/app/instance
 ```
 
 MVP에서는 DB 컨테이너를 추가하지 않는다.
@@ -504,7 +504,7 @@ python slim 이미지 사용
 uv 설치
 uv sync --locked 또는 동등한 재현 설치
 gunicorn으로 실행
-/app/data 디렉터리 생성
+/app/instance 디렉터리 생성
 ```
 
 ## 13. 배포 설계
@@ -528,7 +528,7 @@ docker compose up -d --build
 OCI 보안 규칙에서 80/443 또는 테스트 포트 개방
 OAuth Redirect URI 운영 URL 등록
 .env 운영값 분리
-./data/app.db 백업
+./instance/app.db 백업
 ```
 
 ## 14. 향후 확장

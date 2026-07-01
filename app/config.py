@@ -3,7 +3,7 @@ from pathlib import Path
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-DEFAULT_DATABASE_PATH = BASE_DIR / "data" / "app.db"
+DEFAULT_DATABASE_PATH = BASE_DIR / "instance" / "app.db"
 
 
 def normalize_database_url(database_url: str) -> str:

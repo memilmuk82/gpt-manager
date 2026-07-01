@@ -12,7 +12,7 @@ COPY pyproject.toml ./
 RUN uv pip install --system .
 
 COPY . .
-RUN mkdir -p /app/data
+RUN mkdir -p /app/instance
 
 EXPOSE 5000
 

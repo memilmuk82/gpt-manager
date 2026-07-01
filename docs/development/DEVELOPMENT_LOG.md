@@ -427,3 +427,24 @@ Google OAuth: BLOCKED, GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET 미설정
 Google OAuth 운영 검증 완료 후 Release Freeze 전환 가능
 ```
 
+## 2026-07-01 - SQLite instance 저장 구조 확인
+
+### 확인
+
+```text
+SQLite DB 컨테이너 없음
+기존 구성은 ./data:/app/data bind mount 사용
+요구 기준에 맞춰 ./instance:/app/instance bind mount로 전환
+운영 DATABASE_URL=sqlite:///instance/app.db 확인
+기존 data/app.db와 동일 크기의 instance/app.db 존재 확인
+```
+
+### 변경
+
+```text
+기본 DB 경로를 instance/app.db로 변경
+Dockerfile 생성 디렉터리를 /app/instance로 변경
+compose.yaml bind mount를 ./instance:/app/instance로 변경
+.env.example과 배포/설계 문서를 instance 기준으로 갱신
+```
+

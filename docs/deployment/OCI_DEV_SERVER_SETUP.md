@@ -279,7 +279,7 @@ docker compose logs -f
 docker compose down
 ```
 
-DB 파일을 SQLite로 사용할 경우 `./data` 디렉터리를 반드시 볼륨 마운트한다.
+DB 파일을 SQLite로 사용할 경우 `./instance` 디렉터리를 반드시 볼륨 마운트한다.
 
 현재 프로젝트의 `compose.yaml` 기준 예시:
 
@@ -292,7 +292,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./data:/app/data
+      - ./instance:/app/instance
 ```
 
 외부 공개 시연에서 80/443 리버스 프록시를 붙이지 않는다면, OCI Security List/NSG와 Ubuntu ufw에서 사용할 포트를 명시적으로 허용해야 한다. 개발 테스트용 5000 포트는 임시로만 열고 테스트 후 닫는다.
@@ -317,7 +317,7 @@ docker compose exec web python -c "from app import create_app; from app.extensio
 ```env
 FLASK_ENV=production
 SECRET_KEY=<strong-random-secret>
-DATABASE_URL=sqlite:///data/app.db
+DATABASE_URL=sqlite:///instance/app.db
 APP_ENCRYPTION_KEY=<fernet-key>
 SESSION_COOKIE_SECURE=true
 SESSION_COOKIE_SAMESITE=Lax
@@ -404,6 +404,6 @@ __pycache__/
 2. 실제 구현은 Codex에서 하되, 기능 단위로 Git commit을 남긴다.
 3. TDD 통과 전에는 다음 기능으로 넘어가지 않는다.
 4. .env와 인증 키는 Git에 올리지 않는다.
-5. SQLite DB는 ./data에 저장하고, 필요 시 수동 백업한다.
+5. SQLite DB는 ./instance에 저장하고, 필요 시 수동 백업한다.
 6. 제출 전날인 7월 2일에는 RC1을 만들고, 7월 3일에는 기능 추가를 하지 않는다.
 ```
