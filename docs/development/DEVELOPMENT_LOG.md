@@ -333,7 +333,7 @@ OCI URL에서 OAuth 로그인 수동 확인
 ### 검증
 
 ```text
-uv run pytest: 46 passed
+uv run pytest: 47 passed
 Playwright E2E 테스트 인프라 추가
 npm run test:e2e: 1 passed
 ```
@@ -367,3 +367,18 @@ OCI 운영 서버 git pull/build/up
 모든 운영 검증 PASS 시 Release Freeze 전환
 ```
 
+### 운영 버그 수정
+
+```text
+운영 DB가 Phase 6 이전 user 스키마라 auth_provider/approval_status 컬럼이 누락됨
+/auth/register에서 no such column: user.auth_provider 발생
+SQLite 앱 시작 시 누락 컬럼을 추가하는 호환성 migration 추가
+기존 사용자 approval_status 기본값은 approved로 유지
+```
+
+### 재검증
+
+```text
+uv run pytest: 47 passed
+npm run test:e2e: 1 passed
+```

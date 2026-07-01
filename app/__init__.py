@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from sqlalchemy import inspect, text
+
 from flask import Flask, flash, redirect, request, url_for
 from flask_login import current_user, logout_user
 
@@ -60,5 +62,28 @@ def create_app(config_object: type[Config] | None = None) -> Flask:
 
     with app.app_context():
         db.create_all()
+        _ensure_sqlite_schema_compatibility(app)
 
     return app
+
+
+def _ensure_sqlite_schema_compatibility(app: Flask) -> None:
+    db_uri = app.config.get("SQLALCHEMY_DATABASE_URI", "")
+    if not db_uri.startswith("sqlite:///"):
+        return
+
+    inspector = inspect(db.engine)
+    if "user" not in inspector.get_table_names():
+        return
+
+    user_columns = {column["name"] for column in inspector.get_columns("user")}
+    migrations = []
+    if "auth_provider" not in user_columns:
+        migrations.append("ALTER TABLE user ADD COLUMN auth_provider VARCHAR(40) NOT NULL DEFAULT 'local'")
+    if "approval_status" not in user_columns:
+        migrations.append("ALTER TABLE user ADD COLUMN approval_status VARCHAR(20) NOT NULL DEFAULT 'approved'")
+
+    for statement in migrations:
+        db.session.execute(text(statement))
+    if migrations:
+        db.session.commit()

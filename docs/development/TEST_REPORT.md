@@ -236,7 +236,7 @@ OCI URL 기준 Google OAuth 수동 로그인 확인
 1단계 pytest:
 명령: uv run pytest
 결과: PASS
-PASS: 46
+PASS: 47
 FAIL: 0
 
 2단계 Playwright E2E:
@@ -262,3 +262,16 @@ Playwright E2E는 /tmp/gpt-manager-e2e.db를 사용한다.
 앱 기능 코드는 변경하지 않았고, 테스트 인프라만 추가했다.
 ```
 
+## Release Candidate 운영 버그 수정 검증
+
+```text
+날짜: 2026-07-01
+문제: 운영 SQLite DB의 user 테이블에 Phase 6 컬럼(auth_provider, approval_status)이 없어 /auth/register 500 발생
+원인: db.create_all()은 기존 테이블에 신규 컬럼을 추가하지 않음
+수정: SQLite 기존 user 테이블에 누락된 auth_provider, approval_status 컬럼을 앱 시작 시 보수적으로 추가
+영향 범위: SQLite 기존 DB 스키마 호환성, 앱 기능 코드 동작 변경 없음
+
+재검증:
+uv run pytest: 47 passed
+npm run test:e2e: 1 passed
+```

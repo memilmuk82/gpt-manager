@@ -13,7 +13,7 @@ RC1 목표: 2026-07-02
 
 ```text
 현재 Phase: Release Candidate 검증 진행 중
-상태: pytest PASS, Playwright E2E PASS / GitHub push 후 OCI 운영 배포와 운영 환경 수동 검증 필요
+상태: pytest PASS, Playwright E2E PASS, 운영 SQLite 스키마 호환성 버그 수정 완료 / OCI 운영 재배포와 운영 환경 수동 검증 진행 중
 추론 수준: 높음
 ```
 
@@ -247,7 +247,7 @@ OCI URL에서 Google OAuth 로그인 수동 확인
 ## 14. Release Candidate 검증 결과
 
 ```text
-pytest: PASS, 46 passed
+pytest: PASS, 47 passed
 Playwright E2E: PASS, 1 passed
 Docker Build: 로컬 Phase 7 검증에서 PASS, 운영 배포 단계에서 재확인 예정
 OCI 배포: 진행 예정
@@ -269,4 +269,13 @@ Playwright 검증 범위:
 예약 상태 변경
 API Key 등록/교체/삭제
 새로고침 후 데이터 유지
+```
+
+운영 SQLite 스키마 호환성 수정:
+
+```text
+기존 운영 DB의 user 테이블에 auth_provider/approval_status 컬럼이 없어 회원가입 500 발생
+앱 시작 시 SQLite user 테이블 누락 컬럼을 보정하도록 수정
+pytest 47 passed
+Playwright E2E 1 passed
 ```
