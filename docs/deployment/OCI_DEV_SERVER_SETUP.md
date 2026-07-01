@@ -281,19 +281,21 @@ docker compose down
 
 DB 파일을 SQLite로 사용할 경우 `./data` 디렉터리를 반드시 볼륨 마운트한다.
 
-예시:
+현재 프로젝트의 `compose.yaml` 기준 예시:
 
 ```yaml
 services:
   web:
     build: .
     ports:
-      - "8000:8000"
-    volumes:
-      - ./data:/app/data
+      - "5000:5000"
     env_file:
       - .env
+    volumes:
+      - ./data:/app/data
 ```
+
+외부 공개 시연에서 80/443 리버스 프록시를 붙이지 않는다면, OCI Security List/NSG와 Ubuntu ufw에서 사용할 포트를 명시적으로 허용해야 한다. 개발 테스트용 5000 포트는 임시로만 열고 테스트 후 닫는다.
 
 ---
 
@@ -305,19 +307,38 @@ services:
 
 ```env
 FLASK_ENV=production
-SECRET_KEY=change-me
-DATABASE_URL=sqlite:////app/data/app.db
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
-GEMINI_API_KEY_ENCRYPTION_KEY=
+SECRET_KEY=<strong-random-secret>
+DATABASE_URL=sqlite:///data/app.db
+APP_ENCRYPTION_KEY=<fernet-key>
+SESSION_COOKIE_SECURE=true
+SESSION_COOKIE_SAMESITE=Lax
+GOOGLE_CLIENT_ID=<google-client-id>
+GOOGLE_CLIENT_SECRET=<google-client-secret>
+GOOGLE_REDIRECT_URI=https://<your-domain>/auth/google/callback
+ALLOWED_GOOGLE_DOMAIN=senedu.kr
+ADMIN_EMAILS=admin@senedu.kr
+GEMINI_MODEL=gemini-3.5-flash
+GEMINI_MAX_INPUT_CHARS=3000
+GEMINI_MAX_OUTPUT_TOKENS=1200
+MAX_DAILY_AI_CALLS_PER_USER=50
 ```
+
+`APP_ENCRYPTION_KEY`는 다음 형식으로 생성한다.
+
+```bash
+python3 -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+```
+
+Google OAuth Redirect URI 설정은 `docs/deployment/GOOGLE_OAUTH_REDIRECT_URI.md`를 기준으로 확인한다.
 
 `.gitignore`에 반드시 포함한다.
 
 ```gitignore
 .env
 *.db
-/data/
+data/*.db
+data/*.sqlite
+data/*.sqlite3
 __pycache__/
 .venv/
 ```

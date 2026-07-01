@@ -12,8 +12,8 @@ RC1 목표: 2026-07-02
 ## 2. 현재 Phase
 
 ```text
-현재 Phase: Phase 6 완료
-상태: 관리자 대시보드와 계정 승인제/Google OAuth 기본 흐름 구현 완료 / Phase 7 배포·제출 준비
+현재 Phase: Phase 7 진행 중
+상태: README/.env.example/OAuth Redirect URI/OCI 배포 문서 정리 완료, 최종 pytest 및 Docker Compose 로컬 검증 완료 / OCI 실서버 배포와 OAuth 운영 Redirect URI 수동 확인 필요
 추론 수준: 높음
 ```
 
@@ -167,10 +167,14 @@ uv run pytest: 46 passed
 ### Phase 7
 
 ```text
-OCI 배포
-README
-최종 테스트
-제출
+완료: README 최신화
+완료: .env.example 최종 확인 및 주석 보강
+완료: Google OAuth Redirect URI 설정 절차 문서화
+완료: Docker Compose 로컬 빌드/실행/healthz 확인
+완료: uv run pytest 최종 통과 확인
+남음: OCI 실제 서버 배포
+남음: Google OAuth 운영 Redirect URI 수동 확인
+남음: 제출용 최종 시연 리허설
 ```
 
 ## 11. 제외 기능
@@ -208,4 +212,34 @@ Gemini 호출부를 service로 격리
 모델명은 환경변수로 관리
 상태 변경 요청은 POST로 제한
 7월 2일 RC1 이후 신규 기능 금지
+```
+
+## 13. Phase 7 진행 결과
+
+```text
+README를 Phase 7 기준으로 최신화
+.env.example에 Google OAuth/운영 설정 주석 추가
+Google OAuth Redirect URI 설정 문서 추가
+OCI Dev Server 문서의 compose/env 예시를 현재 앱 설정과 일치하도록 보완
+uv run pytest 최종 통과
+Docker Compose build/up/healthz/down 로컬 검증 완료
+```
+
+검증 결과:
+
+```text
+uv run pytest: 46 passed
+docker compose build: success
+docker compose up -d: success
+curl /healthz: 200 {"status":"ok"}
+docker compose down: success
+```
+
+남은 작업:
+
+```text
+OCI 실제 서버에 .env 운영값 설정
+Google Cloud Console에 운영 Redirect URI 등록
+OCI URL에서 Google OAuth 로그인 수동 확인
+제출 전 최종 시연 리허설
 ```

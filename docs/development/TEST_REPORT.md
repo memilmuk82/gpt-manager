@@ -187,3 +187,42 @@ tests/test_auth.py additions
 ```bash
 uv run pytest
 ```
+
+## Phase 7 테스트 결과
+
+```text
+날짜: 2026-07-01
+Phase: Phase 7
+추론 수준: 높음
+명령: uv run pytest
+결과: PASS
+PASS: 46
+FAIL: 0
+수정 내용: README 최신화, .env.example 보강, Google OAuth Redirect URI 문서 추가, OCI 배포 문서 보완
+재테스트 결과: 46 passed
+```
+
+Docker Compose 확인:
+
+```text
+명령: docker compose build
+결과: PASS, image gpt-manager-web built
+
+명령: docker compose up -d
+결과: PASS, gpt-manager-web-1 started
+
+명령: curl http://localhost:5000/healthz
+결과: PASS, {"status":"ok"}
+
+명령: docker compose down
+결과: PASS, 검증용 컨테이너와 네트워크 정리 완료
+```
+
+남은 외부 검증:
+
+```text
+OCI 실제 서버 배포
+Google Cloud Console 운영 Redirect URI 등록
+OCI URL 기준 Google OAuth 수동 로그인 확인
+```
+

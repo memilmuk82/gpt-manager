@@ -284,3 +284,40 @@ Phase 7 README/.env.example/배포 문서 정리
 OCI 배포 및 실제 Google OAuth Redirect URI 확인
 최종 제출 테스트
 ```
+
+
+## 2026-07-01 - Phase 7
+
+### 추론 수준
+
+```text
+높음
+```
+
+### 진행
+
+```text
+README를 Phase 7 기준으로 최신화
+.env.example에 운영/OAuth 설정 주석 보강
+Google OAuth Redirect URI 설정 문서 추가
+OCI Dev Server 문서의 compose/env 예시를 현재 앱 설정과 일치하도록 보완
+```
+
+### 검증
+
+```text
+uv run pytest: 46 passed
+docker compose build: success
+docker compose up -d: success
+curl http://localhost:5000/healthz: {"status":"ok"}
+docker compose down: success
+```
+
+### 남은 작업
+
+```text
+OCI 실제 서버에서 .env 운영값 설정
+Google Cloud Console Redirect URI 등록
+OCI URL에서 OAuth 로그인 수동 확인
+제출 전 최종 시연 리허설
+```
