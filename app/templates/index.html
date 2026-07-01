@@ -3,33 +3,77 @@
 {% block title %}GPT Share Manager vNext{% endblock %}
 
 {% block content %}
-  <section class="space-y-6">
-    <div class="space-y-3">
-      <p class="text-sm font-medium uppercase tracking-wide text-teal-700">Local authentication ready</p>
-      <h1 class="text-3xl font-bold text-zinc-950">공용 AI 계정 운영 관리와 프롬프트 점검을 위한 기본 앱</h1>
-      <p class="max-w-2xl text-base leading-7 text-zinc-600">
-        현재 Phase 2는 로컬 회원가입, 로그인, 로그아웃, 보호된 대시보드를 제공합니다.
+<section class="space-y-8">
+
+  <div class="space-y-3">
+    <p class="text-sm font-medium uppercase tracking-wide text-teal-700">
+      RELEASE CANDIDATE
+    </p>
+
+    <h1 class="text-3xl font-bold text-zinc-950">
+      공용 AI 계정 운영 및 프롬프트 관리 시스템
+    </h1>
+
+    <p class="max-w-3xl text-base leading-7 text-zinc-600">
+      GPT Share Manager vNext는 학교 및 기관에서 공용 AI 계정을 안전하게
+      운영하기 위한 관리 시스템입니다.
+      현재 Release Candidate(RC) 단계이며 핵심 기능 구현을 완료하고
+      최종 검증을 진행하고 있습니다.
+    </p>
+  </div>
+
+  <div class="flex flex-wrap gap-3">
+    <a
+      class="rounded-md bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800"
+      href="{{ url_for('auth.register') }}"
+    >
+      회원가입
+    </a>
+
+    <a
+      class="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100"
+      href="{{ url_for('auth.login') }}"
+    >
+      로그인
+    </a>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-3">
+
+    <div class="rounded-md border border-zinc-200 bg-white p-5">
+      <h2 class="font-semibold text-lg">
+        사용자 인증
+      </h2>
+
+      <p class="mt-2 text-sm text-zinc-600">
+        로컬 로그인 및 Google OAuth 기반 인증을 지원하며,
+        관리자 승인 절차를 통해 사용자 접근을 관리합니다.
       </p>
     </div>
 
-    <div class="flex flex-wrap gap-3">
-      <a class="rounded-md bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800" href="{{ url_for('auth.register') }}">회원가입</a>
-      <a class="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100" href="{{ url_for('auth.login') }}">로그인</a>
+    <div class="rounded-md border border-zinc-200 bg-white p-5">
+      <h2 class="font-semibold text-lg">
+        운영 기능
+      </h2>
+
+      <p class="mt-2 text-sm text-zinc-600">
+        예약 관리, 사용 기록, 관리자 승인,
+        공용 AI 계정 운영을 위한 핵심 기능을 제공합니다.
+      </p>
     </div>
 
-    <div class="grid gap-4 md:grid-cols-3">
-      <div class="rounded-md border border-zinc-200 bg-white p-4">
-        <h2 class="font-semibold">Local Login</h2>
-        <p class="mt-2 text-sm text-zinc-600">Password hashes are stored with Werkzeug security helpers.</p>
-      </div>
-      <div class="rounded-md border border-zinc-200 bg-white p-4">
-        <h2 class="font-semibold">Protected Dashboard</h2>
-        <p class="mt-2 text-sm text-zinc-600">/dashboard requires an authenticated session.</p>
-      </div>
-      <div class="rounded-md border border-zinc-200 bg-white p-4">
-        <h2 class="font-semibold">Next Phase</h2>
-        <p class="mt-2 text-sm text-zinc-600">Reservations and usage logs remain outside Phase 2.</p>
-      </div>
+    <div class="rounded-md border border-zinc-200 bg-white p-5">
+      <h2 class="font-semibold text-lg">
+        Release Candidate
+      </h2>
+
+      <p class="mt-2 text-sm text-zinc-600">
+        Phase 7 구현을 완료하였으며,
+        현재 운영 환경 배포 및 최종 안정화 작업을 진행하고 있습니다.
+      </p>
     </div>
-  </section>
+
+  </div>
+
+</section>
 {% endblock %}
