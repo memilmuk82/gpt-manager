@@ -313,3 +313,14 @@ users: 3 -> 3
 reservations: 2 -> 2
 uv run pytest: 47 passed
 ```
+
+## RC Deployment
+
+- OCI Ubuntu 배포 완료
+- Docker Compose 운영
+- Gunicorn 적용
+- Nginx Reverse Proxy 적용
+- Cloudflare DNS 연결
+- dev-gpt.memilmuk82.com 연결 완료
+- iptables HTTP/HTTPS 허용
+- Release Candidate 환경 구축 완료
