@@ -12,8 +12,8 @@ RC1 목표: 2026-07-02
 ## 2. 현재 Phase
 
 ```text
-현재 Phase: Phase 5 완료
-상태: 프롬프트 점검기 구현 완료 / Phase 6 관리자 대시보드 및 Google OAuth senedu.kr 제한 착수 준비
+현재 Phase: Phase 6 완료
+상태: 관리자 대시보드와 계정 승인제/Google OAuth 기본 흐름 구현 완료 / Phase 7 배포·제출 준비
 추론 수준: 높음
 ```
 
@@ -71,6 +71,11 @@ Phase 5 PromptReview 모델 구현
 Phase 5 프롬프트 점검 입력/저장/조회 구현
 Phase 5 Gemini 호출 service 및 mock 테스트 구현
 Phase 5 프롬프트 점검 pytest 통과
+Phase 6 관리자 대시보드 구현
+Phase 6 사용자 승인/정지 관리 구현
+Phase 6 senedu.kr 자동 승인 + 외부 계정 관리자 승인제 구현
+Phase 6 Google OAuth 기본 로그인 흐름 구현
+Phase 6 관리자/OAuth/승인제 pytest 통과
 ```
 
 ## 6. Phase 3 결과
@@ -135,18 +140,29 @@ GEMINI_MODEL 기본값을 gemini-3.5-flash로 갱신
 uv run pytest: 36 passed
 ```
 
-## 9. 진행 예정
-
-### Phase 6
+## 9. Phase 6 결과
 
 ```text
-관리자 대시보드
-전체 예약/로그/프롬프트 점검 결과 확인
-Google OAuth 로그인 구현
-senedu.kr 계정만 Google 로그인 가능하도록 제한
-로컬 회원가입 도메인 제한 여부 최종 결정
-가능하면 운영 보고서 생성
+관리자 대시보드 추가
+전체 사용자/예약/사용 로그/프롬프트 점검 수 요약 추가
+사용자 승인 관리 화면 추가
+관리자만 /admin 접근 가능
+senedu.kr 계정은 자동 승인
+외부 Google 계정과 외부 로컬 이메일 계정은 pending 상태로 등록
+관리자가 pending 계정을 승인 가능
+관리자가 사용자 계정을 정지 가능
+Google OAuth login/callback 기본 흐름 추가
+Google callback에서 검증된 email/sub 확인
+Google OAuth 테스트는 userinfo fetch를 mock 처리
 ```
+
+검증 결과:
+
+```text
+uv run pytest: 46 passed
+```
+
+## 10. 진행 예정
 
 ### Phase 7
 
@@ -157,7 +173,7 @@ README
 제출
 ```
 
-## 10. 제외 기능
+## 11. 제외 기능
 
 ```text
 자유 채팅형 챗봇
@@ -173,11 +189,11 @@ OCI Managed DB
 정보화기기/IP 관리
 ```
 
-## 11. 현재 위험 요소
+## 12. 현재 위험 요소
 
 ```text
 OAuth Redirect URI 설정 지연 가능성
-Google OAuth senedu.kr 도메인 제한 구현/검증 필요
+Google OAuth 운영 Redirect URI와 실제 Google Cloud 설정 확인 필요
 Gemini 모델명/SDK 확인 필요
 OCI 배포 시간 부족 가능성
 UI 완성도 부족 가능성

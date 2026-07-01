@@ -236,3 +236,51 @@ uv run pytest: 36 passed
 ```text
 Phase 6 관리자 대시보드 및 Google OAuth senedu.kr 제한 구현
 ```
+
+
+## 2026-07-01 - Phase 6
+
+### 추론 수준
+
+```text
+높음
+```
+
+### 정책 결정
+
+```text
+senedu.kr 계정은 자동 승인
+그 외 Google 계정과 로컬 이메일 계정은 pending 상태로 등록
+관리자가 승인하면 사용 가능
+정지된 계정은 로그인/기능 접근 차단
+```
+
+### 구현
+
+```text
+User approval_status/auth_provider 필드 추가
+ApprovalStatus 값 추가
+전역 승인 상태 접근 제어 before_request 추가
+관리자 대시보드 추가
+사용자 승인/정지 관리 화면 추가
+Google OAuth login/callback 기본 라우트 추가
+Google userinfo fetch service 추가
+Google callback에서 email_verified/sub/email 검증
+ADMIN_EMAILS 설정 추가
+ALLOWED_GOOGLE_DOMAIN 기본값을 senedu.kr로 설정
+로그인/회원가입 화면에 승인제 안내 추가
+```
+
+### 검증
+
+```text
+uv run pytest: 46 passed
+```
+
+### 다음 작업
+
+```text
+Phase 7 README/.env.example/배포 문서 정리
+OCI 배포 및 실제 Google OAuth Redirect URI 확인
+최종 제출 테스트
+```

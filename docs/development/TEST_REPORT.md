@@ -147,6 +147,41 @@ FAIL: 0
 재테스트 결과: 36 passed
 ```
 
+
+## Phase 6 테스트 결과
+
+```text
+날짜: 2026-07-01
+Phase: Phase 6
+추론 수준: 높음
+명령: uv run pytest
+결과: PASS
+PASS: 46
+FAIL: 0
+수정 내용: 관리자 대시보드, 사용자 승인/정지 관리, senedu.kr 자동 승인, 외부 계정 승인 대기, Google OAuth 기본 흐름 추가
+재테스트 결과: 46 passed
+```
+
+## Phase 6 테스트 파일
+
+```text
+tests/test_admin.py
+- non-admin cannot access admin dashboard
+- admin can view and approve pending user
+- admin cannot suspend self
+
+tests/test_google_oauth.py
+- Google login redirects to Google with hd=senedu.kr
+- senedu.kr Google account is auto-approved
+- external Google account remains pending
+- unverified Google email is rejected
+
+tests/test_auth.py additions
+- external local registration waits for admin approval
+- admin email registration gets admin role
+- suspended user cannot login
+```
+
 ## 실행 명령
 
 ```bash

@@ -17,6 +17,11 @@ class TestConfig:
     GEMINI_MAX_INPUT_CHARS = 3000
     GEMINI_MAX_OUTPUT_TOKENS = 1200
     MAX_DAILY_AI_CALLS_PER_USER = 50
+    GOOGLE_CLIENT_ID = "test-google-client"
+    GOOGLE_CLIENT_SECRET = "test-google-secret"
+    GOOGLE_REDIRECT_URI = "http://localhost/auth/google/callback"
+    ALLOWED_GOOGLE_DOMAIN = "senedu.kr"
+    ADMIN_EMAILS = ["admin@senedu.kr"]
 
 
 @pytest.fixture()

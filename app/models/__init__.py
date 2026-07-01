@@ -13,6 +13,8 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(255), nullable=True)
     role = db.Column(db.String(20), nullable=False, default="user")
     google_sub = db.Column(db.String(255), unique=True, nullable=True)
+    auth_provider = db.Column(db.String(40), nullable=False, default="local")
+    approval_status = db.Column(db.String(20), nullable=False, default="approved", index=True)
     is_active = db.Column(db.Boolean, nullable=False, default=True)
     created_at = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
     updated_at = db.Column(
@@ -22,6 +24,14 @@ class User(UserMixin, db.Model):
         onupdate=lambda: datetime.now(timezone.utc),
     )
 
+    @property
+    def is_approved(self) -> bool:
+        return self.approval_status == ApprovalStatus.APPROVED
+
+    @property
+    def is_admin(self) -> bool:
+        return self.role == "admin"
+
     def set_password(self, password: str) -> None:
         self.password_hash = generate_password_hash(password)
 
@@ -29,6 +39,12 @@ class User(UserMixin, db.Model):
         if not self.password_hash:
             return False
         return check_password_hash(self.password_hash, password)
+
+
+class ApprovalStatus:
+    PENDING = "pending"
+    APPROVED = "approved"
+    SUSPENDED = "suspended"
 
 
 class ReservationStatus:

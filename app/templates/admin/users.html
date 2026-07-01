@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}User Approvals - GPT Share Manager vNext{% endblock %}
+
+{% block content %}
+  <section class="space-y-6">
+    <div>
+      <p class="text-sm font-medium uppercase text-teal-700">Admin</p>
+      <h1 class="mt-2 text-3xl font-bold">사용자 승인 관리</h1>
+    </div>
+
+    <div class="overflow-hidden rounded-md border border-zinc-200 bg-white">
+      <table class="min-w-full divide-y divide-zinc-200 text-sm">
+        <thead class="bg-zinc-50 text-left text-zinc-600">
+          <tr>
+            <th class="px-4 py-3 font-medium">이메일</th>
+            <th class="px-4 py-3 font-medium">이름</th>
+            <th class="px-4 py-3 font-medium">방식</th>
+            <th class="px-4 py-3 font-medium">권한</th>
+            <th class="px-4 py-3 font-medium">상태</th>
+            <th class="px-4 py-3 font-medium">작업</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-zinc-100">
+          {% for user in users %}
+            <tr>
+              <td class="px-4 py-3">{{ user.email }}</td>
+              <td class="px-4 py-3 text-zinc-600">{{ user.name }}</td>
+              <td class="px-4 py-3 text-zinc-600">{{ user.auth_provider }}</td>
+              <td class="px-4 py-3 text-zinc-600">{{ user.role }}</td>
+              <td class="px-4 py-3 text-zinc-600">{{ user.approval_status }}</td>
+              <td class="px-4 py-3">
+                <div class="flex flex-wrap gap-2">
+                  {% if user.approval_status != 'approved' %}
+                    <form method="post" action="{{ url_for('admin.approve_user', user_id=user.id) }}">
+                      <button class="rounded-md bg-teal-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-teal-800" type="submit">승인</button>
+                    </form>
+                  {% endif %}
+                  {% if user.id != current_user.id and user.approval_status != 'suspended' %}
+                    <form method="post" action="{{ url_for('admin.suspend_user', user_id=user.id) }}">
+                      <button class="rounded-md border border-red-200 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50" type="submit">정지</button>
+                    </form>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+          {% else %}
+            <tr><td class="px-4 py-6 text-zinc-500" colspan="6">사용자가 없습니다.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+{% endblock %}

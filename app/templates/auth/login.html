@@ -6,8 +6,10 @@
   <section class="max-w-md space-y-6">
     <div>
       <h1 class="text-2xl font-bold">로그인</h1>
-      <p class="mt-2 text-sm text-zinc-600">가입한 로컬 계정으로 로그인합니다.</p>
+      <p class="mt-2 text-sm text-zinc-600">로컬 계정 또는 Google 계정으로 로그인합니다.</p>
     </div>
+
+    <a class="inline-flex rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100" href="{{ url_for('auth.google_login') }}">Google로 로그인</a>
 
     <form class="space-y-4" method="post" action="{{ url_for('auth.login_post', next=request.args.get('next')) }}">
       <label class="block text-sm font-medium">

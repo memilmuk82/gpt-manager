@@ -1,7 +1,9 @@
 from pathlib import Path
 
-from flask import Flask
+from flask import Flask, flash, redirect, request, url_for
+from flask_login import current_user, logout_user
 
+from app.admin import admin_bp
 from app.auth import auth_bp
 from app.config import Config
 from app.extensions import db, login_manager
@@ -29,6 +31,32 @@ def create_app(config_object: type[Config] | None = None) -> Flask:
     app.register_blueprint(reservations_bp)
     app.register_blueprint(prompts_bp)
     app.register_blueprint(settings_bp)
+    app.register_blueprint(admin_bp)
+
+    @app.before_request
+    def enforce_user_approval():
+        allowed_endpoints = {
+            "static",
+            "main.index",
+            "main.healthz",
+            "auth.login",
+            "auth.login_post",
+            "auth.register",
+            "auth.register_post",
+            "auth.google_login",
+            "auth.google_callback",
+            "auth.pending",
+            "auth.logout",
+        }
+        if not current_user.is_authenticated or request.endpoint in allowed_endpoints:
+            return None
+        if current_user.approval_status == "suspended":
+            logout_user()
+            flash("정지된 계정입니다. 관리자에게 문의하세요.", "error")
+            return redirect(url_for("auth.login"))
+        if not current_user.is_approved:
+            return redirect(url_for("auth.pending"))
+        return None
 
     with app.app_context():
         db.create_all()

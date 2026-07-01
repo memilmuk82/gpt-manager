@@ -33,7 +33,8 @@ class Config:
         "GOOGLE_REDIRECT_URI",
         "http://localhost:5000/auth/google/callback",
     )
-    ALLOWED_GOOGLE_DOMAIN = os.getenv("ALLOWED_GOOGLE_DOMAIN", "")
+    ALLOWED_GOOGLE_DOMAIN = os.getenv("ALLOWED_GOOGLE_DOMAIN", "senedu.kr")
+    ADMIN_EMAILS = [email.strip().lower() for email in os.getenv("ADMIN_EMAILS", "").split(",") if email.strip()]
 
     GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash")
     GEMINI_MAX_INPUT_CHARS = int(os.getenv("GEMINI_MAX_INPUT_CHARS", "3000"))
