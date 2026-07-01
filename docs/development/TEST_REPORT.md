@@ -74,31 +74,77 @@ tests/test_user_model.py
 tests/test_config.py
 - relative SQLite DATABASE_URL is rooted at ./data
 - in-memory SQLite DATABASE_URL is unchanged
+
+tests/test_reservations.py
+- reservation create/cancel flow
+- reservation ownership filtering
+- overlap conflict rejection
+- back-to-back and different resource allowance
+- cancelled reservation does not block new reservation
+- inactive resource rejected
+- end time must be after start
+
+tests/test_usage_logs.py
+- usage log can be created from reservation
+- usage log can be created with resource only
+- owned reservation is required
+- user cannot view another user's usage log
+
+tests/test_api_keys.py
+- settings page requires login
+- API Key encryption roundtrip
+- plaintext API Key is not stored
+- masked key display uses last4 only
+- API Key can be replaced and deleted
+- saved API Key decrypt check redirects successfully
+
+tests/test_prompt_reviews.py
+- prompt review requires login
+- saved API Key is required
+- mocked Gemini result is saved
+- too-long prompt is rejected
+- user cannot view another user's prompt review
+- prompt builder includes required sections
 ```
 
-## Phase 3 예정 테스트
+## Phase 3 테스트 결과
 
 ```text
-reservation conflict detection
-cancelled reservation does not conflict
-user can see own reservations
-usage log can be created by authenticated user
+날짜: 2026-07-01
+Phase: Phase 3
+명령: uv run pytest
+결과: PASS
+PASS: 25
+FAIL: 0
+수정 내용: AiResource/Reservation/UsageLog 모델, 예약 CRUD, 예약 충돌 검증, 사용 로그 CRUD 추가
+재테스트 결과: 25 passed
 ```
 
-## Phase 4 예정 테스트
+## Phase 4 테스트 결과
 
 ```text
-API Key encryption roundtrip
-plaintext API Key is not stored
-masked key display uses last4 only
+날짜: 2026-07-01
+Phase: Phase 4
+명령: uv run pytest
+결과: PASS
+PASS: 30
+FAIL: 0
+수정 내용: UserApiKey 모델, Fernet 암호화 저장, API Key 마스킹/삭제/복호화 확인 추가
+재테스트 결과: 30 passed
 ```
 
-## Phase 5 예정 테스트
+## Phase 5 테스트 결과
 
 ```text
-prompt review prompt builder includes selected options
-Gemini call is mocked in tests
-PromptReview is saved for current user
+날짜: 2026-07-01
+Phase: Phase 5
+추론 수준: 높음
+명령: uv run pytest
+결과: PASS
+PASS: 36
+FAIL: 0
+수정 내용: PromptReview 모델, 프롬프트 점검 화면, Gemini 호출 service, mock 테스트 추가
+재테스트 결과: 36 passed
 ```
 
 ## 실행 명령

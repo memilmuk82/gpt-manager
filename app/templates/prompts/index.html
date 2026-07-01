@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Prompt Reviews - GPT Share Manager vNext{% endblock %}
+
+{% block content %}
+  <section class="space-y-6">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <p class="text-sm font-medium uppercase text-teal-700">Prompt Reviews</p>
+        <h1 class="mt-2 text-3xl font-bold">프롬프트 점검</h1>
+      </div>
+      <a class="rounded-md bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800" href="{{ url_for('prompts.new') }}">새 점검</a>
+    </div>
+
+    <div class="overflow-hidden rounded-md border border-zinc-200 bg-white">
+      <table class="min-w-full divide-y divide-zinc-200 text-sm">
+        <thead class="bg-zinc-50 text-left text-zinc-600">
+          <tr>
+            <th class="px-4 py-3 font-medium">목표</th>
+            <th class="px-4 py-3 font-medium">모델</th>
+            <th class="px-4 py-3 font-medium">생성일</th>
+            <th class="px-4 py-3 font-medium">보기</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-zinc-100">
+          {% for review in reviews %}
+            <tr>
+              <td class="px-4 py-3">{{ review.review_goal }}</td>
+              <td class="px-4 py-3 text-zinc-600">{{ review.model_name }}</td>
+              <td class="px-4 py-3 text-zinc-600">{{ review.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+              <td class="px-4 py-3"><a class="text-teal-700 hover:text-teal-900" href="{{ url_for('prompts.show', review_id=review.id) }}">열기</a></td>
+            </tr>
+          {% else %}
+            <tr>
+              <td class="px-4 py-6 text-zinc-500" colspan="4">저장된 점검 결과가 없습니다.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+{% endblock %}

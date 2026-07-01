@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}New Prompt Review - GPT Share Manager vNext{% endblock %}
+
+{% block content %}
+  <section class="space-y-6">
+    <div>
+      <p class="text-sm font-medium uppercase text-teal-700">Prompt Reviews</p>
+      <h1 class="mt-2 text-3xl font-bold">새 프롬프트 점검</h1>
+    </div>
+
+    <form class="space-y-4 rounded-md border border-zinc-200 bg-white p-5" method="post" action="{{ url_for('prompts.create') }}">
+      <div>
+        <label class="block text-sm font-medium text-zinc-700" for="review_goal">점검 목표</label>
+        <input class="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm focus:border-teal-700 focus:outline-none focus:ring-1 focus:ring-teal-700" id="review_goal" name="review_goal" value="명확성, 안전성, 수업 활용성 개선">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-zinc-700" for="source_prompt">원본 프롬프트</label>
+        <textarea class="mt-1 min-h-64 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm focus:border-teal-700 focus:outline-none focus:ring-1 focus:ring-teal-700" id="source_prompt" name="source_prompt" required></textarea>
+      </div>
+      <button class="rounded-md bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800" type="submit">점검 실행</button>
+    </form>
+  </section>
+{% endblock %}

@@ -129,3 +129,110 @@ Phase 3 예약/로그 구현 계획 보고
 AiResource, Reservation, UsageLog 모델과 예약 충돌 테스트 설계
 ```
 
+
+
+## 2026-07-01 - Phase 3
+
+### 구현
+
+```text
+AiResource 모델 추가
+Reservation 모델 및 상태값 추가
+UsageLog 모델 추가
+예약 목록/생성/취소/완료 구현
+예약 시간 파싱 및 충돌 검증 service 추가
+사용 로그 목록/생성/상세 조회 구현
+예약/로그 템플릿 작성
+예약/로그 접근을 현재 사용자로 제한
+```
+
+### 검증
+
+```text
+uv run pytest: 25 passed
+```
+
+### 다음 작업
+
+```text
+Phase 4 Gemini API Key 암호화 설정 구현
+UserApiKey 모델, Fernet 암호화, 등록/삭제/마스킹 테스트 추가
+```
+
+## 2026-07-01 - Phase 4
+
+### 구현
+
+```text
+cryptography 의존성 사용
+UserApiKey 모델 추가
+Fernet 기반 암호화/복호화 service 추가
+/settings/api-key 화면 추가
+Gemini API Key 등록/교체/삭제 구현
+저장 상태 마지막 4자리 마스킹 표시
+저장된 키 복호화 확인 기능 추가
+내비게이션과 대시보드 문구 갱신
+```
+
+### 보안 메모
+
+```text
+API Key 원문은 DB에 저장하지 않음
+화면에는 마지막 4자리만 표시
+운영 환경에서는 APP_ENCRYPTION_KEY를 Fernet 키로 고정 설정 필요
+```
+
+### 검증
+
+```text
+uv run pytest: 30 passed
+```
+
+### 다음 작업
+
+```text
+Phase 5 프롬프트 점검기 구현
+PromptReview 모델, Gemini 호출 service, mock 테스트 작성
+```
+
+
+## 2026-07-01 - Phase 5
+
+### 추론 수준
+
+```text
+높음
+```
+
+### 구현
+
+```text
+PromptReview 모델 추가
+프롬프트 점검 목록/입력/상세 화면 추가
+점검 프롬프트 조립 service 추가
+Gemini REST 호출 service 추가
+저장된 Gemini API Key 복호화 후 호출에 사용
+Gemini 호출부 mock 테스트 추가
+입력 길이 제한 및 사용자별 접근 제한 구현
+GEMINI_MODEL 기본값을 gemini-3.5-flash로 갱신
+```
+
+### 예정 보강
+
+```text
+Phase 6에서 Google OAuth 로그인 구현
+ALLOWED_GOOGLE_DOMAIN=senedu.kr 기준으로 Google 로그인 계정 제한
+필요 시 로컬 회원가입도 senedu.kr 도메인으로 제한
+```
+
+### 검증
+
+```text
+uv run pytest: 36 passed
+```
+
+### 다음 작업
+
+```text
+Phase 6 관리자 대시보드 및 Google OAuth senedu.kr 제한 구현
+```

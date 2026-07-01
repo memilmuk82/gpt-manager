@@ -6,8 +6,10 @@ from app.auth import auth_bp
 from app.config import Config
 from app.extensions import db, login_manager
 from app.logs import logs_bp
+from app.prompts import prompts_bp
 from app.reservations import reservations_bp
 from app.routes.main import main_bp
+from app.settings import settings_bp
 
 
 def create_app(config_object: type[Config] | None = None) -> Flask:
@@ -25,6 +27,8 @@ def create_app(config_object: type[Config] | None = None) -> Flask:
     app.register_blueprint(auth_bp)
     app.register_blueprint(logs_bp)
     app.register_blueprint(reservations_bp)
+    app.register_blueprint(prompts_bp)
+    app.register_blueprint(settings_bp)
 
     with app.app_context():
         db.create_all()

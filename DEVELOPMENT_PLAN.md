@@ -78,12 +78,15 @@ pytest 통과
 
 ```text
 관리자 대시보드
+Google OAuth 로그인
+senedu.kr 계정만 Google 로그인 가능하도록 제한
 가능하면 운영 보고서 생성
 UI 정리
 README 작성
 시연 흐름 작성
 OCI 배포
 OAuth redirect 확인
+senedu.kr Google 계정 제한 확인
 최종 통합 테스트
 ```
 
@@ -186,8 +189,9 @@ mock 테스트
 
 ```text
 관리자 대시보드
-전체 예약/로그 확인
+전체 예약/로그/프롬프트 점검 결과 확인
 AI 리소스 관리
+Google OAuth 로그인 및 senedu.kr 도메인 제한
 가능하면 운영 보고서 생성
 ```
 
