@@ -12,8 +12,8 @@ RC1 목표: 2026-07-02
 ## 2. 현재 Phase
 
 ```text
-현재 Phase: Phase 7 진행 중
-상태: README/.env.example/OAuth Redirect URI/OCI 배포 문서 정리 완료, 최종 pytest 및 Docker Compose 로컬 검증 완료 / OCI 실서버 배포와 OAuth 운영 Redirect URI 수동 확인 필요
+현재 Phase: Release Candidate 검증 진행 중
+상태: pytest PASS, Playwright E2E PASS / GitHub push 후 OCI 운영 배포와 운영 환경 수동 검증 필요
 추론 수준: 높음
 ```
 
@@ -242,4 +242,31 @@ OCI 실제 서버에 .env 운영값 설정
 Google Cloud Console에 운영 Redirect URI 등록
 OCI URL에서 Google OAuth 로그인 수동 확인
 제출 전 최종 시연 리허설
+```
+
+## 14. Release Candidate 검증 결과
+
+```text
+pytest: PASS, 46 passed
+Playwright E2E: PASS, 1 passed
+Docker Build: 로컬 Phase 7 검증에서 PASS, 운영 배포 단계에서 재확인 예정
+OCI 배포: 진행 예정
+운영 Health Check: 진행 예정
+OAuth 운영 검증: 진행 예정
+로컬 로그인 운영 검증: 진행 예정
+CRUD 운영 검증: 진행 예정
+세션 유지 운영 검증: 진행 예정
+Release Freeze: 운영 검증 완료 후 전환 예정
+```
+
+Playwright 검증 범위:
+
+```text
+메인 페이지 접속
+회원가입/로컬 로그인
+예약 목록 조회
+예약 추가
+예약 상태 변경
+API Key 등록/교체/삭제
+새로고침 후 데이터 유지
 ```

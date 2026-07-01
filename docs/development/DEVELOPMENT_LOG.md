@@ -321,3 +321,49 @@ Google Cloud Console Redirect URI 등록
 OCI URL에서 OAuth 로그인 수동 확인
 제출 전 최종 시연 리허설
 ```
+
+## 2026-07-01 - Release Candidate 검증
+
+### 추론 수준
+
+```text
+높음
+```
+
+### 검증
+
+```text
+uv run pytest: 46 passed
+Playwright E2E 테스트 인프라 추가
+npm run test:e2e: 1 passed
+```
+
+### Playwright 검증 범위
+
+```text
+메인 페이지 접속
+회원가입 및 로컬 로그인
+예약 목록 조회
+예약 추가
+예약 완료 상태 변경
+Gemini API Key 등록/교체/삭제
+새로고침 후 예약/API Key 상태 유지 확인
+```
+
+### 변경 범위
+
+```text
+앱 기능 코드 변경 없음
+Playwright 테스트 설정과 E2E 테스트 추가
+Release Candidate 검증 결과 문서화
+```
+
+### 다음 작업
+
+```text
+검증 커밋 후 master push
+OCI 운영 서버 git pull/build/up
+운영 /healthz, OAuth, 로컬 로그인, CRUD, 세션 유지 검증
+모든 운영 검증 PASS 시 Release Freeze 전환
+```
+

@@ -9,3 +9,6 @@ instance/
 data/*.db
 data/*.sqlite
 data/*.sqlite3
+node_modules/
+test-results/
+playwright-report/

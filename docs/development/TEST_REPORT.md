@@ -226,3 +226,39 @@ Google Cloud Console 운영 Redirect URI 등록
 OCI URL 기준 Google OAuth 수동 로그인 확인
 ```
 
+## Release Candidate 검증 결과
+
+```text
+날짜: 2026-07-01
+단계: Release Candidate 검증
+추론 수준: 높음
+
+1단계 pytest:
+명령: uv run pytest
+결과: PASS
+PASS: 46
+FAIL: 0
+
+2단계 Playwright E2E:
+명령: npm run test:e2e
+결과: PASS
+PASS: 1
+FAIL: 0
+검증 범위: 메인 페이지 접속, 회원가입/로그인, 예약 목록 조회, 예약 추가, 예약 상태 변경, API Key 등록/교체/삭제, 새로고침 후 데이터 유지
+
+환경 준비:
+명령: npm install
+결과: PASS
+명령: npx playwright install chromium
+결과: PASS
+명령: sudo npx playwright install-deps chromium
+결과: PASS
+```
+
+주의:
+
+```text
+Playwright E2E는 /tmp/gpt-manager-e2e.db를 사용한다.
+앱 기능 코드는 변경하지 않았고, 테스트 인프라만 추가했다.
+```
+
