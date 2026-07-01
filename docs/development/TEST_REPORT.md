@@ -275,3 +275,53 @@ Playwright E2E는 /tmp/gpt-manager-e2e.db를 사용한다.
 uv run pytest: 47 passed
 npm run test:e2e: 1 passed
 ```
+
+## Release Candidate OCI 운영 배포 검증
+
+```text
+날짜: 2026-07-01
+단계: OCI 운영 배포 및 운영 환경 검증
+
+GitHub:
+master pushed: PASS
+latest commit deployed: 926e3f1 fix: migrate legacy sqlite user columns
+
+OCI 배포:
+git pull: PASS, Already up to date
+docker compose build: PASS
+docker compose up -d: PASS
+container status: PASS, gpt-manager-web-1 Up
+
+Health Check:
+GET /healthz: PASS, 200 {"status":"ok"}
+
+운영 DB 보정:
+user.auth_provider: PASS
+user.approval_status: PASS
+
+운영 로컬 검증:
+메인 페이지 접속: PASS
+회원가입 및 세션 생성: PASS
+로컬 로그인: PASS
+세션 유지: PASS
+예약 목록 조회: PASS
+예약 추가: PASS
+예약 완료 상태 변경: PASS
+Gemini API Key 등록/교체: PASS
+Gemini API Key 삭제: PASS
+CRUD 후 세션 유지: PASS
+
+운영 OAuth 검증:
+결과: BLOCKED
+원인: GOOGLE_CLIENT_ID와 GOOGLE_CLIENT_SECRET이 운영 .env에 설정되어 있지 않음
+현재 동작: GET /auth/google/login -> 302 /auth/login
+필요 조치: Google Cloud Console OAuth Client 생성 후 GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI 설정 및 컨테이너 재기동
+```
+
+Release Freeze 판정:
+
+```text
+보류
+사유: Google OAuth 운영 검증 미완료
+```
+

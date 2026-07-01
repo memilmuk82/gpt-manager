@@ -13,7 +13,7 @@ RC1 목표: 2026-07-02
 
 ```text
 현재 Phase: Release Candidate 검증 진행 중
-상태: pytest PASS, Playwright E2E PASS, 운영 SQLite 스키마 호환성 버그 수정 완료 / OCI 운영 재배포와 운영 환경 수동 검증 진행 중
+상태: pytest PASS, Playwright E2E PASS, OCI 배포 PASS, 운영 Health/로컬 로그인/CRUD/세션 유지 PASS / Google OAuth 운영 설정 미완료로 Release Freeze 보류
 추론 수준: 높음
 ```
 
@@ -249,14 +249,14 @@ OCI URL에서 Google OAuth 로그인 수동 확인
 ```text
 pytest: PASS, 47 passed
 Playwright E2E: PASS, 1 passed
-Docker Build: 로컬 Phase 7 검증에서 PASS, 운영 배포 단계에서 재확인 예정
-OCI 배포: 진행 예정
-운영 Health Check: 진행 예정
-OAuth 운영 검증: 진행 예정
-로컬 로그인 운영 검증: 진행 예정
-CRUD 운영 검증: 진행 예정
-세션 유지 운영 검증: 진행 예정
-Release Freeze: 운영 검증 완료 후 전환 예정
+Docker Build: PASS
+OCI 배포: PASS
+운영 Health Check: PASS
+OAuth 운영 검증: BLOCKED, GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET 미설정
+로컬 로그인 운영 검증: PASS
+CRUD 운영 검증: PASS
+세션 유지 운영 검증: PASS
+Release Freeze: 보류, Google OAuth 운영 검증 완료 필요
 ```
 
 Playwright 검증 범위:
@@ -278,4 +278,25 @@ API Key 등록/교체/삭제
 앱 시작 시 SQLite user 테이블 누락 컬럼을 보정하도록 수정
 pytest 47 passed
 Playwright E2E 1 passed
+```
+
+## 15. OCI 운영 검증 결과
+
+```text
+git pull: PASS
+docker compose build: PASS
+docker compose up -d: PASS
+/healthz: PASS, 200 {"status":"ok"}
+로컬 로그인: PASS
+예약 목록/추가/완료: PASS
+Gemini API Key 등록/교체/삭제: PASS
+세션 유지: PASS
+Google OAuth: BLOCKED, 운영 .env에 GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET 미설정
+```
+
+Release Freeze:
+
+```text
+보류
+Google OAuth 운영 설정과 수동 로그인 검증 완료 후 전환
 ```

@@ -382,3 +382,48 @@ SQLite 앱 시작 시 누락 컬럼을 추가하는 호환성 migration 추가
 uv run pytest: 47 passed
 npm run test:e2e: 1 passed
 ```
+
+## 2026-07-01 - OCI 운영 배포 검증
+
+### 배포
+
+```text
+git pull: Already up to date
+docker compose build: success
+docker compose up -d: success
+```
+
+### 운영 버그
+
+```text
+1. 기존 SQLite user 테이블에 auth_provider/approval_status 누락
+   - 앱 시작 시 SQLite 호환성 migration 추가
+   - pytest 47 passed
+   - Playwright E2E 1 passed
+
+2. 운영 .env 승인 정책 누락
+   - ALLOWED_GOOGLE_DOMAIN=senedu.kr 설정
+   - ADMIN_EMAILS=admin@senedu.kr 설정
+
+3. 운영 APP_ENCRYPTION_KEY가 Fernet 형식이 아님
+   - 유효한 Fernet 키로 교체
+```
+
+### 운영 검증 결과
+
+```text
+/healthz: PASS
+로컬 로그인: PASS
+예약 CRUD 성격 검증: PASS
+API Key 등록/교체/삭제: PASS
+세션 유지: PASS
+Google OAuth: BLOCKED, GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET 미설정
+```
+
+### Release Freeze 판정
+
+```text
+보류
+Google OAuth 운영 검증 완료 후 Release Freeze 전환 가능
+```
+
