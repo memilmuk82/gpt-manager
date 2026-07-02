@@ -1,8 +1,8 @@
-# Codex Start Here - GPT Share Manager vNext
+# Codex Start Here - 생성형 AI 계정 공동 사용 지원 시스템
 
 ## 0. 프로젝트 한 줄 정의
 
-`GPT Share Manager vNext`는 공용 AI 계정 사용을 예약·기록하고, Gemini 경량 모델을 이용해 사용자가 작성한 프롬프트를 점검·개선하는 Flask 기반 웹앱이다.
+`생성형 AI 계정 공동 사용 지원 시스템`는 공용 AI 계정 사용을 예약·기록하고, Gemini 경량 모델을 이용해 사용자가 작성한 프롬프트를 점검·개선하는 Flask 기반 웹앱이다.
 
 이 프로젝트는 새 교육 생성기를 만드는 것이 아니다. 기존 GPT 공유앱의 운영 철학을 Flask + Docker + OCI 구조로 재설계하고, Gemini API는 필수 기능인 "프롬프트 점검기"에 사용한다. "운영 보고서 생성"은 시간이 남을 때만 구현하는 선택 기능이다.
 

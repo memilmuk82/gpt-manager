@@ -1,48 +1,83 @@
 # Repository Structure
 
-## 권장 구조
+## 현재 구조
 
 ```text
-gpt-share-manager-vnext/
+gpt-manager/
 ├─ app/
 │  ├─ __init__.py
 │  ├─ config.py
 │  ├─ extensions.py
-│  ├─ models.py
+│  ├─ models/
+│  │  └─ __init__.py
 │  ├─ auth/
-│  ├─ main/
+│  │  ├─ __init__.py
+│  │  └─ routes.py
+│  ├─ routes/
+│  │  ├─ __init__.py
+│  │  └─ main.py
 │  ├─ reservations/
-│  ├─ ai/
+│  │  ├─ __init__.py
+│  │  └─ routes.py
+│  ├─ logs/
+│  │  ├─ __init__.py
+│  │  └─ routes.py
+│  ├─ prompts/
+│  │  ├─ __init__.py
+│  │  └─ routes.py
+│  ├─ settings/
+│  │  ├─ __init__.py
+│  │  └─ routes.py
 │  ├─ admin/
+│  │  ├─ __init__.py
+│  │  └─ routes.py
 │  ├─ services/
+│  │  ├─ access_policy.py
+│  │  ├─ encryption_service.py
+│  │  ├─ oauth_service.py
+│  │  ├─ prompt_review_service.py
+│  │  └─ reservation_service.py
 │  ├─ templates/
+│  │  ├─ base.html
+│  │  ├─ index.html
+│  │  ├─ dashboard.html
+│  │  ├─ guide.html
+│  │  ├─ partials/
+│  │  │  └─ _auth_info.html
+│  │  ├─ auth/
+│  │  ├─ reservations/
+│  │  │  ├─ index.html
+│  │  │  ├─ new.html
+│  │  │  └─ today.html
+│  │  ├─ logs/
+│  │  ├─ prompts/
+│  │  ├─ settings/
+│  │  └─ admin/
 │  └─ static/
 ├─ tests/
-├─ data/
 ├─ docs/
+├─ instance/
 ├─ Dockerfile
-├─ docker-compose.yml
+├─ compose.yaml
 ├─ pyproject.toml
 ├─ uv.lock
 ├─ .env.example
 ├─ README.md
-├─ PROJECT_INSTRUCTIONS.md
-├─ PRD.md
+├─ PROJECT_STATUS.md
 ├─ SYSTEM_DESIGN.md
-├─ DEVELOPMENT_PLAN.md
 ├─ TASK.md
-└─ PROJECT_STATUS.md
+└─ PROJECT_INSTRUCTIONS.md
 ```
 
 ## 구조 원칙
 
 ```text
-route는 요청/응답만 담당한다.
-비즈니스 로직은 services에 둔다.
-DB 모델은 MVP에서 models.py 하나로 시작한다.
-모델 파일이 커지면 테스트 후 app/models/로 분리한다.
-Gemini 호출은 services/gemini_service.py에만 둔다.
-API Key 암호화는 services/crypto_service.py에 둔다.
+route는 요청/응답과 인증 흐름을 담당한다.
+예약 충돌, OAuth, 암호화, 프롬프트 점검 조립은 services에 둔다.
+DB 모델은 app/models/__init__.py에 모아 둔다.
+Jinja 템플릿은 기능별 하위 디렉터리로 분리한다.
+공통 안내 UI는 templates/partials에 둔다.
+SQLite DB는 ./instance/app.db에 저장하고 Docker Compose에서 ./instance를 /app/instance로 마운트한다.
 ```
 
 ## 과도한 구조화 금지

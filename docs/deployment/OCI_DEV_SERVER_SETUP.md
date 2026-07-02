@@ -288,7 +288,7 @@ services:
   web:
     build: .
     ports:
-      - "5000:5000"
+      - "127.0.0.1:5000:5000"
     env_file:
       - .env
     volumes:
@@ -302,7 +302,7 @@ services:
 fresh DB에서는 예약에 사용할 AI 리소스가 자동 생성되지 않는다. 앱 실행 후 아래 명령으로 최소 1개의 리소스를 추가한다.
 
 ```bash
-docker compose exec web python -c "from app import create_app; from app.extensions import db; from app.models import AiResource; app=create_app(); ctx=app.app_context(); ctx.push(); AiResource.query.filter_by(name='GPT Pro 공용 계정 A').first() or db.session.add(AiResource(name='GPT Pro 공용 계정 A', provider='OpenAI', description='Shared AI resource')); db.session.commit(); ctx.pop()"
+docker compose exec web python -c "from app import create_app; from app.extensions import db; from app.models import AiResource; app=create_app(); ctx=app.app_context(); ctx.push(); AiResource.query.filter_by(name='학교 공용 생성형 AI 계정 A').first() or db.session.add(AiResource(name='학교 공용 생성형 AI 계정 A', provider='OpenAI', description='Shared AI resource')); db.session.commit(); ctx.pop()"
 ```
 
 
@@ -318,6 +318,8 @@ docker compose exec web python -c "from app import create_app; from app.extensio
 FLASK_ENV=production
 SECRET_KEY=<strong-random-secret>
 DATABASE_URL=sqlite:///instance/app.db
+APP_TITLE=생성형 AI 계정 공동 사용 지원 시스템
+ORGANIZATION_NAME=학교
 APP_ENCRYPTION_KEY=<fernet-key>
 SESSION_COOKIE_SECURE=true
 SESSION_COOKIE_SAMESITE=Lax
@@ -326,6 +328,7 @@ GOOGLE_CLIENT_SECRET=<google-client-secret>
 GOOGLE_REDIRECT_URI=https://<your-domain>/auth/google/callback
 ALLOWED_GOOGLE_DOMAIN=senedu.kr
 ADMIN_EMAILS=admin@senedu.kr
+ASSISTANT_ADMIN_EMAILS=
 GEMINI_MODEL=gemini-3.5-flash
 GEMINI_MAX_INPUT_CHARS=3000
 GEMINI_MAX_OUTPUT_TOKENS=1200
@@ -383,9 +386,6 @@ __pycache__/
 시간 절약을 위해 아래 작업은 제출 이후로 미룬다.
 
 ```text
-- 도메인 연결
-- HTTPS 인증서 자동 발급
-- Caddy / Nginx 리버스 프록시
 - PostgreSQL 컨테이너 전환
 - 자동 백업
 - 모니터링
@@ -406,4 +406,30 @@ __pycache__/
 4. .env와 인증 키는 Git에 올리지 않는다.
 5. SQLite DB는 ./instance에 저장하고, 필요 시 수동 백업한다.
 6. 제출 전날인 7월 2일에는 RC1을 만들고, 7월 3일에는 기능 추가를 하지 않는다.
+```
+
+
+---
+
+## 17. 현재 운영 도메인 검증 결과
+
+```text
+도메인: dev-gpt.memilmuk82.com
+DNS: 129.154.221.2
+HTTPS /: 200 OK
+HTTP /: 301 -> HTTPS
+/healthz: 200 {"status":"ok"}
+Nginx: reverse proxy 적용
+Docker Compose: gpt-manager-web-1 Up
+컨테이너 포트: 127.0.0.1:5000 -> 5000
+```
+
+운영 재배포 기본 명령:
+
+```bash
+git pull
+docker compose down
+docker compose up -d --build
+curl http://127.0.0.1:5000/healthz
+curl https://dev-gpt.memilmuk82.com/healthz
 ```

@@ -417,14 +417,14 @@ docker compose up -d: success
 예약 CRUD 성격 검증: PASS
 API Key 등록/교체/삭제: PASS
 세션 유지: PASS
-Google OAuth: BLOCKED, GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET 미설정
+Google OAuth: 2026-07-01 당시 미설정. 2026-07-02에 운영 Redirect URI와 도메인 응답 확인 완료
 ```
 
 ### Release Freeze 판정
 
 ```text
-보류
-Google OAuth 운영 검증 완료 후 Release Freeze 전환 가능
+2026-07-01 당시 보류
+2026-07-02 도메인/OAuth Redirect URI 확인 후 RC 운영 검증 완료 상태로 갱신
 ```
 
 ## 2026-07-01 - SQLite instance 저장 구조 확인
@@ -448,3 +448,43 @@ compose.yaml bind mount를 ./instance:/app/instance로 변경
 .env.example과 배포/설계 문서를 instance 기준으로 갱신
 ```
 
+
+
+## 2026-07-02 - UI/예약/보조관리자/도메인 검증
+
+### 구현
+
+```text
+공통 헤더를 생성형 AI 계정 공동 사용 지원 시스템 기준으로 정리
+비로그인 시작 화면 문구 일반화
+승인 사용자 홈 화면에 현재 사용중/다음 예약/접속 안내/빠른 메뉴/오늘 예약 요약 추가
+사용 안내 화면 /guide 추가
+오늘 예약 화면 /reservations/today 추가
+보조관리자 role assistant_admin 추가
+ASSISTANT_ADMIN_EMAILS 환경변수 추가
+관리자 탭과 /admin 접근을 admin 또는 assistant_admin에게 허용
+사용자 관리 화면에서 assistant_admin을 보조관리자로 표시
+```
+
+### 검증
+
+```text
+uv run pytest: 50 passed
+python3 -m py_compile: PASS
+docker compose down: PASS
+docker compose up -d --build: PASS
+http://127.0.0.1:5000/: 200 OK
+https://dev-gpt.memilmuk82.com/: 200 OK
+https://dev-gpt.memilmuk82.com/healthz: 200 {"status":"ok"}
+/reservations/today 비로그인 접근: 302 /auth/login?next=...
+```
+
+### 배포
+
+```text
+git push origin master: PASS
+최신 커밋: 95f51ca ui: add today reservations and assistant admin
+Docker 이미지 재빌드 완료
+Nginx HTTPS 도메인 응답 확인 완료
+Google OAuth Redirect URI: https://dev-gpt.memilmuk82.com/auth/google/callback
+```

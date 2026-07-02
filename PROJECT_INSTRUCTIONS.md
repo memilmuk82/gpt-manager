@@ -1,10 +1,10 @@
-# GPT Share Manager vNext - Project Instructions
+# 생성형 AI 계정 공동 사용 지원 시스템 - Project Instructions
 
 ## 1. 문서 목적
 
 이 문서는 `gpt-share-manager-vnext` 프로젝트의 개발 원칙을 정의한다.
 
-이번 프로젝트는 2026-07-03 제출을 목표로 하는 연수 결과물이다. 따라서 장기 학습용 완성형 프로젝트가 아니라, 3일 안에 작동·시연·설명 가능한 MVP를 완성하는 것이 우선이다.
+이번 프로젝트는 2026-07-03 제출을 목표로 하는 연수 결과물이다. 따라서 장기 학습용 완성형 프로젝트가 아니라, 3일 안에 작동·시연·설명 가능한 MVP를 완성하는 것이 우선이다. 2026-07-02 현재 RC 운영 검증은 완료되었으며, 이후 변경은 최종 문서·시연 정리 중심으로 제한한다.
 
 적용 대상:
 
@@ -29,8 +29,9 @@ Codex
 로컬 Docker Compose 실행 성공
 OCI Docker Compose 실행 성공
 로컬 로그인 성공
-Google OAuth 로그인 성공 또는 OAuth 설정 절차 문서화 완료
+Google OAuth 로그인 또는 운영 Redirect URI 설정 확인
 예약 생성/조회/취소 가능
+오늘 예약 조회 가능
 사용 로그 작성 가능
 Gemini API Key 등록/삭제 가능
 프롬프트 점검기 실행 가능

@@ -355,3 +355,42 @@ pytest:
 uv run pytest: 47 passed
 ```
 
+
+
+## 2026-07-02 UI/예약/권한 및 운영 도메인 검증
+
+```text
+날짜: 2026-07-02
+범위: Apps Script 기준 UI 문구 정리, 홈/사용 안내, 오늘 예약, 보조관리자, 운영 도메인 확인
+
+pytest:
+명령: uv run pytest
+결과: PASS
+PASS: 50
+FAIL: 0
+
+추가 문법 검사:
+python3 -m py_compile app/config.py app/models/__init__.py app/services/access_policy.py app/admin/routes.py app/reservations/routes.py app/routes/main.py
+결과: PASS
+
+Docker 재빌드:
+docker compose down: PASS
+docker compose up -d --build: PASS
+container status: gpt-manager-web-1 Up
+
+로컬 HTTP:
+GET http://127.0.0.1:5000/: 200 OK
+GET http://127.0.0.1:5000/healthz: 200 OK
+
+운영 도메인:
+DNS dev-gpt.memilmuk82.com: 129.154.221.2
+GET https://dev-gpt.memilmuk82.com/: 200 OK
+GET http://dev-gpt.memilmuk82.com/: 301 -> https://dev-gpt.memilmuk82.com/
+GET https://dev-gpt.memilmuk82.com/healthz: 200 {"status":"ok"}
+GET https://dev-gpt.memilmuk82.com/reservations/today: 302 /auth/login?next=%2Freservations%2Ftoday
+
+추가 테스트 파일:
+tests/test_reservations.py - 오늘 예약 날짜 필터 및 취소 예약 제외
+tests/test_admin.py - assistant_admin 관리자 화면 접근
+tests/test_auth.py - ASSISTANT_ADMIN_EMAILS 자동 role 부여
+```

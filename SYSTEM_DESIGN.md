@@ -1,147 +1,83 @@
-# System Design - GPT Share Manager vNext
+# System Design - 생성형 AI 계정 공동 사용 지원 시스템
 
 ## 1. 전체 구조
 
 ```text
 Browser
+  ↓ HTTPS
+Nginx reverse proxy
+  ↓ localhost:5000
+Docker Compose web service
   ↓
-Flask App
+Flask + Gunicorn
   ↓
 SQLite ./instance/app.db
   ↓
-Gemini API
+Gemini API, Google OAuth
 ```
 
-배포 구조:
+운영 배포:
 
 ```text
 OCI Ubuntu
+  ├─ Nginx HTTPS reverse proxy
   ├─ Docker Compose
-  │   └─ Flask + Gunicorn Container
+  │   └─ Flask + Gunicorn container
   ├─ ./instance/app.db
-  └─ optional reverse proxy later
+  └─ .env 운영 설정
 ```
 
-MVP에서는 단일 Flask 컨테이너와 SQLite 파일을 사용한다. Caddy/Nginx/HTTPS는 제출 전 시간이 허용될 때 추가한다. Google OAuth 운영 테스트에는 HTTPS가 필요할 수 있으므로, 운영 도메인 설정은 별도 배포 문서에서 관리한다.
+현재 운영 도메인:
+
+```text
+https://dev-gpt.memilmuk82.com
+```
 
 ## 2. 기술 스택
 
 ```text
-Python 3.12 이상 권장
+Python 3.12
 Flask
 SQLAlchemy
 Flask-Login
-Authlib
-cryptography
-google-generativeai 또는 google-genai 계열 SDK 중 Codex가 확인 가능한 안정 패키지
+Requests 기반 Google OAuth userinfo/token 호출
+cryptography.Fernet
 Jinja2
-Vanilla JS
 Tailwind CDN
 pytest
 Docker Compose
 SQLite
 uv
+Gunicorn
+Nginx
+OCI Ubuntu
 ```
 
-주의:
+## 3. 설정값
 
-```text
-Gemini SDK 패키지명과 모델명은 실제 연수/개발 환경에서 확인한 뒤 .env로 지정한다.
-모델명은 코드에 하드코딩하지 않는다.
-```
-
-## 3. 권장 저장소 구조
-
-```text
-gpt-share-manager-vnext/
-├─ app/
-│  ├─ __init__.py
-│  ├─ config.py
-│  ├─ extensions.py
-│  ├─ models.py
-│  ├─ auth/
-│  │  ├─ __init__.py
-│  │  └─ routes.py
-│  ├─ main/
-│  │  ├─ __init__.py
-│  │  └─ routes.py
-│  ├─ reservations/
-│  │  ├─ __init__.py
-│  │  └─ routes.py
-│  ├─ ai/
-│  │  ├─ __init__.py
-│  │  └─ routes.py
-│  ├─ admin/
-│  │  ├─ __init__.py
-│  │  └─ routes.py
-│  ├─ services/
-│  │  ├─ crypto_service.py
-│  │  ├─ gemini_service.py
-│  │  ├─ prompt_review_service.py
-│  │  └─ report_service.py
-│  ├─ templates/
-│  │  ├─ base.html
-│  │  ├─ index.html
-│  │  ├─ auth/
-│  │  ├─ reservations/
-│  │  ├─ ai/
-│  │  └─ admin/
-│  └─ static/
-├─ tests/
-├─ data/
-│  └─ .gitkeep
-├─ docs/
-├─ Dockerfile
-├─ docker-compose.yml
-├─ pyproject.toml
-├─ uv.lock
-├─ .env.example
-├─ .gitignore
-├─ README.md
-├─ PROJECT_INSTRUCTIONS.md
-├─ PRD.md
-├─ SYSTEM_DESIGN.md
-├─ DEVELOPMENT_PLAN.md
-├─ TASK.md
-└─ PROJECT_STATUS.md
-```
-
-MVP에서는 `models.py` 단일 파일로 시작한다. 모델이 커지면 테스트 후 `app/models/`로 분리한다.
-
-## 4. 설정값
-
-`.env.example` 예시:
+주요 환경변수:
 
 ```env
-FLASK_ENV=development
-SECRET_KEY=change-me
+APP_TITLE=생성형 AI 계정 공동 사용 지원 시스템
+ORGANIZATION_NAME=학교
+SECRET_KEY=<strong-random-secret>
 DATABASE_URL=sqlite:///instance/app.db
-APP_ENCRYPTION_KEY=generate-fernet-key
-SESSION_COOKIE_SECURE=false
-
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
-GOOGLE_REDIRECT_URI=http://localhost:5000/auth/google/callback
-ALLOWED_GOOGLE_DOMAIN=
-
-GEMINI_MODEL=gemini-3.1-light
+APP_ENCRYPTION_KEY=<fernet-key>
+SESSION_COOKIE_SECURE=true
+SESSION_COOKIE_SAMESITE=Lax
+GOOGLE_CLIENT_ID=<google-client-id>
+GOOGLE_CLIENT_SECRET=<google-client-secret>
+GOOGLE_REDIRECT_URI=https://dev-gpt.memilmuk82.com/auth/google/callback
+ALLOWED_GOOGLE_DOMAIN=senedu.kr
+ADMIN_EMAILS=<comma-separated-admin-emails>
+ASSISTANT_ADMIN_EMAILS=<comma-separated-assistant-admin-emails>
+GEMINI_MODEL=gemini-3.5-flash
 GEMINI_MAX_INPUT_CHARS=3000
 GEMINI_MAX_OUTPUT_TOKENS=1200
 MAX_DAILY_AI_CALLS_PER_USER=50
 ```
 
-운영에서는 다음 값을 반드시 변경한다.
-
-```text
-SECRET_KEY
-APP_ENCRYPTION_KEY
-GOOGLE_CLIENT_ID
-GOOGLE_CLIENT_SECRET
-GOOGLE_REDIRECT_URI
-SESSION_COOKIE_SECURE=true
-```
-
-## 5. 데이터 모델
+## 4. 데이터 모델
 
 ### User
 
@@ -150,39 +86,22 @@ id: int PK
 email: string unique nullable false
 name: string
 password_hash: string nullable
-role: string default 'user'  # admin/user
+role: string default 'user'  # user/admin/assistant_admin
 google_sub: string nullable unique
+auth_provider: string default 'local'
+approval_status: string default 'approved'  # pending/approved/suspended
 is_active: bool default true
 created_at: datetime
 updated_at: datetime
 ```
 
-원칙:
+권한 helper:
 
 ```text
-password_hash는 로컬 로그인 사용자만 사용한다.
-google_sub는 Google OAuth 사용자 식별값이다.
-최소 1명의 admin을 유지한다.
-```
-
-### UserApiKey
-
-```text
-id: int PK
-user_id: FK User.id unique
-encrypted_api_key: text nullable false
-api_key_last4: string nullable
-provider: string default 'gemini'
-created_at: datetime
-updated_at: datetime
-```
-
-원칙:
-
-```text
-평문 API Key 저장 금지
-화면에는 last4만 표시
-삭제 가능
+is_approved
+is_admin
+is_assistant_admin
+can_access_admin
 ```
 
 ### AiResource
@@ -190,26 +109,18 @@ updated_at: datetime
 ```text
 id: int PK
 name: string
-provider: string  # GPT, Gemini, Claude, etc.
+provider: string
 description: text nullable
 is_active: bool default true
 created_at: datetime
 updated_at: datetime
 ```
 
-예시:
-
-```text
-GPT Pro 공용 계정 A
-GPT Pro 공용 계정 B
-Gemini 교육용 계정
-```
-
 주의:
 
 ```text
-이 모델은 리소스 이름만 저장한다.
-실제 계정 ID/PW는 저장하지 않는다.
+리소스 이름만 저장한다.
+실제 공용 계정 ID/PW는 저장하지 않는다.
 ```
 
 ### Reservation
@@ -248,60 +159,70 @@ created_at: datetime
 updated_at: datetime
 ```
 
+### UserApiKey
+
+```text
+id: int PK
+user_id: FK User.id
+provider: string default 'gemini'
+encrypted_api_key: text
+key_last4: string
+created_at: datetime
+updated_at: datetime
+```
+
 ### PromptReview
 
 ```text
 id: int PK
 user_id: FK User.id
-original_prompt: text
-work_type: string
-options_json: text
-review_score: int nullable
-review_result_json: text
-improved_prompt: text
+source_prompt: text
+review_goal: string
+assembled_prompt: text
+review_result: text
 model_name: string
 created_at: datetime
+updated_at: datetime
 ```
 
-### AiCallLog
-
-```text
-id: int PK
-user_id: FK User.id
-feature: string  # prompt_review, ops_report
-model_name: string
-input_chars: int
-output_chars: int nullable
-status: string  # success, error
-error_message: text nullable
-created_at: datetime
-```
-
-실제 토큰 수가 SDK에서 제공되지 않으면 문자열 길이 기준으로 저장한다.
-
-## 6. 권한 정책
+## 5. 권한 정책
 
 ```text
 비로그인 사용자:
-- index/login/register만 접근 가능
+- index/login/register/google login/callback만 접근 가능
+
+pending 사용자:
+- /auth/pending과 logout만 접근 가능
 
 user:
-- 본인 예약 생성/조회/취소
+- 홈/사용 안내 접근
+- 본인 예약 생성/조회/취소/완료
+- 오늘 예약 전체 현황 조회
 - 본인 사용 로그 작성/조회
 - 본인 Gemini API Key 설정
 - 본인 프롬프트 점검 기록 조회
 
+assistant_admin:
+- user 권한
+- /admin 접근
+- /admin/users에서 pending 사용자 승인/정지
+
 admin:
-- 전체 예약 조회
-- 전체 사용 로그 조회
-- AI 리소스 관리
-- 사용자 목록 조회
-- 운영 보고서 생성
+- assistant_admin과 동일한 운영 관리 접근
 ```
 
-MVP에서는 `admin`과 `user` 2단계만 구현한다.
+현재 보조관리자는 DB 컬럼 추가 없이 `User.role == "assistant_admin"`으로 구분한다.
 
-## 7. 주요 Route 설계
+## 6. 주요 Route
+
+### Main
+
+```text
+GET /              # 비로그인 시작 화면
+GET /dashboard     # 승인 사용자 홈
+GET /guide         # 사용 안내
+GET /healthz
+```
 
 ### Auth
 
@@ -310,39 +231,24 @@ GET  /auth/login
 POST /auth/login
 GET  /auth/register
 POST /auth/register
-GET  /auth/logout
 GET  /auth/google/login
 GET  /auth/google/callback
-```
-
-### Main
-
-```text
-GET /              # landing 또는 dashboard redirect
-GET /dashboard
-GET /healthz
-```
-
-### Settings
-
-```text
-GET  /settings/api-key
-POST /settings/api-key
-POST /settings/api-key/delete
-POST /settings/api-key/test
+GET  /auth/pending
+POST /auth/logout
 ```
 
 ### Reservations
 
 ```text
-GET  /reservations
-GET  /reservations/new
+GET  /reservations              # 내 예약
+GET  /reservations/today        # 날짜별 전체 예약 현황
+GET  /reservations/new          # 사용 신청
 POST /reservations
 POST /reservations/<id>/cancel
 POST /reservations/<id>/complete
 ```
 
-### Usage Logs
+### Logs
 
 ```text
 GET  /logs
@@ -351,13 +257,22 @@ POST /logs
 GET  /logs/<id>
 ```
 
-### Prompt Review
+### Prompt Reviews
 
 ```text
-GET  /ai/prompt-review
-POST /ai/prompt-review
-GET  /ai/prompt-reviews
-GET  /ai/prompt-reviews/<id>
+GET  /prompts
+GET  /prompts/new
+POST /prompts
+GET  /prompts/<id>
+```
+
+### Settings
+
+```text
+GET  /settings/api-key
+POST /settings/api-key
+POST /settings/api-key/test
+POST /settings/api-key/delete
 ```
 
 ### Admin
@@ -365,180 +280,125 @@ GET  /ai/prompt-reviews/<id>
 ```text
 GET  /admin
 GET  /admin/users
-GET  /admin/reservations
-GET  /admin/logs
-GET  /admin/resources
-POST /admin/resources
-POST /admin/resources/<id>/toggle
-GET  /admin/reports
-POST /admin/reports/generate
+POST /admin/users/<id>/approve
+POST /admin/users/<id>/suspend
 ```
 
-Admin report는 시간이 부족하면 후순위로 둔다.
+## 7. UI 구조
+
+```text
+base.html: 공통 헤더/네비게이션/flash 메시지
+index.html: 비로그인 시작 화면
+dashboard.html: 현재 사용중, 다음 예약, 인증번호 안내, 빠른 메뉴, 오늘 예약 요약
+guide.html: 사용 안내
+partials/_auth_info.html: 생성형 AI 계정 접속 및 인증번호 안내
+reservations/today.html: 날짜별 전체 예약 현황
+```
+
+네비게이션:
+
+```text
+홈
+사용 신청
+오늘 예약
+내 예약
+사용 기록
+프롬프트 점검
+사용 안내
+설정
+관리자(admin/assistant_admin만)
+```
 
 ## 8. Gemini 호출 구조
 
-앱의 다른 부분은 Gemini SDK를 직접 호출하지 않는다.
-
 ```text
-route
+prompts route
   ↓
 prompt_review_service
   ↓
-gemini_service
-  ↓
-Gemini API
+Gemini REST API
 ```
 
-### gemini_service 책임
+원칙:
 
 ```text
-사용자 API Key 복호화
-모델명 로드
-입력 길이 제한
-API 호출
-에러 처리
-AiCallLog 저장
+Gemini API Key는 사용자별 암호화 저장값을 복호화해 사용한다.
+모델명은 GEMINI_MODEL 환경변수로 관리한다.
+입력 길이와 출력 토큰 상한을 환경변수로 제한한다.
+테스트에서는 Gemini 호출을 mock 처리한다.
 ```
 
-### prompt_review_service 책임
-
-```text
-사용자 입력 검증
-점검용 시스템 프롬프트 조립
-정해진 출력 형식 요청
-Gemini 응답 파싱/정리
-PromptReview 저장
-```
-
-## 9. 프롬프트 점검용 출력 형식
-
-Gemini에는 가능하면 JSON 형식을 요청한다. 단, JSON 파싱 실패 시 Markdown 원문도 저장한다.
-
-요청 출력 구조:
-
-```json
-{
-  "score": 82,
-  "strengths": ["목적이 명확함"],
-  "missing_elements": ["출력 형식", "평가 기준"],
-  "improved_prompt": "...",
-  "rationale": ["출력 형식을 추가해 재사용성을 높임"],
-  "safety_notes": ["학생 개인정보 입력 금지"]
-}
-```
-
-## 10. 보안 설계
-
-### API Key 암호화
-
-```text
-cryptography.Fernet 사용
-APP_ENCRYPTION_KEY 환경변수에서 암호화 키 로드
-DB에는 encrypted_api_key만 저장
-api_key_last4는 표시용으로만 저장
-```
-
-### 비밀번호
-
-```text
-werkzeug.security.generate_password_hash
-werkzeug.security.check_password_hash
-```
-
-### XSS 방지
+## 9. 보안 설계
 
 ```text
 Jinja autoescape 사용
-사용자 입력을 safe 처리하지 않음
-Markdown 렌더링은 MVP에서 생략하거나 plain text로 표시
+사용자 입력 safe 처리 금지
+Gemini API Key 평문 저장 금지
+비밀번호 평문 저장 금지
+SECRET_KEY와 APP_ENCRYPTION_KEY는 환경변수 사용
+SESSION_COOKIE_HTTPONLY=True
+운영 HTTPS에서는 SESSION_COOKIE_SECURE=true 권장
+상태 변경 요청은 POST로 제한
+공용 생성형 AI 계정 ID/PW 저장 금지
+학생 개인정보 입력 금지
 ```
 
-### CSRF
+CSRF 보호는 제출 이후 보완 과제로 남아 있다.
 
-MVP에서는 Flask-WTF 도입 여부를 Codex가 판단해 제안한다. 시간이 부족하면 최소한 상태 변경 요청은 POST로 제한하고, 이후 개선 과제로 CSRF 보호를 문서화한다.
-
-## 11. 테스트 설계
-
-필수 테스트:
+## 10. 테스트
 
 ```text
-/healthz 응답 테스트
-User password hash 테스트
-API Key 암호화/복호화 테스트
-API Key가 평문으로 저장되지 않는지 테스트
-예약 충돌 테스트
-본인 데이터 접근 제한 테스트
-Prompt review 프롬프트 조립 테스트
-Gemini API 호출 mock 테스트
+uv run pytest: 50 passed
 ```
 
-테스트 실행:
-
-```bash
-uv run pytest
-```
-
-## 12. Docker 설계
-
-### docker-compose.yml
+주요 테스트 범위:
 
 ```text
+인증/승인/정지 흐름
+Google OAuth mock
+관리자/보조관리자 접근
+예약 충돌/취소/완료
+오늘 예약 날짜 필터
+사용 로그 소유권
+API Key 암호화
+프롬프트 점검 mock
+healthz/config/model
+```
+
+## 11. Docker/배포
+
+현재 `compose.yaml`:
+
+```yaml
 services:
   web:
     build: .
     ports:
-      - "5000:5000"
+      - "127.0.0.1:5000:5000"
     env_file:
       - .env
     volumes:
       - ./instance:/app/instance
 ```
 
-MVP에서는 DB 컨테이너를 추가하지 않는다.
-
-### Dockerfile 원칙
-
-```text
-python slim 이미지 사용
-uv 설치
-uv sync --locked 또는 동등한 재현 설치
-gunicorn으로 실행
-/app/instance 디렉터리 생성
-```
-
-## 13. 배포 설계
-
-로컬:
-
-```bash
-docker compose up --build
-```
-
-OCI:
+운영 재배포:
 
 ```bash
 git pull
+docker compose down
 docker compose up -d --build
+curl http://127.0.0.1:5000/healthz
+curl https://dev-gpt.memilmuk82.com/healthz
 ```
 
-운영 주의:
+## 12. 향후 확장
 
 ```text
-OCI 보안 규칙에서 80/443 또는 테스트 포트 개방
-OAuth Redirect URI 운영 URL 등록
-.env 운영값 분리
-./instance/app.db 백업
-```
-
-## 14. 향후 확장
-
-```text
-SQLite → Docker PostgreSQL
-admin/subadmin/user 권한 세분화
-프롬프트 템플릿 저장소
-공용 AI 계정별 정책 안내
+CSRF 보호 도입
+관리자 리소스 관리 UI
 사용 통계 차트
-월간 보고서 PDF/Markdown 다운로드
-Caddy HTTPS 자동화
+월간 보고서 생성
+SQLite 백업 자동화
+Docker PostgreSQL 전환
+권한 세분화
 ```
