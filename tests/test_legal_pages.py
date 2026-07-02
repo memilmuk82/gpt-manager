@@ -12,8 +12,8 @@ def test_footer_links_and_manager_info_are_visible(client):
     assert "개인정보처리방침" in body
     assert "정보관리책임자" in body
     assert "이진선" in body
-    assert "070-4390-8235" in body
-    assert "memilmuk82@senedu.kr" in body
+    assert "02-2237-0465" in body
+    assert "memilmuk@sen.go.kr" in body
     assert "/terms" in body
     assert "/privacy" in body
 
