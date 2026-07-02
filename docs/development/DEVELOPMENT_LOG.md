@@ -530,3 +530,26 @@ npm run test:e2e: 1 passed
 개인정보 보유 기간, 파기 절차, 제3자 제공/국외 이전 해당 여부는 실제 운영 정책 확정 후 문서 보완 필요
 ```
 
+## 2026-07-02 - README 및 문서 최신화
+
+### 범위
+
+```text
+README.md 최신 상태 반영
+PROJECT_STATUS.md와 TASK.md 최신 커밋/검증 상태 반영
+SYSTEM_DESIGN.md에 /terms, /privacy, Footer, Markdown 렌더링 보안 반영
+RELEASE_CHECKLIST.md에 법적 페이지와 E2E 확인 항목 추가
+REPOSITORY_STRUCTURE.md에 legal service/template/docs/test 파일 반영
+SECURITY_DECISIONS.md에 Markdown 법적 문서 렌더링 제한 결정 추가
+MANIFEST.md에 docs/legal 문서 추가
+```
+
+### 검증
+
+```text
+전체 Markdown 코드펜스 균형 검사: PASS
+uv run pytest: 55 passed
+오래된 README/TASK/상태 문서의 50 passed 및 95f51ca 기준 문구 제거 확인
+문서만 변경되어 앱 컨테이너 재빌드 필요성은 낮음
+```
+

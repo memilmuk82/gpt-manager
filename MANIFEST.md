@@ -19,3 +19,5 @@
 - `docs/development/RELEASE_CHECKLIST.md`
 - `docs/development/TEST_REPORT.md`
 - `docs/guides/CODEX_PHASE_1_PROMPT.md`
+- `docs/legal/TERMS.md`
+- `docs/legal/PRIVACY_POLICY.md`

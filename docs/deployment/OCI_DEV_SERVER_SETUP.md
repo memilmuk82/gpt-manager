@@ -419,6 +419,8 @@ DNS: 129.154.221.2
 HTTPS /: 200 OK
 HTTP /: 301 -> HTTPS
 /healthz: 200 {"status":"ok"}
+/terms: 200 OK
+/privacy: 200 OK
 Nginx: reverse proxy 적용
 Docker Compose: gpt-manager-web-1 Up
 컨테이너 포트: 127.0.0.1:5000 -> 5000
@@ -432,4 +434,6 @@ docker compose down
 docker compose up -d --build
 curl http://127.0.0.1:5000/healthz
 curl https://dev-gpt.memilmuk82.com/healthz
+curl https://dev-gpt.memilmuk82.com/terms
+curl https://dev-gpt.memilmuk82.com/privacy
 ```

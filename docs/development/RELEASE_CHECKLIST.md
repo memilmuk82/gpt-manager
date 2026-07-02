@@ -4,9 +4,10 @@
 
 ```text
 RC 목표일: 2026-07-02
-현재 상태: RC 운영 검증 완료
+현재 상태: RC 운영 검증 완료 + 법적 고지 페이지 배포 완료
 운영 도메인: https://dev-gpt.memilmuk82.com
-pytest: 50 passed
+pytest: 55 passed
+Playwright E2E: 1 passed
 Docker Compose rebuild: PASS
 ```
 
@@ -29,6 +30,9 @@ Docker Compose rebuild: PASS
 [x] README 실행 방법 확인
 [x] .env.example 최신화
 [x] 도메인 HTTPS 응답 확인
+[x] Footer 이용약관/개인정보처리방침 링크 확인
+[x] /terms, /privacy HTTPS 200 확인
+[x] Markdown 법적 문서 raw HTML escape 테스트 확인
 ```
 
 ## 3. 2026-07-03 Freeze 원칙
@@ -68,11 +72,13 @@ UI 대규모 변경
 8. Gemini API Key 등록
 9. 프롬프트 점검 실행
 10. 결과 확인
-11. 로그아웃
-12. 관리자 또는 보조관리자 계정 로그인
-13. 사용자 승인 화면 확인
-14. uv run pytest 실행
-15. docker compose down/up 후 데이터 유지 확인
+11. Footer에서 이용약관과 개인정보처리방침 페이지 이동 확인
+12. 로그아웃
+13. 관리자 또는 보조관리자 계정 로그인
+14. 사용자 승인 화면 확인
+15. uv run pytest 실행
+16. npm run test:e2e 실행
+17. docker compose down/up 후 데이터 유지 확인
 ```
 
 ## 5. 제출 설명 핵심 문장

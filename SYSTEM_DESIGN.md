@@ -189,10 +189,10 @@ updated_at: datetime
 
 ```text
 비로그인 사용자:
-- index/login/register/google login/callback만 접근 가능
+- index/login/register/google login/callback, /terms, /privacy 접근 가능
 
 pending 사용자:
-- /auth/pending과 logout만 접근 가능
+- /auth/pending, logout, /terms, /privacy 접근 가능
 
 user:
 - 홈/사용 안내 접근
@@ -221,6 +221,8 @@ admin:
 GET /              # 비로그인 시작 화면
 GET /dashboard     # 승인 사용자 홈
 GET /guide         # 사용 안내
+GET /terms         # 이용약관
+GET /privacy       # 개인정보처리방침
 GET /healthz
 ```
 
@@ -287,11 +289,12 @@ POST /admin/users/<id>/suspend
 ## 7. UI 구조
 
 ```text
-base.html: 공통 헤더/네비게이션/flash 메시지
+base.html: 공통 헤더/네비게이션/flash 메시지/Footer 법적 고지
 index.html: 비로그인 시작 화면
 dashboard.html: 현재 사용중, 다음 예약, 인증번호 안내, 빠른 메뉴, 오늘 예약 요약
 guide.html: 사용 안내
 partials/_auth_info.html: 생성형 AI 계정 접속 및 인증번호 안내
+legal/document.html: Markdown 기반 이용약관/개인정보처리방침 출력
 reservations/today.html: 날짜별 전체 예약 현황
 ```
 
@@ -341,6 +344,8 @@ SESSION_COOKIE_HTTPONLY=True
 상태 변경 요청은 POST로 제한
 공용 생성형 AI 계정 ID/PW 저장 금지
 학생 개인정보 입력 금지
+법적 문서 Markdown raw HTML/script escape 처리
+/terms, /privacy는 URL 공유 가능하되 인증 정보와 무관한 공개 문서만 제공
 ```
 
 CSRF 보호는 제출 이후 보완 과제로 남아 있다.
@@ -348,7 +353,8 @@ CSRF 보호는 제출 이후 보완 과제로 남아 있다.
 ## 10. 테스트
 
 ```text
-uv run pytest: 50 passed
+uv run pytest: 55 passed
+npm run test:e2e: 1 passed
 ```
 
 주요 테스트 범위:
@@ -362,6 +368,8 @@ Google OAuth mock
 사용 로그 소유권
 API Key 암호화
 프롬프트 점검 mock
+법적 고지 Footer와 /terms, /privacy
+Markdown raw HTML/script 이스케이프
 healthz/config/model
 ```
 
@@ -389,6 +397,8 @@ docker compose down
 docker compose up -d --build
 curl http://127.0.0.1:5000/healthz
 curl https://dev-gpt.memilmuk82.com/healthz
+curl https://dev-gpt.memilmuk82.com/terms
+curl https://dev-gpt.memilmuk82.com/privacy
 ```
 
 ## 12. 향후 확장

@@ -14,7 +14,7 @@
 
 ```text
 상태: Release Candidate 운영 검증 완료 + 법적 고지 페이지 구현/검증 완료
-최근 배포 커밋: 95f51ca ui: add today reservations and assistant admin
+최근 기능 배포 커밋: 337e677 feat: add legal policy pages
 pytest: PASS, 55 passed
 Docker Compose rebuild: PASS
 운영 Health Check: PASS, /healthz 200 {"status":"ok"}
@@ -120,6 +120,8 @@ HTTPS: 200 OK
 HTTP: 301 -> HTTPS
 /healthz: 200 {"status":"ok"}
 /reservations/today: 비로그인 302 /auth/login?next=...
+/terms: 200 OK
+/privacy: 200 OK
 Docker container: gpt-manager-web-1 Up
 Port binding: 127.0.0.1:5000 -> container 5000
 ```
@@ -142,6 +144,8 @@ Docker Compose down/up --build: PASS
 curl http://127.0.0.1:5000/: 200 OK
 curl https://dev-gpt.memilmuk82.com/: 200 OK
 curl https://dev-gpt.memilmuk82.com/healthz: 200 OK
+curl https://dev-gpt.memilmuk82.com/terms: 200 OK
+curl https://dev-gpt.memilmuk82.com/privacy: 200 OK
 ```
 
 ## 10. 남은 작업
