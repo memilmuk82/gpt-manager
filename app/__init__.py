@@ -41,6 +41,8 @@ def create_app(config_object: type[Config] | None = None) -> Flask:
             "static",
             "main.index",
             "main.healthz",
+            "main.terms",
+            "main.privacy",
             "auth.login",
             "auth.login_post",
             "auth.register",

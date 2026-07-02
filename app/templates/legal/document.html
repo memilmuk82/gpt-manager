@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - {{ config.get("APP_TITLE", "생성형 AI 계정 공동 사용 지원 시스템") }}{% endblock %}
+
+{% block content %}
+  <article class="mx-auto max-w-4xl space-y-8">
+    <div class="border-b border-slate-200 pb-5">
+      <p class="text-sm font-medium text-teal-700">종로산업정보학교</p>
+      <h1 class="mt-2 text-3xl font-bold text-slate-950">{{ title }}</h1>
+    </div>
+
+    <div class="space-y-4">
+      {{ document_html }}
+    </div>
+  </article>
+{% endblock %}

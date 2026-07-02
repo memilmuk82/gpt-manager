@@ -488,3 +488,45 @@ Docker 이미지 재빌드 완료
 Nginx HTTPS 도메인 응답 확인 완료
 Google OAuth Redirect URI: https://dev-gpt.memilmuk82.com/auth/google/callback
 ```
+
+## 2026-07-02 - 법적 고지 페이지 추가
+
+### 구현
+
+```text
+docs/legal/TERMS.md Markdown 이용약관 작성
+docs/legal/PRIVACY_POLICY.md Markdown 개인정보처리방침 작성
+/terms 라우트 추가
+/privacy 라우트 추가
+공통 Footer에 Copyright, 이용약관, 개인정보처리방침, 정보관리책임자, 기관명 표시
+법적 문서를 HTML 템플릿에 직접 작성하지 않고 Markdown 파일에서 렌더링하도록 구성
+승인 대기 사용자도 /terms, /privacy 접근 가능하도록 허용 endpoint 추가
+```
+
+### Markdown 렌더링 및 보안
+
+```text
+app/services/legal_markdown_service.py 추가
+제한된 Markdown 문법만 HTML로 변환
+본문 텍스트와 raw HTML은 html.escape로 이스케이프
+템플릿에서는 렌더링된 allowlist HTML만 safe 처리
+프론트에 API Key 또는 비밀값 노출 없음
+개인정보/학생 민감정보/평가 문항 원본을 입력하지 말라는 정책 문구를 문서에 명시
+```
+
+### 검증
+
+```text
+python3 -m py_compile app/routes/main.py app/services/legal_markdown_service.py app/__init__.py: PASS
+uv run pytest tests/test_legal_pages.py tests/test_app.py tests/test_auth.py: 17 passed
+uv run pytest: 55 passed
+npm run test:e2e: 1 passed
+```
+
+### 추가 검토 필요
+
+```text
+법률 문구는 프로젝트 운영 목적에 맞춰 작성했으나 최종 고지는 개인정보보호법/교육기관 내부 정책 기준의 법률 검토 필요
+개인정보 보유 기간, 파기 절차, 제3자 제공/국외 이전 해당 여부는 실제 운영 정책 확정 후 문서 보완 필요
+```
+

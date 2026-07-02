@@ -13,9 +13,9 @@
 ## 2. 현재 상태
 
 ```text
-상태: Release Candidate 운영 검증 완료
+상태: Release Candidate 운영 검증 완료 + 법적 고지 페이지 구현/검증 완료
 최근 배포 커밋: 95f51ca ui: add today reservations and assistant admin
-pytest: PASS, 50 passed
+pytest: PASS, 55 passed
 Docker Compose rebuild: PASS
 운영 Health Check: PASS, /healthz 200 {"status":"ok"}
 HTTPS 도메인: PASS, dev-gpt.memilmuk82.com 200 OK
@@ -23,6 +23,9 @@ HTTP -> HTTPS: PASS, 301 redirect
 오늘 예약 화면: 구현 완료
 보조관리자 권한: 구현 완료
 Google OAuth Redirect URI: https://dev-gpt.memilmuk82.com/auth/google/callback 로 설정 확인
+법적 고지 페이지: /terms, /privacy 구현 완료
+Markdown 법적 문서: docs/legal/TERMS.md, docs/legal/PRIVACY_POLICY.md
+Playwright E2E: PASS, 1 passed
 ```
 
 ## 3. 확정된 방향
@@ -68,6 +71,9 @@ Apps Script 기준 UI 문구 일반화 및 홈/사용 안내 화면 정리
 오늘 예약 화면 추가
 보조관리자 권한 추가
 Docker Compose 재빌드 및 도메인 응답 확인
+이용약관/개인정보처리방침 Markdown 문서화
+/terms, /privacy 페이지 및 공통 Footer 링크 추가
+정보관리책임자/기관/Copyright Footer 표시
 ```
 
 ## 6. 현재 구현 기능
@@ -83,6 +89,8 @@ Google OAuth 로그인
 Gemini API Key 설정
 프롬프트 점검
 사용 안내
+공통 Footer 법적 고지 링크
+이용약관/개인정보처리방침 페이지
 관리자/보조관리자 대시보드
 사용자 승인/정지 관리
 ```
@@ -90,7 +98,7 @@ Gemini API Key 설정
 ## 7. 권한 정책
 
 ```text
-비로그인: 시작 화면, 로그인, 회원가입, Google OAuth 시작 가능
+비로그인: 시작 화면, 로그인, 회원가입, Google OAuth 시작, /terms, /privacy 가능
 승인 대기 사용자: pending 화면으로 제한
 일반 사용자: 본인 예약/로그/API Key/프롬프트 점검, 오늘 예약 전체 현황 조회
 보조관리자 assistant_admin: 일반 사용자 기능 + /admin 및 /admin/users 접근
@@ -121,7 +129,7 @@ Port binding: 127.0.0.1:5000 -> container 5000
 ```text
 명령: uv run pytest
 결과: PASS
-PASS: 50
+PASS: 55
 FAIL: 0
 ```
 
@@ -129,6 +137,7 @@ FAIL: 0
 
 ```text
 python3 -m py_compile: PASS
+npm run test:e2e: PASS, 1 passed
 Docker Compose down/up --build: PASS
 curl http://127.0.0.1:5000/: 200 OK
 curl https://dev-gpt.memilmuk82.com/: 200 OK
@@ -141,6 +150,7 @@ curl https://dev-gpt.memilmuk82.com/healthz: 200 OK
 제출용 최종 시연 리허설
 필요 시 스크린샷/영상 캡처
 운영 DB 백업 절차 수동 정리
+이용약관/개인정보처리방침 법률 검토
 CSRF 보호는 제출 이후 보완 과제로 유지
 ```
 

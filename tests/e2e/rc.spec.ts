@@ -5,9 +5,20 @@ test('release candidate core user workflow persists data across refreshes', asyn
   const password = 'password123';
 
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: /공용 AI 계정 운영 관리/ })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '생성형 AI 계정 공동 사용 지원 시스템' })).toBeVisible();
+  await expect(page.getByText('Copyright © 2026 GPT Share Manager vNext')).toBeVisible();
 
-  await page.getByRole('link', { name: 'Register' }).click();
+  await page.getByRole('link', { name: '이용약관' }).click();
+  await expect(page).toHaveURL(/\/terms$/);
+  await expect(page.getByRole('heading', { name: '이용약관' }).first()).toBeVisible();
+  await page.goBack();
+
+  await page.getByRole('link', { name: '개인정보처리방침' }).click();
+  await expect(page).toHaveURL(/\/privacy$/);
+  await expect(page.getByRole('heading', { name: '개인정보처리방침' }).first()).toBeVisible();
+  await page.goBack();
+
+  await page.getByRole('main').getByRole('link', { name: '회원가입' }).click();
   await page.getByLabel('이름').fill('E2E Teacher');
   await page.getByLabel('이메일').fill(email);
   await page.getByLabel('비밀번호').fill(password);
@@ -15,16 +26,16 @@ test('release candidate core user workflow persists data across refreshes', asyn
   await expect(page).toHaveURL(/\/dashboard$/);
   await expect(page.getByText(email)).toBeVisible();
 
-  await page.getByRole('button', { name: 'Logout' }).click();
-  await expect(page.getByRole('link', { name: 'Register' })).toBeVisible();
+  await page.getByRole('button', { name: '사용 종료' }).click();
+  await expect(page.getByRole('banner').getByRole('link', { name: '회원가입' })).toBeVisible();
 
-  await page.getByRole('link', { name: 'Login' }).click();
+  await page.getByRole('link', { name: '로그인', exact: true }).click();
   await page.getByLabel('이메일').fill(email);
   await page.getByLabel('비밀번호').fill(password);
   await page.getByRole('button', { name: '로그인' }).click();
   await expect(page).toHaveURL(/\/dashboard$/);
 
-  await page.getByRole('link', { name: 'Reservations' }).click();
+  await page.getByRole('link', { name: '내 예약' }).click();
   await expect(page.getByRole('heading', { name: '내 예약' })).toBeVisible();
   await expect(page.getByText('아직 예약이 없습니다.')).toBeVisible();
 
@@ -47,7 +58,7 @@ test('release candidate core user workflow persists data across refreshes', asyn
   await page.reload();
   await expect(page.getByText('completed')).toBeVisible();
 
-  await page.getByRole('link', { name: 'Settings' }).click();
+  await page.getByRole('link', { name: '설정' }).click();
   await expect(page.getByRole('heading', { name: 'Gemini API Key' })).toBeVisible();
   await page.locator('#api_key').fill('gemini-e2e-key-1111');
   await page.getByRole('button', { name: '암호화 저장' }).click();

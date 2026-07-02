@@ -4,6 +4,7 @@ from flask import Blueprint, jsonify, render_template
 from flask_login import login_required
 
 from app.models import Reservation, ReservationStatus
+from app.services import legal_markdown_service
 
 
 main_bp = Blueprint("main", __name__)
@@ -61,6 +62,24 @@ def dashboard():
 @login_required
 def guide():
     return render_template("guide.html")
+
+
+@main_bp.get("/terms")
+def terms():
+    return render_template(
+        "legal/document.html",
+        title="이용약관",
+        document_html=legal_markdown_service.render_legal_markdown("terms"),
+    )
+
+
+@main_bp.get("/privacy")
+def privacy():
+    return render_template(
+        "legal/document.html",
+        title="개인정보처리방침",
+        document_html=legal_markdown_service.render_legal_markdown("privacy"),
+    )
 
 
 @main_bp.get("/healthz")
