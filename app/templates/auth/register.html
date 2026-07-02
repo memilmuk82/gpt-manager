@@ -1,26 +1,29 @@
 {% extends "base.html" %}
 
-{% block title %}회원가입 - GPT Share Manager vNext{% endblock %}
+{% block title %}회원가입 - {{ config.get("APP_TITLE", "생성형 AI 계정 공동 사용 지원 시스템") }}{% endblock %}
 
 {% block content %}
-  <section class="max-w-md space-y-6">
+  <section class="mx-auto max-w-md space-y-6">
     <div>
-      <h1 class="text-2xl font-bold">회원가입</h1>
-      <p class="mt-2 text-sm text-zinc-600">senedu.kr 계정은 자동 승인되며, 외부 이메일은 관리자 승인 후 사용할 수 있습니다.</p>
+      <p class="text-sm font-medium text-teal-700">등록 요청</p>
+      <h1 class="mt-2 text-2xl font-bold text-slate-950">회원가입</h1>
+      <p class="mt-2 text-sm leading-6 text-slate-600">
+        학교 공용 생성형 AI 계정 사용이 필요한 경우 계정을 만든 뒤 관리자 승인을 기다려 주세요.
+      </p>
     </div>
 
-    <form class="space-y-4" method="post" action="{{ url_for('auth.register_post') }}">
+    <form class="space-y-4 rounded-lg border border-slate-200 bg-white p-5 shadow-sm" method="post" action="{{ url_for('auth.register_post') }}">
       <label class="block text-sm font-medium">
         이름
-        <input class="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2" name="name" required autocomplete="name">
+        <input class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2" name="name" required autocomplete="name">
       </label>
       <label class="block text-sm font-medium">
         이메일
-        <input class="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2" name="email" type="email" required autocomplete="email">
+        <input class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2" name="email" type="email" required autocomplete="email">
       </label>
       <label class="block text-sm font-medium">
         비밀번호
-        <input class="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2" name="password" type="password" minlength="8" required autocomplete="new-password">
+        <input class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2" name="password" type="password" minlength="8" required autocomplete="new-password">
       </label>
       <button class="rounded-md bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800" type="submit">가입하기</button>
     </form>

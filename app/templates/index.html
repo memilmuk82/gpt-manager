@@ -1,75 +1,82 @@
 {% extends "base.html" %}
 
-{% block title %}GPT Share Manager vNext{% endblock %}
+{% block title %}{{ config.get("APP_TITLE", "생성형 AI 계정 공동 사용 지원 시스템") }}{% endblock %}
 
 {% block content %}
 <section class="space-y-8">
 
-  <div class="space-y-3">
-    <p class="text-sm font-medium uppercase tracking-wide text-teal-700">
-      RELEASE CANDIDATE
-    </p>
+  <div class="max-w-3xl space-y-4">
+    <p class="text-sm font-medium text-teal-700">{{ config.get("ORGANIZATION_NAME", "학교") }}</p>
 
-    <h1 class="text-3xl font-bold text-zinc-950">
-      공용 AI 계정 운영 및 프롬프트 관리 시스템
+    <h1 class="text-3xl font-bold text-slate-950 sm:text-4xl">
+      생성형 AI 계정 공동 사용 지원 시스템
     </h1>
 
-    <p class="max-w-3xl text-base leading-7 text-zinc-600">
-      GPT Share Manager vNext는 학교 및 기관에서 공용 AI 계정을 안전하게
-      운영하기 위한 관리 시스템입니다.
-      현재 Release Candidate(RC) 단계이며 핵심 기능 구현을 완료하고
-      최종 검증을 진행하고 있습니다.
+    <p class="text-lg font-medium text-slate-700">
+      학교 공용 생성형 AI 계정 운영 및 사용 지원 시스템
+    </p>
+
+    <p class="text-base leading-7 text-slate-600">
+      본 시스템은 학교 공용 생성형 AI 계정의 예약, 사용 기록, 사용자 승인,
+      안전한 활용 안내를 지원합니다. 사용하려면 먼저 로그인해 주세요.
     </p>
   </div>
 
   <div class="flex flex-wrap gap-3">
     <a
       class="rounded-md bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800"
-      href="{{ url_for('auth.register') }}"
+      href="{{ url_for('auth.google_login') }}"
     >
-      회원가입
+      Google 로그인
     </a>
 
     <a
-      class="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100"
+      class="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
       href="{{ url_for('auth.login') }}"
     >
-      로그인
+      로컬 로그인
+    </a>
+
+    <a
+      class="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+      href="{{ url_for('auth.register') }}"
+    >
+      회원가입
     </a>
   </div>
 
   <div class="grid gap-4 md:grid-cols-3">
 
-    <div class="rounded-md border border-zinc-200 bg-white p-5">
+    <div class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
       <h2 class="font-semibold text-lg">
         사용자 인증
       </h2>
 
-      <p class="mt-2 text-sm text-zinc-600">
+      <p class="mt-2 text-sm leading-6 text-slate-600">
         로컬 로그인 및 Google OAuth 기반 인증을 지원하며,
         관리자 승인 절차를 통해 사용자 접근을 관리합니다.
       </p>
     </div>
 
-    <div class="rounded-md border border-zinc-200 bg-white p-5">
+    <div class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
       <h2 class="font-semibold text-lg">
-        운영 기능
+        예약 및 사용 기록
       </h2>
 
-      <p class="mt-2 text-sm text-zinc-600">
+      <p class="mt-2 text-sm leading-6 text-slate-600">
         예약 관리, 사용 기록, 관리자 승인,
-        공용 AI 계정 운영을 위한 핵심 기능을 제공합니다.
+        학교 공용 생성형 AI 계정 운영을 위한 핵심 기능을 제공합니다.
       </p>
     </div>
 
-    <div class="rounded-md border border-zinc-200 bg-white p-5">
+    <div class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
       <h2 class="font-semibold text-lg">
-        Release Candidate
+        안전한 활용 안내
       </h2>
 
-      <p class="mt-2 text-sm text-zinc-600">
-        Phase 7 구현을 완료하였으며,
-        현재 운영 환경 배포 및 최종 안정화 작업을 진행하고 있습니다.
+      <p class="mt-2 text-sm leading-6 text-slate-600">
+        개인정보, 민감정보, 평가 보안 자료, 실제 학생 자료를 입력하지 않도록
+        사용 전 안내와 확인 절차를 제공합니다.
       </p>
     </div>
 

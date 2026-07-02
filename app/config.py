@@ -16,6 +16,9 @@ def normalize_database_url(database_url: str) -> str:
 
 
 class Config:
+    APP_TITLE = os.getenv("APP_TITLE", "생성형 AI 계정 공동 사용 지원 시스템")
+    ORGANIZATION_NAME = os.getenv("ORGANIZATION_NAME", "학교")
+
     SECRET_KEY = os.getenv("SECRET_KEY", "dev-change-me")
     SQLALCHEMY_DATABASE_URI = normalize_database_url(
         os.getenv("DATABASE_URL", f"sqlite:///{DEFAULT_DATABASE_PATH}")
