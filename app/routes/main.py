@@ -1,5 +1,9 @@
+from datetime import datetime, time
+
 from flask import Blueprint, jsonify, render_template
 from flask_login import login_required
+
+from app.models import Reservation, ReservationStatus
 
 
 main_bp = Blueprint("main", __name__)
@@ -13,7 +17,50 @@ def index():
 @main_bp.get("/dashboard")
 @login_required
 def dashboard():
-    return render_template("dashboard.html")
+    now = datetime.now()
+    today_start = datetime.combine(now.date(), time.min)
+    today_end = datetime.combine(now.date(), time.max)
+
+    current_reservation = (
+        Reservation.query.filter(
+            Reservation.status == ReservationStatus.RESERVED,
+            Reservation.start_at <= now,
+            Reservation.end_at > now,
+        )
+        .order_by(Reservation.end_at.asc())
+        .first()
+    )
+    next_reservation = (
+        Reservation.query.filter(
+            Reservation.status == ReservationStatus.RESERVED,
+            Reservation.start_at > now,
+        )
+        .order_by(Reservation.start_at.asc())
+        .first()
+    )
+    today_reservations = (
+        Reservation.query.filter(
+            Reservation.status != ReservationStatus.CANCELLED,
+            Reservation.start_at >= today_start,
+            Reservation.start_at <= today_end,
+        )
+        .order_by(Reservation.start_at.asc())
+        .limit(8)
+        .all()
+    )
+
+    return render_template(
+        "dashboard.html",
+        current_reservation=current_reservation,
+        next_reservation=next_reservation,
+        today_reservations=today_reservations,
+    )
+
+
+@main_bp.get("/guide")
+@login_required
+def guide():
+    return render_template("guide.html")
 
 
 @main_bp.get("/healthz")

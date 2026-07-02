@@ -1,3 +1,5 @@
+from datetime import date, datetime, time
+
 from flask import flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
@@ -20,6 +22,28 @@ def index():
         .all()
     )
     return render_template("reservations/index.html", reservations=reservations)
+
+
+@reservations_bp.get("/today")
+@login_required
+def today():
+    selected_date = _selected_date(request.args.get("date", ""))
+    day_start = datetime.combine(selected_date, time.min)
+    day_end = datetime.combine(selected_date, time.max)
+    reservations = (
+        Reservation.query.filter(
+            Reservation.status != ReservationStatus.CANCELLED,
+            Reservation.start_at >= day_start,
+            Reservation.start_at <= day_end,
+        )
+        .order_by(Reservation.start_at.asc(), Reservation.end_at.asc())
+        .all()
+    )
+    return render_template(
+        "reservations/today.html",
+        reservations=reservations,
+        selected_date=selected_date,
+    )
 
 
 @reservations_bp.get("/new")
@@ -91,3 +115,13 @@ def complete(reservation_id: int):
 
 def _get_owned_reservation(reservation_id: int) -> Reservation:
     return Reservation.query.filter_by(id=reservation_id, user_id=current_user.id).first_or_404()
+
+
+def _selected_date(raw_value: str) -> date:
+    if not raw_value:
+        return date.today()
+    try:
+        return date.fromisoformat(raw_value)
+    except ValueError:
+        flash("날짜 형식이 올바르지 않아 오늘 예약을 표시합니다.", "warning")
+        return date.today()

@@ -23,11 +23,19 @@ def is_admin_email(email: str) -> bool:
     return normalize_email(email) in current_app.config.get("ADMIN_EMAILS", [])
 
 
+def is_assistant_admin_email(email: str) -> bool:
+    return normalize_email(email) in current_app.config.get("ASSISTANT_ADMIN_EMAILS", [])
+
+
 def initial_approval_status(email: str) -> str:
-    if is_trusted_email(email) or is_admin_email(email):
+    if is_trusted_email(email) or is_admin_email(email) or is_assistant_admin_email(email):
         return ApprovalStatus.APPROVED
     return ApprovalStatus.PENDING
 
 
 def initial_role(email: str) -> str:
-    return "admin" if is_admin_email(email) else "user"
+    if is_admin_email(email):
+        return "admin"
+    if is_assistant_admin_email(email):
+        return "assistant_admin"
+    return "user"

@@ -38,6 +38,11 @@ class Config:
     )
     ALLOWED_GOOGLE_DOMAIN = os.getenv("ALLOWED_GOOGLE_DOMAIN", "senedu.kr")
     ADMIN_EMAILS = [email.strip().lower() for email in os.getenv("ADMIN_EMAILS", "").split(",") if email.strip()]
+    ASSISTANT_ADMIN_EMAILS = [
+        email.strip().lower()
+        for email in os.getenv("ASSISTANT_ADMIN_EMAILS", "").split(",")
+        if email.strip()
+    ]
 
     GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash")
     GEMINI_MAX_INPUT_CHARS = int(os.getenv("GEMINI_MAX_INPUT_CHARS", "3000"))

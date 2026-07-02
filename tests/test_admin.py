@@ -58,3 +58,16 @@ def test_admin_cannot_suspend_self(client, app):
     assert response.status_code == 302
     with app.app_context():
         assert db.session.get(User, admin_id).approval_status == ApprovalStatus.APPROVED
+
+
+def test_assistant_admin_can_access_admin_dashboard(client, app):
+    with app.app_context():
+        create_user(email="assistant@senedu.kr", name="Assistant", role="assistant_admin")
+
+    login(client, email="assistant@senedu.kr")
+
+    dashboard_response = client.get("/admin")
+    users_response = client.get("/admin/users")
+
+    assert dashboard_response.status_code == 200
+    assert users_response.status_code == 200

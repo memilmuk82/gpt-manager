@@ -32,6 +32,14 @@ class User(UserMixin, db.Model):
     def is_admin(self) -> bool:
         return self.role == "admin"
 
+    @property
+    def is_assistant_admin(self) -> bool:
+        return self.role == "assistant_admin"
+
+    @property
+    def can_access_admin(self) -> bool:
+        return self.is_admin or self.is_assistant_admin
+
     def set_password(self, password: str) -> None:
         self.password_hash = generate_password_hash(password)
 

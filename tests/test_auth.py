@@ -116,6 +116,17 @@ def test_admin_email_registration_gets_admin_role(client, app):
         assert user.approval_status == "approved"
 
 
+def test_assistant_admin_email_registration_gets_assistant_admin_role(client, app):
+    response = register(client, email="assistant@senedu.kr")
+
+    assert response.status_code == 302
+    assert response.headers["Location"].endswith("/dashboard")
+    with app.app_context():
+        user = User.query.filter_by(email="assistant@senedu.kr").one()
+        assert user.role == "assistant_admin"
+        assert user.approval_status == "approved"
+
+
 def test_suspended_user_cannot_login(client, app):
     with app.app_context():
         user = User(email="blocked@senedu.kr", name="Blocked", approval_status="suspended")

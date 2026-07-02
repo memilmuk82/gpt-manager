@@ -27,7 +27,7 @@
               <td class="px-4 py-3">{{ user.email }}</td>
               <td class="px-4 py-3 text-zinc-600">{{ user.name }}</td>
               <td class="px-4 py-3 text-zinc-600">{{ user.auth_provider }}</td>
-              <td class="px-4 py-3 text-zinc-600">{{ user.role }}</td>
+              <td class="px-4 py-3 text-zinc-600">{% if user.role == 'admin' %}관리자{% elif user.role == 'assistant_admin' %}보조관리자{% else %}일반 사용자{% endif %}</td>
               <td class="px-4 py-3 text-zinc-600">{{ user.approval_status }}</td>
               <td class="px-4 py-3">
                 <div class="flex flex-wrap gap-2">

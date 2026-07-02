@@ -239,3 +239,47 @@ def test_reservation_end_must_be_after_start(client, app):
 
     assert response.status_code == 400
     assert "예약 종료 시간은 시작 시간보다 늦어야 합니다." in response.get_data(as_text=True)
+
+
+def test_today_reservations_show_shared_daily_schedule(client, app):
+    with app.app_context():
+        create_user()
+        other = create_user(email="other@example.com", name="Other")
+        resource = create_resource()
+        db.session.add_all(
+            [
+                Reservation(
+                    user_id=other.id,
+                    resource_id=resource.id,
+                    start_at=datetime(2026, 7, 2, 9, 0),
+                    end_at=datetime(2026, 7, 2, 10, 0),
+                    purpose="다른 사용자 예약",
+                ),
+                Reservation(
+                    user_id=other.id,
+                    resource_id=resource.id,
+                    start_at=datetime(2026, 7, 3, 9, 0),
+                    end_at=datetime(2026, 7, 3, 10, 0),
+                    purpose="다른 날짜 예약",
+                ),
+                Reservation(
+                    user_id=other.id,
+                    resource_id=resource.id,
+                    start_at=datetime(2026, 7, 2, 11, 0),
+                    end_at=datetime(2026, 7, 2, 12, 0),
+                    purpose="취소된 예약",
+                    status=ReservationStatus.CANCELLED,
+                ),
+            ]
+        )
+        db.session.commit()
+
+    login(client)
+    response = client.get("/reservations/today?date=2026-07-02")
+    body = response.get_data(as_text=True)
+
+    assert response.status_code == 200
+    assert "다른 사용자 예약" in body
+    assert "Other" in body
+    assert "다른 날짜 예약" not in body
+    assert "취소된 예약" not in body

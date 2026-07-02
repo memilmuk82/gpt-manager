@@ -19,13 +19,14 @@
             {% if current_user.is_approved %}
               <a class="rounded-md px-3 py-2 font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-950" href="{{ url_for('main.dashboard') }}">홈</a>
               <a class="rounded-md px-3 py-2 font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-950" href="{{ url_for('reservations.new') }}">사용 신청</a>
+              <a class="rounded-md px-3 py-2 font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-950" href="{{ url_for('reservations.today') }}">오늘 예약</a>
               <a class="rounded-md px-3 py-2 font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-950" href="{{ url_for('reservations.index') }}">내 예약</a>
               <a class="rounded-md px-3 py-2 font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-950" href="{{ url_for('logs.index') }}">사용 기록</a>
               <a class="rounded-md px-3 py-2 font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-950" href="{{ url_for('prompts.index') }}">프롬프트 점검</a>
               <a class="rounded-md px-3 py-2 font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-950" href="{{ url_for('main.guide') }}">사용 안내</a>
               <a class="rounded-md px-3 py-2 font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-950" href="{{ url_for('settings.api_key') }}">설정</a>
             {% endif %}
-            {% if current_user.is_admin and current_user.is_approved %}
+            {% if current_user.can_access_admin and current_user.is_approved %}
               <a class="rounded-md px-3 py-2 font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-950" href="{{ url_for('admin.dashboard') }}">관리자</a>
             {% endif %}
             <span class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-slate-600">

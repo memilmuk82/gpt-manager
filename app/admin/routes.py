@@ -12,7 +12,7 @@ def admin_required(view):
     @wraps(view)
     @login_required
     def wrapped(*args, **kwargs):
-        if not current_user.is_admin or not current_user.is_approved:
+        if not current_user.can_access_admin or not current_user.is_approved:
             abort(403)
         return view(*args, **kwargs)
 

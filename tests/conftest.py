@@ -22,6 +22,7 @@ class TestConfig:
     GOOGLE_REDIRECT_URI = "http://localhost/auth/google/callback"
     ALLOWED_GOOGLE_DOMAIN = "senedu.kr"
     ADMIN_EMAILS = ["admin@senedu.kr"]
+    ASSISTANT_ADMIN_EMAILS = ["assistant@senedu.kr"]
 
 
 @pytest.fixture()
