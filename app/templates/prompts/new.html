@@ -10,6 +10,7 @@
     </div>
 
     <form class="space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" method="post" action="{{ url_for('prompts.create') }}">
+      <label class="block text-sm font-extrabold text-slate-950" for="prompt_template">점검 템플릿<select class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-base" id="prompt_template"><option value="">직접 작성</option>{% for template in prompt_templates %}<option value="{{ loop.index0 }}" data-goal="{{ template.goal }}" data-prompt="{{ template.prompt }}">{{ template.name }}</option>{% endfor %}</select></label>
       <label class="block text-sm font-extrabold text-slate-950" for="review_goal">점검 목표<input class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 text-base focus:border-slate-950 focus:outline-none focus:ring-1 focus:ring-slate-950" id="review_goal" name="review_goal" value="명확성, 안전성, 수업 활용성 개선"></label>
       <label class="block text-sm font-extrabold text-slate-950" for="source_prompt">점검 대상 프롬프트<textarea class="mt-2 min-h-72 w-full rounded-xl border border-slate-300 px-4 py-3 text-base leading-7 focus:border-slate-950 focus:outline-none focus:ring-1 focus:ring-slate-950" id="source_prompt" name="source_prompt" required></textarea></label>
       <div class="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm font-semibold leading-6 text-amber-900">학생 개인정보, 평가 자료, 생활기록부 민감정보, 상담 내용, 비공개 업무자료는 입력하지 않습니다.</div>
@@ -19,4 +20,17 @@
       </div>
     </form>
   </section>
+  <script>
+    (function () {
+      const templateSelect = document.getElementById('prompt_template');
+      const goal = document.getElementById('review_goal');
+      const prompt = document.getElementById('source_prompt');
+      templateSelect.addEventListener('change', function () {
+        const option = templateSelect.selectedOptions[0];
+        if (!option || !option.dataset.goal) return;
+        goal.value = option.dataset.goal;
+        if (!prompt.value.trim()) prompt.value = option.dataset.prompt;
+      });
+    })();
+  </script>
 {% endblock %}

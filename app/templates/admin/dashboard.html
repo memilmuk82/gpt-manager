@@ -29,6 +29,8 @@
       {{ admin_card('requests', '♙', '등록 요청 관리', '미등록 사용자의 등록 요청을 승인하거나 반려합니다.', '등록 요청 불러오기') }}
       {{ admin_card('stats', '▥', '통계 조회', '사용자별, 작업 유형별 사용 통계를 조회합니다.', '통계 불러오기') }}
       {{ admin_card('reports', '▤', '월간 운영 보고서', '예약과 사용 로그를 월별 보고서 초안으로 정리합니다.', '보고서 불러오기') }}
+      {{ admin_card('exports', '⇩', 'CSV 내보내기', '사용자, 예약, 사용 로그 원자료를 CSV로 다운로드합니다.', '내보내기 열기') }}
+      {{ admin_card('backups', '▣', 'DB 백업', '운영 SQLite DB 백업 파일을 생성하고 다운로드합니다.', '백업 열기') }}
       {{ admin_card('audit', '⌕', '감사 로그', '관리자 주요 변경 이력을 확인합니다.', '감사 로그 불러오기') }}
       {{ admin_card('tests', '♧', '전체 테스트 실행', '관리자 화면에서 서버의 전체 테스트를 실행합니다.', '테스트 실행') }}
     </div>
@@ -286,6 +288,25 @@
         </form>
         <div class="mt-5 grid gap-3 md:grid-cols-4"><div class="rounded-xl border border-slate-200 bg-slate-50 p-4"><p class="text-sm text-slate-500">전체 예약</p><p class="mt-2 text-2xl font-extrabold">{{ report.stats.total_reservations }}</p></div><div class="rounded-xl border border-slate-200 bg-slate-50 p-4"><p class="text-sm text-slate-500">사용 로그</p><p class="mt-2 text-2xl font-extrabold">{{ report.usage_logs|length }}</p></div><div class="rounded-xl border border-slate-200 bg-slate-50 p-4"><p class="text-sm text-slate-500">프롬프트 점검</p><p class="mt-2 text-2xl font-extrabold">{{ report.prompt_reviews }}</p></div><div class="rounded-xl border border-slate-200 bg-slate-50 p-4"><p class="text-sm text-slate-500">실제 사용</p><p class="mt-2 text-2xl font-extrabold">{{ minutes(report.stats.actual_minutes) }}</p></div></div>
         <pre class="mt-5 max-h-[42rem] overflow-auto whitespace-pre-wrap rounded-xl bg-slate-950 p-4 text-sm leading-6 text-slate-100">{{ report.markdown }}</pre>
+      </section>
+    {% endif %}
+
+    {% if section == 'exports' %}
+      <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 class="text-xl font-extrabold text-slate-950">⇩ CSV 내보내기</h2>
+        <p class="mt-2 text-sm text-slate-600">운영 보고와 점검에 필요한 원자료를 CSV로 다운로드합니다.</p>
+        <div class="mt-5 grid gap-4 md:grid-cols-3">
+          <a class="rounded-2xl border border-slate-200 bg-slate-50 p-5 font-extrabold text-slate-950" href="{{ url_for('admin.export_users_csv') }}">사용자 CSV</a>
+          <a class="rounded-2xl border border-slate-200 bg-slate-50 p-5 font-extrabold text-slate-950" href="{{ url_for('admin.export_reservations_csv') }}">예약 CSV</a>
+          <a class="rounded-2xl border border-slate-200 bg-slate-50 p-5 font-extrabold text-slate-950" href="{{ url_for('admin.export_usage_logs_csv') }}">사용 로그 CSV</a>
+        </div>
+      </section>
+    {% endif %}
+
+    {% if section == 'backups' %}
+      <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"><div><h2 class="text-xl font-extrabold text-slate-950">▣ DB 백업</h2><p class="mt-2 text-sm text-slate-600">현재 SQLite DB 파일을 서버의 backups 디렉터리에 복사합니다.</p></div><form method="post" action="{{ url_for('admin.create_backup') }}"><button class="rounded-xl bg-slate-950 px-5 py-2.5 text-sm font-extrabold text-white" type="submit">백업 생성</button></form></div>
+        <div class="mt-5 overflow-x-auto rounded-2xl border border-slate-200"><table class="min-w-full divide-y divide-slate-200 text-sm"><thead class="bg-slate-50 text-left text-slate-600"><tr><th class="px-4 py-3">파일명</th><th class="px-4 py-3">크기</th><th class="px-4 py-3">작업</th></tr></thead><tbody class="divide-y divide-slate-100">{% for backup in backups %}<tr><td class="px-4 py-3 font-bold text-slate-950">{{ backup.name }}</td><td class="px-4 py-3 text-slate-600">{{ backup.size_kb }} KB</td><td class="px-4 py-3"><a class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-bold text-slate-700" href="{{ url_for('admin.download_backup', filename=backup.name) }}">다운로드</a></td></tr>{% else %}<tr><td class="px-4 py-8 text-center text-slate-500" colspan="3">생성된 백업이 없습니다.</td></tr>{% endfor %}</tbody></table></div>
       </section>
     {% endif %}
 

@@ -157,6 +157,8 @@ def _ensure_sqlite_schema_compatibility(app: Flask) -> None:
             migrations.append("ALTER TABLE reservation ADD COLUMN description TEXT NOT NULL DEFAULT ''")
         if "safety_confirmed" not in reservation_columns:
             migrations.append("ALTER TABLE reservation ADD COLUMN safety_confirmed BOOLEAN NOT NULL DEFAULT 0")
+        if "consent_version" not in reservation_columns:
+            migrations.append("ALTER TABLE reservation ADD COLUMN consent_version VARCHAR(80) NOT NULL DEFAULT ''")
 
     for statement in migrations:
         db.session.execute(text(statement))

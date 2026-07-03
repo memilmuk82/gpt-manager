@@ -106,6 +106,7 @@ class Reservation(db.Model):
     purpose = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text, nullable=False, default="")
     safety_confirmed = db.Column(db.Boolean, nullable=False, default=False)
+    consent_version = db.Column(db.String(80), nullable=False, default="")
     status = db.Column(db.String(20), nullable=False, default=ReservationStatus.RESERVED, index=True)
     created_at = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
     updated_at = db.Column(

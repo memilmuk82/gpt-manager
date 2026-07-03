@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from app.extensions import db
-from app.models import AiResource, Reservation, ReservationStatus, User
+from app.models import AiResource, AppSetting, Reservation, ReservationStatus, User
 
 
 def create_user(email="teacher@example.com", name="Teacher") -> User:
@@ -55,6 +55,7 @@ def test_reservation_create_and_cancel_flow(client, app):
         assert reservation.purpose == "수업 자료 준비"
         assert reservation.start_at == datetime(2026, 7, 2, 9, 0)
         assert reservation.status == ReservationStatus.RESERVED
+        assert reservation.consent_version == "2026-07-04"
 
     cancel_response = client.post("/reservations/1/cancel", follow_redirects=False)
 
@@ -316,3 +317,56 @@ def test_reservation_filters_by_keyword_and_status(client, app):
     assert response.status_code == 200
     assert "활동지 준비" in body
     assert "행정 문서" not in body
+
+
+def test_reservation_calendar_shows_monthly_shared_schedule(client, app):
+    with app.app_context():
+        create_user()
+        other = create_user(email="other@example.com", name="Other")
+        resource = create_resource()
+        db.session.add(
+            Reservation(
+                user_id=other.id,
+                resource_id=resource.id,
+                start_at=datetime(2026, 7, 15, 9, 0),
+                end_at=datetime(2026, 7, 15, 10, 0),
+                purpose="월간 캘린더 예약",
+            )
+        )
+        db.session.commit()
+
+    login(client)
+    response = client.get("/reservations/calendar?month=2026-07")
+    body = response.get_data(as_text=True)
+
+    assert response.status_code == 200
+    assert "예약 캘린더" in body
+    assert "2026-07" in body
+    assert "월간 캘린더 예약" in body
+    assert "Other" in body
+
+
+def test_reservation_records_configured_usage_policy_version(client, app):
+    with app.app_context():
+        create_user()
+        resource = create_resource()
+        db.session.add(AppSetting(key="usage_policy_version", value="policy-v2", label="사용 규칙 버전", help_text="", sort_order=1))
+        db.session.commit()
+        resource_id = resource.id
+
+    login(client)
+    response = client.post(
+        "/reservations",
+        data={
+            "resource_id": resource_id,
+            "start_at": "2026-07-02T09:00",
+            "end_at": "2026-07-02T10:00",
+            "purpose": "동의 버전 기록",
+            "work_type": "워크북 개발",
+            "safety_confirmed": "on",
+        },
+    )
+
+    assert response.status_code == 302
+    with app.app_context():
+        assert Reservation.query.one().consent_version == "policy-v2"

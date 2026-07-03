@@ -224,3 +224,18 @@ def test_prompt_review_markdown_download_and_search(client, app):
     assert "# 프롬프트 점검 결과 #1" in body
     assert "행정 안내문 작성" in body
     assert "개선 결과" in body
+
+
+def test_prompt_review_new_page_shows_templates(client, app):
+    with app.app_context():
+        create_user()
+
+    login(client)
+    response = client.get("/prompt-reviews/new")
+    body = response.get_data(as_text=True)
+
+    assert response.status_code == 200
+    assert "점검 템플릿" in body
+    assert "수업자료" in body
+    assert "행정문서" in body
+    assert "평가문항 검토" in body

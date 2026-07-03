@@ -10,7 +10,7 @@ from datetime import date, datetime, time
 from functools import wraps
 from pathlib import Path
 
-from flask import Response, abort, flash, redirect, render_template, request, url_for
+from flask import Response, abort, current_app, flash, redirect, render_template, request, send_from_directory, url_for
 from flask_login import current_user, login_required
 
 from app.admin import admin_bp
@@ -70,6 +70,58 @@ def monthly_report_download():
         mimetype="text/markdown; charset=utf-8",
         headers={"Content-Disposition": f"attachment; filename={filename}"},
     )
+
+
+@admin_bp.get("/exports/users.csv")
+@admin_required
+def export_users_csv():
+    rows = [["id", "email", "name", "department", "extension", "role", "approval_status", "is_active", "is_auth_manager", "created_at"]]
+    for user in User.query.order_by(User.id.asc()).all():
+        rows.append([user.id, user.email, user.name, user.department, user.extension, user.role, user.approval_status, user.is_active, user.is_auth_manager, user.created_at.isoformat()])
+    return _csv_response("users.csv", rows)
+
+
+@admin_bp.get("/exports/reservations.csv")
+@admin_required
+def export_reservations_csv():
+    rows = [["id", "user_email", "resource", "start_at", "end_at", "work_type", "purpose", "status", "consent_version"]]
+    for reservation in Reservation.query.order_by(Reservation.start_at.desc()).all():
+        rows.append([reservation.id, reservation.user.email, reservation.resource.name, reservation.start_at.isoformat(), reservation.end_at.isoformat(), reservation.work_type, reservation.purpose, reservation.status, reservation.consent_version])
+    return _csv_response("reservations.csv", rows)
+
+
+@admin_bp.get("/exports/usage-logs.csv")
+@admin_required
+def export_usage_logs_csv():
+    rows = [["id", "user_email", "reservation_id", "resource", "work_type", "summary", "created_at"]]
+    for log in UsageLog.query.order_by(UsageLog.created_at.desc()).all():
+        rows.append([log.id, log.user.email, log.reservation_id or "", log.resource.name if log.resource else "", log.work_type, log.summary, log.created_at.isoformat()])
+    return _csv_response("usage-logs.csv", rows)
+
+
+@admin_bp.post("/backups")
+@admin_required
+def create_backup():
+    db_path = _sqlite_database_path()
+    if db_path is None or not db_path.exists():
+        flash("백업할 SQLite DB 파일을 찾을 수 없습니다.", "error")
+        return redirect(url_for("admin.dashboard", section="backups"))
+    backup_dir = _backup_dir()
+    backup_dir.mkdir(parents=True, exist_ok=True)
+    backup_path = backup_dir / f"app-{datetime.now().strftime('%Y%m%d-%H%M%S')}.db"
+    shutil.copy2(db_path, backup_path)
+    _record_audit("backups.create", "sqlite", backup_path.name, "SQLite DB 백업을 생성했습니다.")
+    db.session.commit()
+    flash(f"백업을 생성했습니다: {backup_path.name}", "success")
+    return redirect(url_for("admin.dashboard", section="backups"))
+
+
+@admin_bp.get("/backups/<path:filename>")
+@admin_required
+def download_backup(filename: str):
+    if "/" in filename or not filename.startswith("app-") or not filename.endswith(".db"):
+        abort(404)
+    return send_from_directory(_backup_dir(), filename, as_attachment=True)
 
 
 @admin_bp.post("/settings")
@@ -390,6 +442,7 @@ def _admin_context(section: str = "overview", test_result: dict | None = None) -
         "user_filters": _user_filter_values(),
         "report": _monthly_report_context(),
         "audit_logs": AuditLog.query.order_by(AuditLog.created_at.desc()).limit(100).all(),
+        "backups": _available_backups(),
         "guide_settings": _guide_settings(),
         "guides": GuideItem.query.order_by(GuideItem.sort_order.asc()).all(),
         "resources": AiResource.query.order_by(AiResource.name.asc()).all(),
@@ -401,6 +454,38 @@ def _admin_context(section: str = "overview", test_result: dict | None = None) -
         "admin_stats": _usage_statistics(all_users, reservations),
         "test_result": test_result,
     }
+
+
+def _csv_response(filename: str, rows: list[list]) -> Response:
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerows(rows)
+    return Response(
+        "﻿" + output.getvalue(),
+        mimetype="text/csv; charset=utf-8",
+        headers={"Content-Disposition": f"attachment; filename={filename}"},
+    )
+
+
+def _sqlite_database_path() -> Path | None:
+    db_uri = current_app.config.get("SQLALCHEMY_DATABASE_URI", "")
+    if db_uri == "sqlite:///:memory:" or not db_uri.startswith("sqlite:///"):
+        return None
+    return Path(db_uri.removeprefix("sqlite:///"))
+
+
+def _backup_dir() -> Path:
+    return Path(current_app.root_path).resolve().parent / "backups"
+
+
+def _available_backups() -> list[dict]:
+    backup_dir = _backup_dir()
+    if not backup_dir.exists():
+        return []
+    backups = []
+    for path in sorted(backup_dir.glob("app-*.db"), key=lambda item: item.stat().st_mtime, reverse=True)[:20]:
+        backups.append({"name": path.name, "size_kb": max(1, path.stat().st_size // 1024)})
+    return backups
 
 
 def _filtered_users(users: list[User]) -> list[User]:

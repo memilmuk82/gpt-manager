@@ -1,4 +1,4 @@
-from datetime import datetime, time
+from datetime import datetime, time, timedelta, timezone
 
 from flask import Response, current_app, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
@@ -12,6 +12,29 @@ from app.services.prompt_review_service import GeminiReviewError, build_review_p
 
 
 PROVIDER = "gemini"
+
+PROMPT_TEMPLATES = [
+    {
+        "name": "수업자료",
+        "goal": "수업자료의 명확성, 활동 가능성, 안전성 개선",
+        "prompt": "대상 학년과 교과, 수업 목표, 활동 시간, 필요한 산출물을 포함해 수업자료 제작 프롬프트를 작성합니다.",
+    },
+    {
+        "name": "행정문서",
+        "goal": "행정문서의 문체, 핵심 항목, 개인정보 노출 위험 점검",
+        "prompt": "수신 대상, 목적, 필수 포함 항목, 톤앤매너를 포함해 행정문서 초안 작성 프롬프트를 작성합니다.",
+    },
+    {
+        "name": "평가문항 검토",
+        "goal": "평가 보안 자료 없이 문항 품질 점검 관점만 개선",
+        "prompt": "실제 문항이나 정답을 넣지 않고 평가 기준, 난이도, 사고 과정, 오류 가능성 점검 요청을 작성합니다.",
+    },
+    {
+        "name": "가정통신문",
+        "goal": "학부모 안내문의 이해도, 누락 항목, 민감정보 위험 점검",
+        "prompt": "행사명, 일시, 장소, 준비물, 문의처, 유의사항을 포함해 가정통신문 초안 요청을 작성합니다.",
+    },
+]
 
 
 @prompts_bp.get("")
@@ -35,7 +58,7 @@ def index():
 @prompts_bp.get("/new")
 @login_required
 def new():
-    return render_template("prompts/new.html")
+    return render_template("prompts/new.html", prompt_templates=PROMPT_TEMPLATES)
 
 
 @prompts_bp.post("")
@@ -47,13 +70,13 @@ def create():
 
     if not source_prompt:
         flash("점검할 프롬프트를 입력하세요.", "error")
-        return render_template("prompts/new.html"), 400
+        return render_template("prompts/new.html", prompt_templates=PROMPT_TEMPLATES), 400
     if len(source_prompt) > max_input_chars:
         flash(f"프롬프트는 {max_input_chars}자 이하로 입력하세요.", "error")
-        return render_template("prompts/new.html"), 400
+        return render_template("prompts/new.html", prompt_templates=PROMPT_TEMPLATES), 400
     if _daily_review_limit_exceeded():
         flash("오늘 사용할 수 있는 Gemini 프롬프트 점검 횟수를 모두 사용했습니다.", "error")
-        return render_template("prompts/new.html"), 429
+        return render_template("prompts/new.html", prompt_templates=PROMPT_TEMPLATES), 429
 
     user_api_key = _get_user_api_key()
     if user_api_key is None:
@@ -77,7 +100,7 @@ def create():
         )
     except GeminiReviewError as exc:
         flash(str(exc), "error")
-        return render_template("prompts/new.html"), 502
+        return render_template("prompts/new.html", prompt_templates=PROMPT_TEMPLATES), 502
 
     review = PromptReview(
         user_id=current_user.id,
@@ -142,9 +165,12 @@ def _daily_review_limit_exceeded() -> bool:
     limit = current_app.config.get("MAX_DAILY_AI_CALLS_PER_USER", 50)
     if limit <= 0:
         return False
-    today_start = datetime.combine(datetime.now().date(), time.min)
-    reviews_today = PromptReview.query.filter(
-        PromptReview.user_id == current_user.id,
-        PromptReview.created_at >= today_start,
-    ).count()
-    return reviews_today >= limit
+    cutoff = datetime.now(timezone.utc) - timedelta(days=1)
+    recent_reviews = 0
+    for review in PromptReview.query.filter_by(user_id=current_user.id).all():
+        created_at = review.created_at
+        if created_at.tzinfo is None:
+            created_at = created_at.replace(tzinfo=timezone.utc)
+        if created_at >= cutoff:
+            recent_reviews += 1
+    return recent_reviews >= limit

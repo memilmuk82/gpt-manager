@@ -13,9 +13,9 @@
 ## 2. 현재 상태
 
 ```text
-상태: 운영 보안/예약-로그 연동 보완 및 문서화 완료
-최근 기능 브랜치: codex/admin-reservation-ui-docs
-pytest: PASS, 77 passed
+상태: 전체 운영 편의 기능 보완 및 문서화 완료
+최근 기능 브랜치: master
+pytest: PASS, 84 passed
 Docker Compose rebuild: PASS, gpt-manager-web-1 Up, /healthz 200
 운영 Health Check: PASS, /healthz 200 {"status":"ok"}
 HTTPS 도메인: PASS, dev-gpt.memilmuk82.com 200 OK
@@ -32,7 +32,7 @@ Playwright E2E: PASS, 1 passed
 SQLite 백업/복원 스크립트 및 문서화 완료
 잔여 확장 기능: 월간 운영 보고서, 프롬프트 Markdown 다운로드, 감사 로그, 검색/필터, 법률 검토 체크리스트 구현 완료
 신청 항목 관리(AI 리소스/작업유형), 인증번호 담당자 2명 제한, 관리자 테스트 실행 fallback, 주요 화면 문구 Settings 관리, 프롬프트 점검 UI 최신화, 개인 Gemini API Key 설정 및 사용자 badge 바로가기 접근성 개선: 구현 완료
-변경 기록: docs/development/2026-07-03_ADMIN_RESERVATION_UI_UPDATE.md, docs/development/2026-07-03_SECURITY_OPERATION_HARDENING.md, docs/development/2026-07-03_REMAINING_FEATURES_COMPLETION.md
+변경 기록: docs/development/2026-07-03_ADMIN_RESERVATION_UI_UPDATE.md, docs/development/2026-07-03_SECURITY_OPERATION_HARDENING.md, docs/development/2026-07-03_REMAINING_FEATURES_COMPLETION.md, docs/development/2026-07-04_FULL_OPERATIONAL_FEATURES.md
 ```
 
 ## 3. 확정된 방향
@@ -92,17 +92,19 @@ Docker Compose 재빌드 및 도메인 응답 확인
 Google OAuth 로그인
 승인 대기 화면
 승인 사용자 홈 화면
-사용 신청/내 예약/오늘 예약
-DB 기반 작업 유형 드롭다운, 사용 전 확인, 사용 시간 자동 계산, 충돌 확인 API
-사용 로그 및 검색/필터
+사용 신청/내 예약/오늘 예약/월간 예약 캘린더
+DB 기반 작업 유형 드롭다운, 사용 전 확인, 사용 규칙 동의 버전 기록, 사용 시간 자동 계산, 충돌 확인 API
+사용 로그 및 검색/필터, 완료 예약 미작성 로그 알림
+홈 KPI 카드: 오늘 예약, 내 월간 예약, 내 월간 로그, 프롬프트 점검, 미작성 로그
 Gemini API Key 설정 및 사용자 badge 바로가기
-프롬프트 점검 최신 화면/상단 메뉴/홈 빠른 이동/Markdown 다운로드
+프롬프트 점검 최신 화면/상단 메뉴/홈 빠른 이동/템플릿 자동 채우기/Markdown 다운로드
+운영 공지 배너
 사용 안내
 공통 Footer 법적 고지 링크
 이용약관/개인정보처리방침 페이지
 관리자/보조관리자 대시보드
 사용자 승인/정지/수정/CSV 일괄 등록 관리, 인증번호 담당자 최대 2명 제한
-관리자 설정 관리, 안내문구 관리, 주요 화면 문구 관리, AI 리소스/작업유형 관리, 등록 요청 관리, 통계 조회, 월간 운영 보고서, 감사 로그, 전체 테스트 실행
+관리자 설정 관리, 안내문구 관리, 주요 화면 문구 관리, AI 리소스/작업유형 관리, 등록 요청 관리, 통계 조회, 월간 운영 보고서, 감사 로그, DB 백업 생성/다운로드, 사용자/예약/사용 로그 CSV 내보내기, 전체 테스트 실행
 ```
 
 ## 7. 권한 정책
@@ -141,7 +143,7 @@ Port binding: 127.0.0.1:5000 -> container 5000
 ```text
 명령: uv run pytest
 결과: PASS
-PASS: 77
+PASS: 84
 FAIL: 0
 ```
 

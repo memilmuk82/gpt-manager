@@ -327,3 +327,54 @@ def test_admin_user_filters(client, app):
     assert response.status_code == 200
     assert "assistant@senedu.kr" in body
     assert "teacher@senedu.kr" not in body
+
+
+def test_admin_csv_exports(client, app):
+    with app.app_context():
+        admin = create_user(email="admin@senedu.kr", name="Admin", role="admin")
+        user = create_user(email="teacher@senedu.kr", name="Teacher")
+        resource = AiResource(name="GPT Pro", provider="OpenAI")
+        db.session.add(resource)
+        db.session.flush()
+        reservation = Reservation(
+            user_id=user.id,
+            resource_id=resource.id,
+            start_at=datetime(2026, 7, 2, 9, 0),
+            end_at=datetime(2026, 7, 2, 10, 0),
+            purpose="CSV 예약",
+            work_type="수업",
+        )
+        db.session.add(reservation)
+        db.session.flush()
+        db.session.add(UsageLog(user_id=user.id, reservation_id=reservation.id, resource_id=resource.id, work_type="수업", summary="CSV 로그"))
+        db.session.commit()
+
+    login(client, email="admin@senedu.kr")
+    users = client.get("/admin/exports/users.csv")
+    reservations = client.get("/admin/exports/reservations.csv")
+    logs = client.get("/admin/exports/usage-logs.csv")
+
+    assert users.status_code == 200
+    assert "teacher@senedu.kr" in users.get_data(as_text=True)
+    assert reservations.status_code == 200
+    assert "CSV 예약" in reservations.get_data(as_text=True)
+    assert logs.status_code == 200
+    assert "CSV 로그" in logs.get_data(as_text=True)
+
+
+def test_admin_can_create_sqlite_backup(client, app, tmp_path):
+    db_file = tmp_path / "app.db"
+    db_file.write_bytes(b"sqlite backup content")
+    app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_file}"
+    with app.app_context():
+        create_user(email="admin@senedu.kr", name="Admin", role="admin")
+
+    login(client, email="admin@senedu.kr")
+    response = client.post("/admin/backups", follow_redirects=True)
+    body = response.get_data(as_text=True)
+
+    assert response.status_code == 200
+    assert "백업을 생성했습니다" in body
+    assert "app-" in body
+    with app.app_context():
+        assert AuditLog.query.filter_by(action="backups.create").count() == 1

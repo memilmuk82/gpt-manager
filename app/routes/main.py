@@ -1,9 +1,9 @@
 from datetime import datetime, time
 
 from flask import Blueprint, jsonify, render_template
-from flask_login import login_required
+from flask_login import current_user, login_required
 
-from app.models import GuideItem, Reservation, ReservationStatus
+from app.models import GuideItem, PromptReview, Reservation, ReservationStatus, UsageLog
 from app.services import legal_markdown_service
 
 
@@ -39,22 +39,46 @@ def dashboard():
         .order_by(Reservation.start_at.asc())
         .first()
     )
-    today_reservations = (
-        Reservation.query.filter(
-            Reservation.status != ReservationStatus.CANCELLED,
-            Reservation.start_at >= today_start,
-            Reservation.start_at <= today_end,
-        )
-        .order_by(Reservation.start_at.asc())
-        .limit(8)
-        .all()
+    today_query = Reservation.query.filter(
+        Reservation.status != ReservationStatus.CANCELLED,
+        Reservation.start_at >= today_start,
+        Reservation.start_at <= today_end,
     )
+    today_reservations = today_query.order_by(Reservation.start_at.asc()).limit(8).all()
+    month_start = datetime.combine(now.date().replace(day=1), time.min)
+    missing_log_reservations = [
+        reservation
+        for reservation in Reservation.query.filter_by(
+            user_id=current_user.id,
+            status=ReservationStatus.COMPLETED,
+        ).order_by(Reservation.end_at.desc()).all()
+        if reservation.usage_logs.count() == 0
+    ]
+    dashboard_stats = {
+        "today_reservations": today_query.count(),
+        "my_month_reservations": Reservation.query.filter(
+            Reservation.user_id == current_user.id,
+            Reservation.start_at >= month_start,
+            Reservation.status != ReservationStatus.CANCELLED,
+        ).count(),
+        "my_month_logs": UsageLog.query.filter(
+            UsageLog.user_id == current_user.id,
+            UsageLog.created_at >= month_start,
+        ).count(),
+        "my_month_prompt_reviews": PromptReview.query.filter(
+            PromptReview.user_id == current_user.id,
+            PromptReview.created_at >= month_start,
+        ).count(),
+        "missing_logs": len(missing_log_reservations),
+    }
 
     return render_template(
         "dashboard.html",
         current_reservation=current_reservation,
         next_reservation=next_reservation,
         today_reservations=today_reservations,
+        missing_log_reservations=missing_log_reservations[:5],
+        dashboard_stats=dashboard_stats,
     )
 
 

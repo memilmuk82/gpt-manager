@@ -50,6 +50,7 @@
               {{ nav_link('main.dashboard', '홈', url_for('main.dashboard'), None, '⌂') }}
               {{ nav_link('reservations.new', '사용 신청', url_for('reservations.new'), None, '+') }}
               {{ nav_link('reservations.today', '오늘 예약', url_for('reservations.today'), None, '▣') }}
+              {{ nav_link('reservations.calendar', '예약 캘린더', url_for('reservations.calendar'), None, '▦') }}
               {{ nav_link('reservations.index', '내 예약', url_for('reservations.index'), None, '♙') }}
               {{ nav_link('prompts.index', '프롬프트 점검', url_for('prompts.index'), 'prompts.', '✓') }}
               {{ nav_link('main.guide', '사용 안내', url_for('main.guide'), None, 'ⓘ') }}
@@ -65,6 +66,15 @@
         </nav>
       </div>
     </header>
+
+    {% if current_user.is_authenticated and current_user.is_approved and setting_value('notice_enabled', 'false') == 'true' %}
+      <section class="border-b border-amber-200 bg-amber-50">
+        <div class="mx-auto max-w-7xl px-4 py-4 text-sm leading-6 text-amber-950">
+          <p class="font-extrabold">{{ setting_value('notice_title', '운영 공지') }}</p>
+          <p class="mt-1 font-semibold">{{ setting_value('notice_body', '') }}</p>
+        </div>
+      </section>
+    {% endif %}
 
     <main class="mx-auto max-w-7xl px-4 py-8">
       {% with messages = get_flashed_messages(with_categories=true) %}

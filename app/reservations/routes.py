@@ -1,3 +1,5 @@
+import calendar as calendar_lib
+from collections import defaultdict
 from datetime import date, datetime, time
 
 from flask import flash, jsonify, redirect, render_template, request, url_for
@@ -39,6 +41,38 @@ def index():
     return render_template("reservations/index.html", reservations=reservations, filters=filters)
 
 
+@reservations_bp.get("/calendar")
+@login_required
+def calendar():
+    selected_month = _selected_month(request.args.get("month", ""))
+    month_start = datetime.combine(selected_month, time.min)
+    last_day = calendar_lib.monthrange(selected_month.year, selected_month.month)[1]
+    month_end = datetime.combine(date(selected_month.year, selected_month.month, last_day), time.max)
+    reservations = (
+        Reservation.query.filter(
+            Reservation.status != ReservationStatus.CANCELLED,
+            Reservation.start_at >= month_start,
+            Reservation.start_at <= month_end,
+        )
+        .order_by(Reservation.start_at.asc(), Reservation.end_at.asc())
+        .all()
+    )
+    reservations_by_date = defaultdict(list)
+    for reservation in reservations:
+        reservations_by_date[reservation.start_at.date()].append(reservation)
+    weeks = calendar_lib.Calendar(firstweekday=6).monthdatescalendar(selected_month.year, selected_month.month)
+    previous_month = _shift_month(selected_month, -1)
+    next_month = _shift_month(selected_month, 1)
+    return render_template(
+        "reservations/calendar.html",
+        selected_month=selected_month,
+        previous_month=previous_month,
+        next_month=next_month,
+        weeks=weeks,
+        reservations_by_date=reservations_by_date,
+    )
+
+
 @reservations_bp.get("/today")
 @login_required
 def today():
@@ -70,6 +104,7 @@ def new():
         work_types=_active_work_types(),
         default_duration=_setting_int("default_duration_minutes", 60),
         max_duration=_setting_int("max_duration_minutes", 180),
+        usage_policy_version=_setting_value("usage_policy_version", "2026-07-04"),
     )
 
 
@@ -123,6 +158,7 @@ def create():
             work_types=_active_work_types(),
             default_duration=_setting_int("default_duration_minutes", 60),
             max_duration=_setting_int("max_duration_minutes", 180),
+            usage_policy_version=_setting_value("usage_policy_version", "2026-07-04"),
         ), 400
 
     reservation = Reservation(
@@ -134,6 +170,7 @@ def create():
         purpose=purpose,
         description=description,
         safety_confirmed=safety_confirmed,
+        consent_version=_setting_value("usage_policy_version", "2026-07-04"),
     )
     db.session.add(reservation)
     db.session.commit()
@@ -174,6 +211,24 @@ def _get_owned_reservation(reservation_id: int) -> Reservation:
     return Reservation.query.filter_by(id=reservation_id, user_id=current_user.id).first_or_404()
 
 
+def _selected_month(raw_value: str) -> date:
+    if not raw_value:
+        today = date.today()
+        return date(today.year, today.month, 1)
+    try:
+        year, month = [int(part) for part in raw_value.split("-", 1)]
+        return date(year, month, 1)
+    except (TypeError, ValueError):
+        flash("월 형식이 올바르지 않아 이번 달 예약을 표시합니다.", "warning")
+        today = date.today()
+        return date(today.year, today.month, 1)
+
+
+def _shift_month(value: date, delta: int) -> date:
+    month_index = value.year * 12 + value.month - 1 + delta
+    return date(month_index // 12, month_index % 12 + 1, 1)
+
+
 def _selected_date(raw_value: str) -> date:
     if not raw_value:
         return date.today()
@@ -195,6 +250,11 @@ def _active_work_types() -> list[str]:
         .all()
     )
     return [work_type.name for work_type in work_types] or DEFAULT_WORK_TYPES
+
+
+def _setting_value(key: str, default: str) -> str:
+    setting = db.session.get(AppSetting, key)
+    return setting.value if setting is not None else default
 
 
 def _setting_int(key: str, default: int) -> int:
