@@ -27,6 +27,8 @@ def register_post():
     email = _normalize_email(request.form.get("email", ""))
     name = request.form.get("name", "").strip()
     password = request.form.get("password", "")
+    department = request.form.get("department", "").strip()
+    extension = request.form.get("extension", "").strip()
 
     if not email or not name or not password:
         flash("이름, 이메일, 비밀번호를 모두 입력하세요.", "error")
@@ -43,6 +45,8 @@ def register_post():
     user = User(
         email=email,
         name=name,
+        department=department,
+        extension=extension,
         role=initial_role(email),
         auth_provider="local",
         approval_status=initial_approval_status(email),

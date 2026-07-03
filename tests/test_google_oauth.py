@@ -7,7 +7,7 @@ def test_google_login_redirects_to_google(client):
 
     assert response.status_code == 302
     assert "accounts.google.com" in response.headers["Location"]
-    assert "hd=senedu.kr" in response.headers["Location"]
+    assert "hd=" not in response.headers["Location"]
 
 
 def test_google_callback_auto_approves_senedu_account(client, app, monkeypatch):
@@ -32,7 +32,7 @@ def test_google_callback_auto_approves_senedu_account(client, app, monkeypatch):
         assert user.approval_status == ApprovalStatus.APPROVED
 
 
-def test_google_callback_keeps_external_account_pending(client, app, monkeypatch):
+def test_google_callback_approves_external_account_when_domain_limit_is_disabled(client, app, monkeypatch):
     def fake_fetch_google_userinfo(code, state):
         return {
             "sub": "google-sub-2",
@@ -46,11 +46,11 @@ def test_google_callback_keeps_external_account_pending(client, app, monkeypatch
     response = client.get("/auth/google/callback?code=ok&state=test", follow_redirects=False)
 
     assert response.status_code == 302
-    assert response.headers["Location"].endswith("/auth/pending")
+    assert response.headers["Location"].endswith("/dashboard")
     with app.app_context():
         user = User.query.filter_by(email="external@gmail.com").one()
         assert user.auth_provider == "google"
-        assert user.approval_status == ApprovalStatus.PENDING
+        assert user.approval_status == ApprovalStatus.APPROVED
 
 
 def test_google_callback_rejects_unverified_email(client, app, monkeypatch):

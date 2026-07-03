@@ -3,65 +3,69 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}{{ config.get("APP_TITLE", "ChatGPT Pro 5X 공동 사용 지원 시스템") }}{% endblock %}</title>
+    <title>{% block title %}{{ setting_value('app_title', config.get('APP_TITLE', 'ChatGPT Pro 5X 공동 사용 지원 시스템')) }}{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body class="min-h-screen bg-slate-100 text-slate-950 antialiased">
-    {% macro nav_link(endpoint, label, href, active_prefix=None) -%}
+    {% macro nav_link(endpoint, label, href, active_prefix=None, icon='') -%}
       {% set active = request.endpoint == endpoint or (active_prefix and request.endpoint and request.endpoint.startswith(active_prefix)) %}
       <a
-        class="inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-semibold transition {% if active %}bg-slate-950 text-white shadow-sm{% else %}text-slate-600 hover:bg-slate-100 hover:text-slate-950{% endif %}"
+        class="inline-flex h-10 items-center gap-2 rounded-xl px-4 text-sm font-bold transition {% if active %}bg-slate-950 text-white shadow-sm{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-950{% endif %}"
         href="{{ href }}"
         {% if active %}aria-current="page"{% endif %}
       >
-        <span aria-hidden="true">{{ caller() }}</span>
+        <span aria-hidden="true">{{ icon }}</span>
         <span>{{ label }}</span>
       </a>
     {%- endmacro %}
 
-    <header class="border-b border-slate-200 bg-white/95 backdrop-blur">
-      <div class="mx-auto max-w-6xl px-4 py-4">
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <a class="min-w-0" href="/">
-            <span class="block text-sm font-semibold text-slate-500">{{ config.get("ORGANIZATION_NAME", "종로산업정보학교") }}</span>
-            <span class="block text-xl font-extrabold tracking-normal text-slate-950">{{ config.get("APP_TITLE", "ChatGPT Pro 5X 공동 사용 지원 시스템") }}</span>
+    <header class="border-b border-slate-200 bg-white">
+      <div class="mx-auto max-w-7xl px-4 py-5">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <a class="min-w-0" href="{{ url_for('main.index') }}">
+            <span class="block text-sm font-semibold text-slate-500">{{ setting_value('organization_name', config.get('ORGANIZATION_NAME', '종로산업정보학교')) }}</span>
+            <span class="block text-2xl font-extrabold tracking-normal text-slate-950">{{ setting_value('app_title', config.get('APP_TITLE', 'ChatGPT Pro 5X 공동 사용 지원 시스템')) }}</span>
           </a>
-          <nav class="flex flex-wrap items-center gap-2 text-sm" aria-label="주요 메뉴">
+          <div class="flex flex-wrap items-center gap-2 text-sm">
+            {% if current_user.is_authenticated %}
+              <span class="inline-flex h-10 items-center gap-2 rounded-full bg-slate-100 px-4 font-semibold text-slate-600">♙ {{ current_user.name if current_user.is_approved else '미등록 사용자' }} / {% if current_user.can_access_admin %}시스템{% else %}사용자{% endif %}</span>
+              <form method="post" action="{{ url_for('auth.logout') }}">
+                <button class="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50" type="submit">▣ 사용 종료</button>
+              </form>
+            {% else %}
+              <a class="inline-flex h-10 items-center rounded-xl bg-slate-950 px-4 text-sm font-bold text-white hover:bg-slate-800" href="{{ url_for('auth.login') }}">로그인</a>
+              <a class="inline-flex h-10 items-center rounded-xl border border-slate-300 bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50" href="{{ url_for('auth.register') }}">등록 요청</a>
+            {% endif %}
+          </div>
+        </div>
+
+        <nav class="mt-5 flex flex-wrap items-center gap-2 text-sm" aria-label="주요 메뉴">
           {% if current_user.is_authenticated %}
             {% if current_user.is_approved %}
-              {% call nav_link('main.dashboard', '홈', url_for('main.dashboard')) %}⌂{% endcall %}
-              {% call nav_link('reservations.new', '사용 신청', url_for('reservations.new')) %}+{% endcall %}
-              {% call nav_link('reservations.today', '오늘 예약', url_for('reservations.today')) %}□{% endcall %}
-              {% call nav_link('reservations.index', '내 예약', url_for('reservations.index')) %}○{% endcall %}
-              {% call nav_link('main.guide', '사용 안내', url_for('main.guide')) %}i{% endcall %}
-              {% call nav_link('logs.index', '사용 기록', url_for('logs.index'), 'logs.') %}≡{% endcall %}
-              {% call nav_link('prompts.index', '프롬프트 점검', url_for('prompts.index'), 'prompts.') %}✓{% endcall %}
-              {% call nav_link('settings.api_key', '설정', url_for('settings.api_key'), 'settings.') %}⚙{% endcall %}
+              {{ nav_link('main.dashboard', '홈', url_for('main.dashboard'), None, '⌂') }}
+              {{ nav_link('reservations.new', '사용 신청', url_for('reservations.new'), None, '+') }}
+              {{ nav_link('reservations.today', '오늘 예약', url_for('reservations.today'), None, '▣') }}
+              {{ nav_link('reservations.index', '내 예약', url_for('reservations.index'), None, '♙') }}
+              {{ nav_link('main.guide', '사용 안내', url_for('main.guide'), None, 'ⓘ') }}
+              {% if current_user.can_access_admin %}
+                {{ nav_link('admin.dashboard', '관리자', url_for('admin.dashboard'), 'admin.', '⚙') }}
+              {% endif %}
+            {% else %}
+              {{ nav_link('main.index', '홈', url_for('main.index'), None, '⌂') }}
+              {{ nav_link('auth.pending', '등록 요청', url_for('auth.pending'), None, '♙') }}
+              {{ nav_link('main.guide', '사용 안내', url_for('main.guide'), None, 'ⓘ') }}
             {% endif %}
-            {% if current_user.can_access_admin and current_user.is_approved %}
-              {% call nav_link('admin.dashboard', '관리자', url_for('admin.dashboard'), 'admin.') %}⚙{% endcall %}
-            {% endif %}
-            <span class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm font-medium text-slate-600">
-              {{ current_user.name if current_user.name else "미등록 사용자" }} / {% if current_user.can_access_admin %}시스템{% else %}사용자{% endif %}
-            </span>
-            <form method="post" action="{{ url_for('auth.logout') }}">
-              <button class="rounded-full border border-red-200 bg-white px-3.5 py-2 text-sm font-semibold text-red-700 hover:bg-red-50" type="submit">사용 종료</button>
-            </form>
-          {% else %}
-            <a class="rounded-full px-3.5 py-2 font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-950" href="{{ url_for('auth.login') }}">로그인</a>
-            <a class="rounded-full bg-slate-950 px-3.5 py-2 font-semibold text-white hover:bg-slate-800" href="{{ url_for('auth.register') }}">회원가입</a>
           {% endif %}
-          </nav>
-        </div>
+        </nav>
       </div>
     </header>
 
-    <main class="mx-auto max-w-6xl px-4 py-8">
+    <main class="mx-auto max-w-7xl px-4 py-8">
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
           <div class="mb-6 space-y-2">
             {% for category, message in messages %}
-              <div class="rounded-2xl border px-4 py-3 text-sm font-medium shadow-sm {% if category == 'error' %}border-red-200 bg-red-50 text-red-800{% elif category == 'warning' %}border-amber-200 bg-amber-50 text-amber-900{% else %}border-emerald-200 bg-emerald-50 text-emerald-800{% endif %}">
+              <div class="rounded-2xl border px-4 py-3 text-sm font-semibold shadow-sm {% if category == 'error' %}border-red-200 bg-red-50 text-red-800{% elif category == 'warning' %}border-amber-200 bg-amber-50 text-amber-900{% else %}border-emerald-200 bg-emerald-50 text-emerald-800{% endif %}">
                 {{ message }}
               </div>
             {% endfor %}
@@ -72,10 +76,10 @@
     </main>
 
     <footer class="mt-10 border-t border-slate-200 bg-white">
-      <div class="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-6 text-sm text-slate-600 lg:flex-row lg:items-start lg:justify-between">
+      <div class="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-6 text-sm text-slate-600 lg:flex-row lg:items-start lg:justify-between">
         <div class="space-y-1">
           <p class="font-medium text-slate-900">Copyright © 2026 GPT Share Manager vNext</p>
-          <p>{{ config.get("ORGANIZATION_NAME", "종로산업정보학교") }}</p>
+          <p>{{ setting_value('organization_name', config.get('ORGANIZATION_NAME', '종로산업정보학교')) }}</p>
         </div>
         <nav class="flex flex-wrap gap-3">
           <a class="font-medium text-slate-600 hover:text-slate-950" href="{{ url_for('main.terms') }}">이용약관</a>

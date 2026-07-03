@@ -91,18 +91,17 @@ def test_logout_blocks_dashboard_access(client):
     assert "/auth/login" in dashboard_response.headers["Location"]
 
 
-def test_external_local_registration_waits_for_admin_approval(client, app):
+def test_external_local_registration_is_approved_without_domain_limit(client, app):
     response = register(client, email="external@gmail.com")
 
     assert response.status_code == 302
-    assert response.headers["Location"].endswith("/auth/pending")
+    assert response.headers["Location"].endswith("/dashboard")
     with app.app_context():
         user = User.query.filter_by(email="external@gmail.com").one()
-        assert user.approval_status == "pending"
+        assert user.approval_status == "approved"
 
     dashboard_response = client.get("/dashboard", follow_redirects=False)
-    assert dashboard_response.status_code == 302
-    assert dashboard_response.headers["Location"].endswith("/auth/pending")
+    assert dashboard_response.status_code == 200
 
 
 def test_admin_email_registration_gets_admin_role(client, app):

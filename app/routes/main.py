@@ -3,7 +3,7 @@ from datetime import datetime, time
 from flask import Blueprint, jsonify, render_template
 from flask_login import login_required
 
-from app.models import Reservation, ReservationStatus
+from app.models import GuideItem, Reservation, ReservationStatus
 from app.services import legal_markdown_service
 
 
@@ -61,7 +61,8 @@ def dashboard():
 @main_bp.get("/guide")
 @login_required
 def guide():
-    return render_template("guide.html")
+    guides = GuideItem.query.filter_by(is_active=True).order_by(GuideItem.sort_order.asc()).all()
+    return render_template("guide.html", guides=guides)
 
 
 @main_bp.get("/terms")

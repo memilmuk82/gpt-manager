@@ -7,6 +7,7 @@ gpt-manager/
 ├─ app/
 │  ├─ __init__.py
 │  ├─ config.py
+│  ├─ defaults.py
 │  ├─ extensions.py
 │  ├─ models/
 │  │  └─ __init__.py
@@ -61,6 +62,8 @@ gpt-manager/
 │  ├─ e2e/
 │  └─ test_legal_pages.py
 ├─ docs/
+│  ├─ development/
+│  │  └─ 2026-07-03_ADMIN_RESERVATION_UI_UPDATE.md
 │  └─ legal/
 │     ├─ TERMS.md
 │     └─ PRIVACY_POLICY.md
@@ -82,9 +85,10 @@ gpt-manager/
 ```text
 route는 요청/응답과 인증 흐름을 담당한다.
 예약 충돌, OAuth, 암호화, 프롬프트 점검 조립은 services에 둔다.
-DB 모델은 app/models/__init__.py에 모아 둔다.
+DB 모델은 app/models/__init__.py에 모아 둔다. 현재 User, Reservation, AppSetting, GuideItem 등 운영 모델을 포함한다.
 Jinja 템플릿은 기능별 하위 디렉터리로 분리한다.
 공통 안내 UI는 templates/partials에 둔다.
+관리자 설정/안내문구 기본값은 app/defaults.py에 둔다.
 이용약관/개인정보처리방침 원문은 docs/legal Markdown 파일로 관리한다.
 법적 Markdown 렌더링은 services/legal_markdown_service.py에서 제한 문법과 escape 처리로 수행한다.
 SQLite DB는 ./instance/app.db에 저장하고 Docker Compose에서 ./instance를 /app/instance로 마운트한다.

@@ -553,3 +553,72 @@ uv run pytest: 55 passed
 문서만 변경되어 앱 컨테이너 재빌드 필요성은 낮음
 ```
 
+
+## 2026-07-03 - 관리자/예약/안내 UI 확장 및 수업 맥락 문서화
+
+### 배경
+
+```text
+종로산업정보학교 AI컴퓨터과 1년 교육과정 반영
+1학기 Python, Flask, SQLite, CRUD 학습 흐름과 연결
+2학기 SQLAlchemy, 칸반보드 기반 개인 프로젝트, 생성형 AI 프론트엔드 보조, 학생 주도 백엔드 구현 흐름 반영
+OCI 개인 인스턴스 또는 학교 서버 배포 시연 흐름 고려
+```
+
+### 구현
+
+```text
+README 상단 리뷰용 관리자 계정 안내 추가
+README에 Flask - SQLite - OCI 선택 이유와 수업 맥락 추가
+app/defaults.py 추가: 작업 유형, 기본 설정, 기본 안내문구 중앙화
+User 모델 확장: department, extension, is_auth_manager, sort_order
+Reservation 모델 확장: work_type, description, safety_confirmed
+AppSetting, GuideItem 모델 추가
+SQLite 기존 DB 호환 컬럼 보정 추가
+기본 설정/안내문구/리소스/리뷰용 관리자 계정 자동 시드 추가
+관리자 설정 관리, 안내문구 관리, 사용자 관리, CSV 일괄 등록, 등록 요청 관리, 통계 조회, 전체 테스트 실행 구현
+사용 신청 작업 유형 드롭다운, 사용 시간 자동 계산, 사용 전 확인, 충돌 확인 API 구현
+홈/오늘 예약/내 예약/사용 안내/미등록 사용자/등록 요청/관리자 화면 디자인 정리
+사용 안내 화면을 GuideItem 기반으로 전환
+```
+
+### 문서
+
+```text
+docs/development/2026-07-03_ADMIN_RESERVATION_UI_UPDATE.md 추가
+PROJECT_STATUS.md 최신 상태 반영
+TASK.md 최신 작업 상태 반영
+SYSTEM_DESIGN.md 새 모델/라우트/SQLite 보정/기본 데이터 구조 반영
+REPOSITORY_STRUCTURE.md app/defaults.py와 변경 기록 문서 반영
+MANIFEST.md 변경 기록 문서 추가
+TEST_REPORT.md 검증 결과 추가
+```
+
+### 검증
+
+```text
+python3 -m py_compile app/models/__init__.py app/__init__.py app/admin/routes.py app/reservations/routes.py app/routes/main.py app/auth/routes.py app/config.py app/defaults.py: PASS
+uv run pytest: PASS, 55 passed
+npm run test:e2e: PASS, 1 passed
+로컬 Flask 서버 http://127.0.0.1:5001 주요 화면 200 확인
+/reservations/conflicts JSON API 확인: ok=true, has_conflict=false
+```
+
+## 2026-07-03 - senedu.kr 도메인 제한 해제
+
+### 변경
+
+```text
+ALLOWED_GOOGLE_DOMAIN 기본값을 빈 값으로 변경
+Google OAuth authorization URL에서 기본 hd=senedu.kr 힌트 제거
+신규 로컬/Google 계정 initial_approval_status를 도메인과 관계없이 approved로 변경
+관리자/보조관리자 role 지정은 ADMIN_EMAILS, ASSISTANT_ADMIN_EMAILS 기준 유지
+```
+
+### 검증
+
+```text
+python3 -m py_compile app/services/access_policy.py app/services/oauth_service.py app/config.py app/auth/routes.py: PASS
+uv run pytest: PASS, 55 passed
+npm run test:e2e: PASS, 1 passed
+```

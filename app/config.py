@@ -16,8 +16,8 @@ def normalize_database_url(database_url: str) -> str:
 
 
 class Config:
-    APP_TITLE = os.getenv("APP_TITLE", "생성형 AI 계정 공동 사용 지원 시스템")
-    ORGANIZATION_NAME = os.getenv("ORGANIZATION_NAME", "학교")
+    APP_TITLE = os.getenv("APP_TITLE", "ChatGPT Pro 5X 공동 사용 지원 시스템")
+    ORGANIZATION_NAME = os.getenv("ORGANIZATION_NAME", "종로산업정보학교")
 
     SECRET_KEY = os.getenv("SECRET_KEY", "dev-change-me")
     SQLALCHEMY_DATABASE_URI = normalize_database_url(
@@ -36,13 +36,15 @@ class Config:
         "GOOGLE_REDIRECT_URI",
         "http://localhost:5000/auth/google/callback",
     )
-    ALLOWED_GOOGLE_DOMAIN = os.getenv("ALLOWED_GOOGLE_DOMAIN", "senedu.kr")
+    ALLOWED_GOOGLE_DOMAIN = os.getenv("ALLOWED_GOOGLE_DOMAIN", "")
     ADMIN_EMAILS = [email.strip().lower() for email in os.getenv("ADMIN_EMAILS", "").split(",") if email.strip()]
     ASSISTANT_ADMIN_EMAILS = [
         email.strip().lower()
         for email in os.getenv("ASSISTANT_ADMIN_EMAILS", "").split(",")
         if email.strip()
     ]
+    REVIEW_ADMIN_EMAIL = os.getenv("REVIEW_ADMIN_EMAIL", "review.admin@senedu.kr")
+    REVIEW_ADMIN_PASSWORD = os.getenv("REVIEW_ADMIN_PASSWORD", "ReviewAdmin!2026")
 
     GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash")
     GEMINI_MAX_INPUT_CHARS = int(os.getenv("GEMINI_MAX_INPUT_CHARS", "3000"))

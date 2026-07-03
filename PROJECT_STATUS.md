@@ -4,7 +4,7 @@
 
 ```text
 프로젝트명: gpt-share-manager-vnext
-표시명: 생성형 AI 계정 공동 사용 지원 시스템
+표시명: ChatGPT Pro 5X 공동 사용 지원 시스템
 목적: 공용 생성형 AI 계정 예약·사용 기록 관리 + Gemini 기반 프롬프트 점검기
 제출 목표: 2026-07-03 오후
 운영 도메인: https://dev-gpt.memilmuk82.com
@@ -13,8 +13,8 @@
 ## 2. 현재 상태
 
 ```text
-상태: Release Candidate 운영 검증 완료 + 법적 고지 페이지 구현/검증 완료
-최근 기능 배포 커밋: 337e677 feat: add legal policy pages
+상태: 관리자/예약/안내 UI 확장 및 문서화 완료
+최근 기능 브랜치: codex/admin-reservation-ui-docs
 pytest: PASS, 55 passed
 Docker Compose rebuild: PASS
 운영 Health Check: PASS, /healthz 200 {"status":"ok"}
@@ -22,10 +22,12 @@ HTTPS 도메인: PASS, dev-gpt.memilmuk82.com 200 OK
 HTTP -> HTTPS: PASS, 301 redirect
 오늘 예약 화면: 구현 완료
 보조관리자 권한: 구현 완료
-Google OAuth Redirect URI: https://dev-gpt.memilmuk82.com/auth/google/callback 로 설정 확인
+Google OAuth Redirect URI: https://dev-gpt.memilmuk82.com/auth/google/callback 로 설정 확인, hd 도메인 힌트 기본 비활성
 법적 고지 페이지: /terms, /privacy 구현 완료
 Markdown 법적 문서: docs/legal/TERMS.md, docs/legal/PRIVACY_POLICY.md
 Playwright E2E: PASS, 1 passed
+관리자/예약/안내 UI 확장: 구현 완료
+변경 기록: docs/development/2026-07-03_ADMIN_RESERVATION_UI_UPDATE.md
 ```
 
 ## 3. 확정된 방향
@@ -62,6 +64,7 @@ Phase 3 AiResource/Reservation/UsageLog 모델 및 예약/로그 기능 구현
 Phase 4 Gemini API Key 암호화 저장/삭제/마스킹/복호화 확인 구현
 Phase 5 PromptReview 모델 및 Gemini 프롬프트 점검 기능 구현
 Phase 6 관리자 대시보드, 사용자 승인/정지, Google OAuth 기본 흐름 구현
+관리자 설정/안내문구/사용자 수정/CSV 일괄 등록/등록 요청/통계/전체 테스트 실행 구현
 Phase 7 README/.env.example/OAuth Redirect URI/OCI 문서 정리
 Release Candidate Playwright E2E 검증
 SQLite 운영 DB 호환성 보정
@@ -85,6 +88,7 @@ Google OAuth 로그인
 승인 대기 화면
 승인 사용자 홈 화면
 사용 신청/내 예약/오늘 예약
+작업 유형 드롭다운, 사용 전 확인, 사용 시간 자동 계산, 충돌 확인 API
 사용 로그
 Gemini API Key 설정
 프롬프트 점검
@@ -92,7 +96,8 @@ Gemini API Key 설정
 공통 Footer 법적 고지 링크
 이용약관/개인정보처리방침 페이지
 관리자/보조관리자 대시보드
-사용자 승인/정지 관리
+사용자 승인/정지/수정/CSV 일괄 등록 관리
+관리자 설정 관리, 안내문구 관리, 등록 요청 관리, 통계 조회, 전체 테스트 실행
 ```
 
 ## 7. 권한 정책
@@ -156,6 +161,7 @@ curl https://dev-gpt.memilmuk82.com/privacy: 200 OK
 운영 DB 백업 절차 수동 정리
 이용약관/개인정보처리방침 법률 검토
 CSRF 보호는 제출 이후 보완 과제로 유지
+운영 전 리뷰용 관리자 기본 비밀번호 변경 또는 비활성화
 ```
 
 ## 11. 제외 기능

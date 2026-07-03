@@ -17,7 +17,7 @@ if DB_PATH.exists():
 os.environ.setdefault('DATABASE_URL', f'sqlite:///{DB_PATH}')
 os.environ.setdefault('SECRET_KEY', 'e2e-secret-key')
 os.environ.setdefault('APP_ENCRYPTION_KEY', '')
-os.environ.setdefault('ALLOWED_GOOGLE_DOMAIN', 'senedu.kr')
+os.environ.setdefault('ALLOWED_GOOGLE_DOMAIN', '')
 os.environ.setdefault('ADMIN_EMAILS', 'admin@senedu.kr')
 
 app = create_app()
