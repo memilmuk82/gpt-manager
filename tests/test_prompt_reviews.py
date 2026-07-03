@@ -56,6 +56,29 @@ def test_prompt_review_requires_saved_api_key(client, app):
         assert PromptReview.query.count() == 0
 
 
+def test_prompt_review_menu_and_pages_match_current_design(client, app):
+    with app.app_context():
+        create_user()
+
+    login(client)
+    dashboard_response = client.get("/dashboard")
+    index_response = client.get("/prompt-reviews")
+    new_response = client.get("/prompt-reviews/new")
+
+    dashboard_html = dashboard_response.get_data(as_text=True)
+    index_html = index_response.get_data(as_text=True)
+    new_html = new_response.get_data(as_text=True)
+
+    assert dashboard_response.status_code == 200
+    assert index_response.status_code == 200
+    assert new_response.status_code == 200
+    assert "프롬프트 점검" in dashboard_html
+    assert "문구 안전성과 품질 확인" in dashboard_html
+    assert "작성한 프롬프트의 명확성, 안전성, 수업 활용성을 점검" in index_html
+    assert "✓ 새 프롬프트 점검" in new_html
+    assert "PROMPT REVIEWS" not in index_html
+
+
 def test_prompt_review_create_saves_mocked_gemini_result(client, app, monkeypatch):
     calls = []
 

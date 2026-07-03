@@ -30,7 +30,7 @@ SQLite 기존 DB 호환 ALTER TABLE 보정 추가
 ```text
 /admin 카드형 관리자 허브 디자인 적용
 설정 관리: 앱 제목, 학교/부서명, 인증 안내, 업무게시판 안내, 로그아웃 안내, AI 활용 권장 순서, 기본 사용 시간, 장시간 사용 기준 수정
-안내 문구 관리: GuideItem 분류, 제목, 정렬 순서, 표시 여부, 본문 수정 및 GPT 접속/인증번호 안내 Settings 수정
+안내 문구 관리: GuideItem 분류, 제목, 정렬 순서, 표시 여부, 본문 수정 및 GPT 접속/인증번호 안내/사용 신청/사용 안내 소개 Settings 수정
 사용자 관리: 사용자 추가, 수정, 활성/비활성, 권한 변경, 인증번호 담당자 여부, 부서, 내선, 정렬 순서 관리, 인증번호 담당자 최대 2명 제한
 CSV 일괄 등록: email,name,department,extension,role,active,is_auth_manager,sort_order 컬럼 검증 후 일괄 등록, 인증번호 담당자 2명 제한 검증
 등록 요청 관리: pending 사용자 승인/반려 분리 표시
@@ -60,9 +60,10 @@ CSV 일괄 등록: email,name,department,extension,role,active,is_auth_manager,s
 홈 화면에 현재 사용중, 다음 예약, 인증 안내, 빠른 이동, 오늘 예약 요약 표시
 오늘 예약 화면 카드형 목록과 날짜 조회 UI 정리
 내 예약 화면 카드형 목록과 상태 변경 버튼 정리
-사용 안내 화면은 GuideItem 데이터 기반으로 표시
+사용 안내 화면은 GuideItem 데이터와 guide_intro_text Settings 기반으로 표시
 개인정보 상세, 평가 보안 상세 앵커 링크 추가
 미등록 사용자 화면과 등록 요청 화면 디자인 정리
+프롬프트 점검 화면을 최신 카드/테이블/상세 결과 UI로 정리하고 홈 빠른 이동과 상단 메뉴에 노출
 ```
 
 ## 테스트 변경
@@ -77,7 +78,7 @@ tests/e2e/rc.spec.ts: 새 등록 요청/사용 신청 UI와 체크박스 흐름 
 
 ```text
 python3 -m py_compile app/models/__init__.py app/__init__.py app/admin/routes.py app/reservations/routes.py app/routes/main.py app/auth/routes.py app/config.py app/defaults.py: PASS
-uv run pytest: PASS, 61 passed
+uv run pytest: PASS, 64 passed
 npm run test:e2e: PASS, 1 passed
 Flask local server http://127.0.0.1:5001: PASS
 주요 화면 HTTP 200 확인: /dashboard, /reservations/new, /reservations/today, /reservations, /guide, /admin, 관리자 각 section
@@ -91,5 +92,7 @@ Flask local server http://127.0.0.1:5001: PASS
 실제 운영 전 기본 리뷰 계정 비밀번호 변경 또는 비활성화 필요
 관리자 화면의 전체 테스트 실행은 서버 자원을 사용하므로 운영 중 반복 실행은 주의
 Docker 이미지는 관리자 테스트 실행을 위해 dev dependency group도 설치
+주요 화면 문구 관리 Settings: auth_info_title, reservation_intro_text, reservation_helper_text, guide_intro_text
+프롬프트 점검 메뉴와 화면 문구 렌더링 테스트 추가
 SQLite 호환 보정은 기존 DB에 누락 컬럼을 추가하지만 복잡한 스키마 마이그레이션 도구를 대체하지는 않음
 ```

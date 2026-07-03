@@ -576,3 +576,70 @@ healthz: 200 {"status":"ok"}
 관리자 테스트 실행 명령: python -m pytest 및 uv run --frozen pytest fallback
 Google OAuth 신규/기존 사용자 승인 및 관리자 권한 부여
 ```
+
+
+## 2026-07-03 주요 화면 문구 Settings 연동 검증
+
+```text
+범위: GPT 접속 안내 제목, 사용 신청 안내 문구, 사용 신청 보조 문구, 사용 안내 소개 문구의 Settings 기반 렌더링
+
+전체 pytest:
+명령: uv run pytest
+결과: PASS
+PASS: 64
+FAIL: 0
+
+Playwright E2E:
+명령: npm run test:e2e
+결과: PASS
+PASS: 1
+FAIL: 0
+```
+
+Docker Compose 리빌드:
+명령: docker compose up -d --build
+결과: PASS
+컨테이너: gpt-manager-web-1 Up
+healthz: 200 {"status":"ok"}
+
+
+추가 테스트 범위:
+
+```text
+관리자 설정값 auth_info_title이 홈 화면 GPT 접속 안내 제목으로 표시됨
+reservation_intro_text와 reservation_helper_text가 사용 신청 화면에 표시됨
+guide_intro_text가 사용 안내 화면에 표시됨
+```
+
+
+## 2026-07-03 프롬프트 점검 UI 최신화 검증
+
+```text
+범위: 상단 프롬프트 점검 메뉴, 홈 빠른 이동, 프롬프트 점검 목록/생성/상세 화면 최신 UI, 구버전 PROMPT REVIEWS 표기 제거
+
+전체 pytest:
+명령: uv run pytest
+결과: PASS
+PASS: 64
+FAIL: 0
+
+Playwright E2E:
+명령: npm run test:e2e
+결과: PASS
+PASS: 1
+FAIL: 0
+
+Docker Compose 리빌드:
+명령: docker compose up -d --build
+결과: PASS
+컨테이너: gpt-manager-web-1 Up
+healthz: 200 {"status":"ok"}
+```
+
+추가 테스트 범위:
+
+```text
+홈 화면에 프롬프트 점검 빠른 이동 카드 표시
+프롬프트 점검 목록과 새 점검 화면 렌더링
+구버전 PROMPT REVIEWS 텍스트 미노출
+```

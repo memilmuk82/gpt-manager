@@ -372,7 +372,15 @@ def _admin_context(section: str = "overview", test_result: dict | None = None) -
 
 
 def _guide_settings() -> list[AppSetting]:
-    keys = ["board_reference_message", "auth_message", "logout_notice"]
+    keys = [
+        "auth_info_title",
+        "board_reference_message",
+        "auth_message",
+        "logout_notice",
+        "reservation_intro_text",
+        "reservation_helper_text",
+        "guide_intro_text",
+    ]
     settings = AppSetting.query.filter(AppSetting.key.in_(keys)).all()
     return sorted(settings, key=lambda setting: keys.index(setting.key))
 

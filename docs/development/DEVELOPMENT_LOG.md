@@ -648,3 +648,52 @@ npm run test:e2e: PASS, 1 passed
 docker compose up -d --build: PASS, gpt-manager-web-1 Up
 GET http://127.0.0.1:5000/healthz: 200 {"status":"ok"}
 ```
+
+
+## 2026-07-03 - 주요 화면 문구 Settings 연동
+
+### 변경
+
+```text
+auth_info_title 기본 설정 추가
+reservation_intro_text, reservation_helper_text 기본 설정 추가
+guide_intro_text 기본 설정 추가
+관리자 안내 문구 관리 화면에서 GPT 접속 안내 제목, 사용 신청 안내 문구, 사용 안내 소개 문구까지 수정 가능하도록 확장
+홈/사용 안내의 GPT 접속 안내 제목을 Settings 기반으로 렌더링
+사용 신청 화면 상단 안내 문구를 Settings 기반으로 렌더링
+사용 안내 화면 소개 문구를 Settings 기반으로 렌더링
+설정 관리 화면에서 긴 안내 문구 필드는 textarea로 표시
+관리자 문구 설정 렌더링 테스트 추가
+```
+
+### 검증
+
+```text
+uv run pytest: PASS, 64 passed
+npm run test:e2e: PASS, 1 passed
+docker compose up -d --build: PASS, gpt-manager-web-1 Up
+GET http://127.0.0.1:5000/healthz: 200 {"status":"ok"}
+```
+
+
+## 2026-07-03 - 프롬프트 점검 UI 최신화
+
+### 변경
+
+```text
+상단 네비게이션에 프롬프트 점검 메뉴 추가
+홈 빠른 이동에 프롬프트 점검 카드 추가
+프롬프트 점검 목록 화면에서 구버전 PROMPT REVIEWS 표기를 제거하고 최신 카드/테이블 톤으로 정리
+새 프롬프트 점검 화면 입력 폼과 민감정보 경고 UI 정리
+점검 결과 상세 화면을 원본 프롬프트와 Gemini 점검 결과 2열 카드로 정리
+프롬프트 점검 메뉴/화면 문구 렌더링 테스트 추가
+```
+
+### 검증
+
+```text
+uv run pytest: PASS, 64 passed
+npm run test:e2e: PASS, 1 passed
+docker compose up -d --build: PASS, gpt-manager-web-1 Up
+GET http://127.0.0.1:5000/healthz: 200 {"status":"ok"}
+```

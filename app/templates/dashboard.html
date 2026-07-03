@@ -33,9 +33,10 @@
 
     {% include "partials/_auth_info.html" %}
 
-    <div class="grid gap-4 md:grid-cols-3">
+    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
       <a class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-300 hover:bg-slate-50" href="{{ url_for('reservations.new') }}"><span class="text-lg font-extrabold text-slate-950">+ 사용 신청</span><span class="mt-2 block text-sm text-slate-600">예약 등록 또는 즉시 사용 시작</span></a>
       <a class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-300 hover:bg-slate-50" href="{{ url_for('reservations.today') }}"><span class="text-lg font-extrabold text-slate-950">▣ 오늘 예약</span><span class="mt-2 block text-sm text-slate-600">오늘 사용 예정 확인</span></a>
+      <a class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-300 hover:bg-slate-50" href="{{ url_for('prompts.index') }}"><span class="text-lg font-extrabold text-slate-950">✓ 프롬프트 점검</span><span class="mt-2 block text-sm text-slate-600">문구 안전성과 품질 확인</span></a>
       <a class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-300 hover:bg-slate-50" href="{{ url_for('main.guide') }}"><span class="text-lg font-extrabold text-slate-950">ⓘ 사용 안내</span><span class="mt-2 block text-sm text-slate-600">적합 업무와 주의사항 확인</span></a>
     </div>
 

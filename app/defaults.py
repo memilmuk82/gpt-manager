@@ -17,12 +17,16 @@ DEFAULT_WORK_TYPES = [
 DEFAULT_SETTINGS = [
     ("app_title", "ChatGPT Pro 5X 공동 사용 지원 시스템", "앱 제목", "100자 이하", 10),
     ("organization_name", "종로산업정보학교", "학교/부서명", "학교 또는 부서명", 20),
-    ("auth_message", "ChatGPT 로그인 인증번호가 필요한 경우 담당 관리자에게 요청해 주세요.", "인증번호 안내 문구", "GPT 로그인 인증번호 안내 문구", 30),
-    ("board_reference_message", "ChatGPT 접속 정보는 업무게시판의 안내글을 참고해 주세요.", "업무게시판 참고 안내", "GPT 접속 정보 업무게시판 참고 안내", 40),
-    ("logout_notice", "사용 후 반드시 ChatGPT에서 로그아웃해 주세요. 브라우저를 닫는 것만으로는 로그아웃되지 않을 수 있습니다.", "로그아웃 안내 문구", "GPT 사용 후 로그아웃 안내", 50),
-    ("ai_usage_order", "1. SenGPT\n2. Gemini Education Plus\n3. NotebookLM Plus\n4. GPT Pro 5x", "AI 활용 권장 순서", "AI 활용 권장 순서", 60),
-    ("default_duration_minutes", "60", "기본 사용 시간", "기본 예상 사용 시간", 70),
-    ("max_duration_minutes", "180", "장시간 사용 안내 기준", "3시간 이상 사용 시 사전 조율 권장", 80),
+    ("auth_info_title", "GPT 접속 및 인증번호 안내", "GPT 접속 안내 제목", "홈/사용 안내 화면의 GPT 접속 및 인증번호 안내 제목", 30),
+    ("auth_message", "ChatGPT 로그인 인증번호가 필요한 경우 담당 관리자에게 요청해 주세요.", "인증번호 안내 문구", "GPT 로그인 인증번호 안내 문구", 40),
+    ("board_reference_message", "ChatGPT 접속 정보는 업무게시판의 안내글을 참고해 주세요.", "업무게시판 참고 안내", "GPT 접속 정보 업무게시판 참고 안내", 50),
+    ("logout_notice", "사용 후 반드시 ChatGPT에서 로그아웃해 주세요. 브라우저를 닫는 것만으로는 로그아웃되지 않을 수 있습니다.", "로그아웃 안내 문구", "GPT 사용 후 로그아웃 안내", 60),
+    ("reservation_intro_text", "GPT Pro는 교육과정 개발, 교재 개발, 워크북 제작, 정책 분석, 코드 검토 등 고난도 교육 연구 업무 지원을 목적으로 운영됩니다.", "사용 신청 안내 문구", "사용 신청 제목 아래 첫 번째 안내 문구", 70),
+    ("reservation_helper_text", "예약 등록은 시작 시간과 사용 시간을 기준으로 종료 예정 시간이 자동 계산됩니다. 지금 사용 시작은 현재 시각부터 선택한 사용 시간만큼 등록됩니다.", "사용 신청 보조 문구", "사용 신청 제목 아래 두 번째 안내 문구", 80),
+    ("guide_intro_text", "부서 공용 GPT Pro는 교육 연구와 교재 개발을 위한 공동 자원입니다. 개인 정보, 평가 보안 자료, 실제 학생 자료 입력은 피해주세요.", "사용 안내 소개 문구", "사용 안내 제목 아래 안내 문구", 90),
+    ("ai_usage_order", "1. SenGPT\n2. Gemini Education Plus\n3. NotebookLM Plus\n4. GPT Pro 5x", "AI 활용 권장 순서", "AI 활용 권장 순서", 100),
+    ("default_duration_minutes", "60", "기본 사용 시간", "기본 예상 사용 시간", 110),
+    ("max_duration_minutes", "180", "장시간 사용 안내 기준", "3시간 이상 사용 시 사전 조율 권장", 120),
 ]
 
 DEFAULT_GUIDES = [

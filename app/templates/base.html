@@ -46,6 +46,7 @@
               {{ nav_link('reservations.new', '사용 신청', url_for('reservations.new'), None, '+') }}
               {{ nav_link('reservations.today', '오늘 예약', url_for('reservations.today'), None, '▣') }}
               {{ nav_link('reservations.index', '내 예약', url_for('reservations.index'), None, '♙') }}
+              {{ nav_link('prompts.index', '프롬프트 점검', url_for('prompts.index'), 'prompts.', '✓') }}
               {{ nav_link('main.guide', '사용 안내', url_for('main.guide'), None, 'ⓘ') }}
               {% if current_user.can_access_admin %}
                 {{ nav_link('admin.dashboard', '관리자', url_for('admin.dashboard'), 'admin.', '⚙') }}

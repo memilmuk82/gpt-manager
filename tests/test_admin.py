@@ -206,3 +206,51 @@ def test_admin_pytest_command_uses_current_python_when_pytest_module_exists(monk
     monkeypatch.setattr(routes.importlib.util, "find_spec", lambda name: object())
 
     assert routes._pytest_command() == [routes.sys.executable, "-m", "pytest"]
+
+
+def test_admin_configurable_page_copy_is_rendered(client, app):
+    with app.app_context():
+        create_user(email="admin@senedu.kr", name="Admin", role="admin")
+        db.session.add_all([
+            AppSetting(key="auth_info_title", value="공용 GPT 로그인 안내", label="GPT 접속 안내 제목", help_text="", sort_order=1),
+            AppSetting(key="reservation_intro_text", value="신청 화면 첫 문구", label="사용 신청 안내 문구", help_text="", sort_order=2),
+            AppSetting(key="reservation_helper_text", value="신청 화면 두 번째 문구", label="사용 신청 보조 문구", help_text="", sort_order=3),
+            AppSetting(key="guide_intro_text", value="사용 안내 소개 문구", label="사용 안내 소개 문구", help_text="", sort_order=4),
+        ])
+        db.session.commit()
+
+    login(client, email="admin@senedu.kr")
+
+    dashboard_body = client.get("/dashboard").get_data(as_text=True)
+    reservation_body = client.get("/reservations/new").get_data(as_text=True)
+    guide_body = client.get("/guide").get_data(as_text=True)
+
+    assert "공용 GPT 로그인 안내" in dashboard_body
+    assert "신청 화면 첫 문구" in reservation_body
+    assert "신청 화면 두 번째 문구" in reservation_body
+    assert "사용 안내 소개 문구" in guide_body
+
+
+def test_guide_page_shows_quick_links_for_all_active_guides(client, app):
+    with app.app_context():
+        create_user(email="admin@senedu.kr", name="Admin", role="admin")
+        for index, category in enumerate(["적합", "부적합", "민감정보", "평가보안", "학생부"], start=1):
+            db.session.add(
+                GuideItem(
+                    code=f"GUIDE_QUICK_{index}",
+                    category=category,
+                    title=f"{category} 안내",
+                    body="본문",
+                    sort_order=index,
+                    is_active=True,
+                )
+            )
+        db.session.commit()
+
+    login(client, email="admin@senedu.kr")
+    response = client.get("/guide")
+    body = response.get_data(as_text=True)
+
+    assert response.status_code == 200
+    for label in ["적합 상세", "부적합 상세", "민감정보 상세", "평가보안 상세", "학생부 상세"]:
+        assert label in body
