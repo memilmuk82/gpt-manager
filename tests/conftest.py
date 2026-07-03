@@ -20,7 +20,7 @@ class TestConfig:
     GOOGLE_CLIENT_ID = "test-google-client"
     GOOGLE_CLIENT_SECRET = "test-google-secret"
     GOOGLE_REDIRECT_URI = "http://localhost/auth/google/callback"
-    ALLOWED_GOOGLE_DOMAIN = "senedu.kr"
+    ALLOWED_GOOGLE_DOMAIN = ""
     ADMIN_EMAILS = ["admin@senedu.kr"]
     ASSISTANT_ADMIN_EMAILS = ["assistant@senedu.kr"]
 

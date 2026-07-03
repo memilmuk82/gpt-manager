@@ -39,14 +39,14 @@ http://localhost:5000/auth/google/callback
 GOOGLE_CLIENT_ID=<client-id>
 GOOGLE_CLIENT_SECRET=<client-secret>
 GOOGLE_REDIRECT_URI=https://dev-gpt.memilmuk82.com/auth/google/callback
-ALLOWED_GOOGLE_DOMAIN=senedu.kr
+ALLOWED_GOOGLE_DOMAIN=
 ```
 
 ## 4. 승인 정책
 
 ```text
-senedu.kr Google 계정: 자동 승인
-senedu.kr 외 Google 계정: pending 상태로 등록 후 관리자 승인 필요
+Google 계정: 이메일 도메인과 관계없이 자동 승인
+관리자가 필요 시 사용자 관리에서 비활성화 가능
 email_verified가 false인 Google 계정: 로그인 거부
 ADMIN_EMAILS 포함 이메일: admin role
 ASSISTANT_ADMIN_EMAILS 포함 이메일: assistant_admin role

@@ -51,8 +51,8 @@ E2E: npm run test:e2e, 1 passed
 ```text
 로컬 회원가입/로그인/로그아웃
 Google OAuth 로그인
-senedu.kr 계정 자동 승인
-외부 로컬/Google 계정 관리자 승인 대기
+도메인 제한 없는 계정 자동 승인
+로컬/Google 신규 계정 자동 승인
 관리자 및 보조관리자 사용자 승인/정지/수정/CSV 일괄 등록 관리
 공용 생성형 AI 계정 예약 생성/조회/취소/완료
 오늘 예약 전체 현황 조회
@@ -179,7 +179,7 @@ docker compose exec web python -c "from app import create_app; from app.extensio
 
 ```text
 1. /auth/register 에서 회원가입 또는 /auth/login 에서 로그인
-2. senedu.kr 계정이면 자동 승인, 외부 계정이면 승인 대기
+2. 이메일 도메인과 관계없이 신규 계정은 자동 승인
 3. /dashboard 에서 현재 사용중, 다음 예약, 오늘 예약 요약 확인
 4. /reservations/new 에서 예약 생성
 5. /reservations/today 에서 날짜별 전체 예약 확인
@@ -205,7 +205,7 @@ docker compose exec web python -c "from app import create_app; from app.extensio
 ```text
 1. 앱 목적 설명: 공용 생성형 AI 계정 직접 제어가 아닌 예약·기록·프롬프트 개선 도구
 2. 로컬 로그인 또는 Google OAuth 로그인
-3. senedu.kr 자동 승인/외부 계정 승인 대기 정책 설명
+3. 도메인 제한 해제 및 신규 계정 자동 승인 정책 설명
 4. 홈 화면에서 현재 사용중/다음 예약/오늘 예약 요약 확인
 5. 사용 신청으로 예약 생성 및 충돌 검증 설명
 6. 오늘 예약 화면에서 전체 예약 현황 확인

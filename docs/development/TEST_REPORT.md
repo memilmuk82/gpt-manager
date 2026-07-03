@@ -526,3 +526,12 @@ GET /reservations/conflicts?resource_id=<id>&start_at=2026-07-03T17:45&end_at=20
 E2E 등록 요청/로그인/사용 신청/예약 완료/API Key 흐름 유지
 관리자 주요 섹션 렌더링 확인
 ```
+
+## 2026-07-03 senedu.kr 도메인 제한 해제 검증
+
+```text
+범위: Google OAuth hd 힌트 제거, 신규 로컬/Google 계정 자동 승인, 기존 관리자 권한 정책 유지
+python3 -m py_compile app/services/access_policy.py app/services/oauth_service.py app/config.py app/auth/routes.py: PASS
+uv run pytest: PASS, 55 passed
+npm run test:e2e: PASS, 1 passed
+```

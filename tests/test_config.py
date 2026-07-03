@@ -47,7 +47,7 @@ def test_legacy_sqlite_user_table_gets_phase6_columns(tmp_path):
         GOOGLE_CLIENT_ID = ""
         GOOGLE_CLIENT_SECRET = ""
         GOOGLE_REDIRECT_URI = "http://localhost:5000/auth/google/callback"
-        ALLOWED_GOOGLE_DOMAIN = "senedu.kr"
+        ALLOWED_GOOGLE_DOMAIN = ""
         ADMIN_EMAILS = []
         GEMINI_MODEL = "gemini-3.5-flash"
         GEMINI_MAX_INPUT_CHARS = 3000

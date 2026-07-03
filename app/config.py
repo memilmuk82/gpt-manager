@@ -36,7 +36,7 @@ class Config:
         "GOOGLE_REDIRECT_URI",
         "http://localhost:5000/auth/google/callback",
     )
-    ALLOWED_GOOGLE_DOMAIN = os.getenv("ALLOWED_GOOGLE_DOMAIN", "senedu.kr")
+    ALLOWED_GOOGLE_DOMAIN = os.getenv("ALLOWED_GOOGLE_DOMAIN", "")
     ADMIN_EMAILS = [email.strip().lower() for email in os.getenv("ADMIN_EMAILS", "").split(",") if email.strip()]
     ASSISTANT_ADMIN_EMAILS = [
         email.strip().lower()

@@ -603,3 +603,22 @@ npm run test:e2e: PASS, 1 passed
 로컬 Flask 서버 http://127.0.0.1:5001 주요 화면 200 확인
 /reservations/conflicts JSON API 확인: ok=true, has_conflict=false
 ```
+
+## 2026-07-03 - senedu.kr 도메인 제한 해제
+
+### 변경
+
+```text
+ALLOWED_GOOGLE_DOMAIN 기본값을 빈 값으로 변경
+Google OAuth authorization URL에서 기본 hd=senedu.kr 힌트 제거
+신규 로컬/Google 계정 initial_approval_status를 도메인과 관계없이 approved로 변경
+관리자/보조관리자 role 지정은 ADMIN_EMAILS, ASSISTANT_ADMIN_EMAILS 기준 유지
+```
+
+### 검증
+
+```text
+python3 -m py_compile app/services/access_policy.py app/services/oauth_service.py app/config.py app/auth/routes.py: PASS
+uv run pytest: PASS, 55 passed
+npm run test:e2e: PASS, 1 passed
+```

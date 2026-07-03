@@ -22,7 +22,7 @@ HTTPS 도메인: PASS, dev-gpt.memilmuk82.com 200 OK
 HTTP -> HTTPS: PASS, 301 redirect
 오늘 예약 화면: 구현 완료
 보조관리자 권한: 구현 완료
-Google OAuth Redirect URI: https://dev-gpt.memilmuk82.com/auth/google/callback 로 설정 확인
+Google OAuth Redirect URI: https://dev-gpt.memilmuk82.com/auth/google/callback 로 설정 확인, hd 도메인 힌트 기본 비활성
 법적 고지 페이지: /terms, /privacy 구현 완료
 Markdown 법적 문서: docs/legal/TERMS.md, docs/legal/PRIVACY_POLICY.md
 Playwright E2E: PASS, 1 passed
