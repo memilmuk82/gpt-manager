@@ -1,3 +1,5 @@
+from datetime import datetime, time
+
 from flask import current_app, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
@@ -41,6 +43,9 @@ def create():
     if len(source_prompt) > max_input_chars:
         flash(f"프롬프트는 {max_input_chars}자 이하로 입력하세요.", "error")
         return render_template("prompts/new.html"), 400
+    if _daily_review_limit_exceeded():
+        flash("오늘 사용할 수 있는 Gemini 프롬프트 점검 횟수를 모두 사용했습니다.", "error")
+        return render_template("prompts/new.html"), 429
 
     user_api_key = _get_user_api_key()
     if user_api_key is None:
@@ -90,3 +95,15 @@ def show(review_id: int):
 
 def _get_user_api_key() -> UserApiKey | None:
     return UserApiKey.query.filter_by(user_id=current_user.id, provider=PROVIDER).first()
+
+
+def _daily_review_limit_exceeded() -> bool:
+    limit = current_app.config.get("MAX_DAILY_AI_CALLS_PER_USER", 50)
+    if limit <= 0:
+        return False
+    today_start = datetime.combine(datetime.now().date(), time.min)
+    reviews_today = PromptReview.query.filter(
+        PromptReview.user_id == current_user.id,
+        PromptReview.created_at >= today_start,
+    ).count()
+    return reviews_today >= limit

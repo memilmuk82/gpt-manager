@@ -132,6 +132,9 @@ def google_callback():
     if not email or not google_sub or not email_verified:
         flash("검증된 Google 계정 정보를 확인할 수 없습니다.", "error")
         return redirect(url_for("auth.login"))
+    if not _google_email_allowed(email):
+        flash("허용된 Google Workspace 도메인 계정만 사용할 수 있습니다.", "error")
+        return redirect(url_for("auth.login"))
 
     user = User.query.filter_by(google_sub=google_sub).first() or User.query.filter_by(email=email).first()
     if user is None:
@@ -140,17 +143,17 @@ def google_callback():
             name=userinfo.get("name") or email.split("@", 1)[0],
             google_sub=google_sub,
             auth_provider="google",
-            role="admin",
-            approval_status=ApprovalStatus.APPROVED,
+            role=initial_role(email),
+            approval_status=initial_approval_status(email),
         )
         db.session.add(user)
     else:
         user.google_sub = user.google_sub or google_sub
         user.auth_provider = "google"
         if user.approval_status == ApprovalStatus.PENDING:
-            user.approval_status = ApprovalStatus.APPROVED
-        if user.role != "admin":
-            user.role = "admin"
+            user.approval_status = initial_approval_status(email)
+        if not user.can_access_admin:
+            user.role = initial_role(email)
     db.session.commit()
 
     if user.approval_status == ApprovalStatus.SUSPENDED:
@@ -179,3 +182,11 @@ def logout():
     logout_user()
     flash("로그아웃되었습니다.", "success")
     return redirect(url_for("main.index"))
+
+
+def _google_email_allowed(email: str) -> bool:
+    allowed_domain = current_app.config.get("ALLOWED_GOOGLE_DOMAIN", "").strip().lower()
+    if not allowed_domain:
+        return True
+    _, _, domain = email.partition("@")
+    return domain.lower() == allowed_domain

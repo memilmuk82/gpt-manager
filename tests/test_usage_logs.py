@@ -90,6 +90,28 @@ def test_usage_log_can_be_created_with_resource_only(client, app):
         assert usage_log.resource_id == resource_id
 
 
+def test_new_usage_log_preselects_reservation_from_query(client, app):
+    with app.app_context():
+        user = create_user()
+        resource = create_resource()
+        reservation = Reservation(
+            user_id=user.id,
+            resource_id=resource.id,
+            start_at=datetime(2026, 7, 2, 9, 0),
+            end_at=datetime(2026, 7, 2, 10, 0),
+            purpose="수업 준비",
+        )
+        db.session.add(reservation)
+        db.session.commit()
+        reservation_id = reservation.id
+
+    login(client)
+    response = client.get(f"/logs/new?reservation_id={reservation_id}")
+
+    assert response.status_code == 200
+    assert f'value="{reservation_id}" selected' in response.get_data(as_text=True)
+
+
 def test_usage_log_requires_owned_reservation(client, app):
     with app.app_context():
         create_user()

@@ -79,10 +79,15 @@ def show(log_id: int):
 
 
 def _form_options() -> dict:
+    selected_reservation_id = request.args.get("reservation_id", type=int)
     reservations = (
         Reservation.query.filter_by(user_id=current_user.id)
         .order_by(Reservation.start_at.desc())
         .all()
     )
     resources = AiResource.query.filter_by(is_active=True).order_by(AiResource.name.asc()).all()
-    return {"reservations": reservations, "resources": resources}
+    return {
+        "reservations": reservations,
+        "resources": resources,
+        "selected_reservation_id": selected_reservation_id,
+    }

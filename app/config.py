@@ -28,6 +28,7 @@ class Config:
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = os.getenv("SESSION_COOKIE_SAMESITE", "Lax")
     SESSION_COOKIE_SECURE = os.getenv("SESSION_COOKIE_SECURE", "false").lower() == "true"
+    WTF_CSRF_ENABLED = os.getenv("WTF_CSRF_ENABLED", "true").lower() == "true"
 
     APP_ENCRYPTION_KEY = os.getenv("APP_ENCRYPTION_KEY", "")
     GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "")
@@ -43,8 +44,9 @@ class Config:
         for email in os.getenv("ASSISTANT_ADMIN_EMAILS", "").split(",")
         if email.strip()
     ]
+    ENABLE_REVIEW_ADMIN = os.getenv("ENABLE_REVIEW_ADMIN", "false").lower() == "true"
     REVIEW_ADMIN_EMAIL = os.getenv("REVIEW_ADMIN_EMAIL", "review.admin@senedu.kr")
-    REVIEW_ADMIN_PASSWORD = os.getenv("REVIEW_ADMIN_PASSWORD", "ReviewAdmin!2026")
+    REVIEW_ADMIN_PASSWORD = os.getenv("REVIEW_ADMIN_PASSWORD", "")
 
     GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash")
     GEMINI_MAX_INPUT_CHARS = int(os.getenv("GEMINI_MAX_INPUT_CHARS", "3000"))

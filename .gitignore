@@ -12,3 +12,5 @@ data/*.sqlite3
 node_modules/
 test-results/
 playwright-report/
+backups/
+*.db.sha256

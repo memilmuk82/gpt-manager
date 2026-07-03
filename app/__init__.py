@@ -1,8 +1,9 @@
+import secrets
 from pathlib import Path
 
 from sqlalchemy import inspect, text
 
-from flask import Flask, flash, redirect, request, url_for
+from flask import Flask, abort, flash, redirect, request, session, url_for
 from flask_login import current_user, logout_user
 
 from app.admin import admin_bp
@@ -58,7 +59,34 @@ def create_app(config_object: type[Config] | None = None) -> Flask:
                 .all()
             )
 
-        return {"setting_value": setting_value, "auth_manager_users": auth_manager_users}
+        def csrf_token() -> str:
+            token = session.get("_csrf_token")
+            if not token:
+                token = secrets.token_urlsafe(32)
+                session["_csrf_token"] = token
+            return token
+
+        return {
+            "setting_value": setting_value,
+            "auth_manager_users": auth_manager_users,
+            "csrf_token": csrf_token,
+        }
+
+    @app.before_request
+    def enforce_csrf_token():
+        if not app.config.get("WTF_CSRF_ENABLED", True):
+            return None
+        if request.method not in {"POST", "PUT", "PATCH", "DELETE"}:
+            return None
+        expected_token = session.get("_csrf_token")
+        submitted_token = (
+            request.form.get("csrf_token")
+            or request.headers.get("X-CSRFToken")
+            or request.headers.get("X-CSRF-Token")
+        )
+        if not expected_token or not submitted_token or not secrets.compare_digest(expected_token, submitted_token):
+            abort(400)
+        return None
 
     @app.before_request
     def enforce_user_approval():
@@ -186,8 +214,13 @@ def _seed_default_records(app: Flask) -> None:
         changed = True
 
     review_email = app.config.get("REVIEW_ADMIN_EMAIL", "review.admin@senedu.kr").strip().lower()
-    review_password = app.config.get("REVIEW_ADMIN_PASSWORD", "ReviewAdmin!2026")
-    if review_email and User.query.filter_by(email=review_email).first() is None:
+    review_password = app.config.get("REVIEW_ADMIN_PASSWORD", "")
+    if (
+        app.config.get("ENABLE_REVIEW_ADMIN", False)
+        and review_email
+        and review_password
+        and User.query.filter_by(email=review_email).first() is None
+    ):
         user = User(
             email=review_email,
             name="리뷰용 관리자 계정",

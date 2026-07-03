@@ -133,6 +133,37 @@ def test_prompt_review_rejects_too_long_input(client, app):
         assert PromptReview.query.count() == 0
 
 
+def test_prompt_review_enforces_daily_limit(client, app, monkeypatch):
+    app.config["MAX_DAILY_AI_CALLS_PER_USER"] = 1
+
+    def fake_call_gemini_review(**kwargs):
+        return "첫 번째 점검 결과"
+
+    monkeypatch.setattr("app.prompts.routes.call_gemini_review", fake_call_gemini_review)
+
+    with app.app_context():
+        user = create_user()
+        save_api_key(user)
+
+    login(client)
+    first_response = client.post(
+        "/prompt-reviews",
+        data={"source_prompt": "첫 번째 프롬프트", "review_goal": "점검"},
+        follow_redirects=False,
+    )
+    second_response = client.post(
+        "/prompt-reviews",
+        data={"source_prompt": "두 번째 프롬프트", "review_goal": "점검"},
+        follow_redirects=False,
+    )
+
+    assert first_response.status_code == 302
+    assert second_response.status_code == 429
+    assert "오늘 사용할 수 있는 Gemini" in second_response.get_data(as_text=True)
+    with app.app_context():
+        assert PromptReview.query.count() == 1
+
+
 def test_user_cannot_view_another_users_prompt_review(client, app):
     with app.app_context():
         create_user()

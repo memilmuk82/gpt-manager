@@ -136,3 +136,35 @@ def test_suspended_user_cannot_login(client, app):
     response = login(client, email="blocked@senedu.kr")
 
     assert response.status_code == 403
+
+
+def test_csrf_rejects_post_without_token_when_enabled(client, app):
+    app.config["WTF_CSRF_ENABLED"] = True
+
+    response = client.post(
+        "/auth/register",
+        data={"email": "csrf@senedu.kr", "name": "CSRF", "password": "password123"},
+    )
+
+    assert response.status_code == 400
+
+
+def test_csrf_accepts_post_with_session_token_when_enabled(client, app):
+    app.config["WTF_CSRF_ENABLED"] = True
+
+    client.get("/auth/register")
+    with client.session_transaction() as session:
+        token = session["_csrf_token"]
+
+    response = client.post(
+        "/auth/register",
+        data={
+            "email": "csrf-ok@senedu.kr",
+            "name": "CSRF OK",
+            "password": "password123",
+            "csrf_token": token,
+        },
+        follow_redirects=False,
+    )
+
+    assert response.status_code == 302
