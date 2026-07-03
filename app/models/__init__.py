@@ -10,12 +10,16 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255), unique=True, nullable=False, index=True)
     name = db.Column(db.String(120), nullable=False)
+    department = db.Column(db.String(120), nullable=False, default="")
+    extension = db.Column(db.String(40), nullable=False, default="")
     password_hash = db.Column(db.String(255), nullable=True)
     role = db.Column(db.String(20), nullable=False, default="user")
     google_sub = db.Column(db.String(255), unique=True, nullable=True)
     auth_provider = db.Column(db.String(40), nullable=False, default="local")
     approval_status = db.Column(db.String(20), nullable=False, default="approved", index=True)
     is_active = db.Column(db.Boolean, nullable=False, default=True)
+    is_auth_manager = db.Column(db.Boolean, nullable=False, default=False)
+    sort_order = db.Column(db.Integer, nullable=False, default=100)
     created_at = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
     updated_at = db.Column(
         db.DateTime,
@@ -84,7 +88,10 @@ class Reservation(db.Model):
     resource_id = db.Column(db.Integer, db.ForeignKey("ai_resource.id"), nullable=False, index=True)
     start_at = db.Column(db.DateTime, nullable=False, index=True)
     end_at = db.Column(db.DateTime, nullable=False, index=True)
+    work_type = db.Column(db.String(120), nullable=False, default="")
     purpose = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.Text, nullable=False, default="")
+    safety_confirmed = db.Column(db.Boolean, nullable=False, default=False)
     status = db.Column(db.String(20), nullable=False, default=ReservationStatus.RESERVED, index=True)
     created_at = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
     updated_at = db.Column(
@@ -96,6 +103,37 @@ class Reservation(db.Model):
 
     user = db.relationship("User", backref=db.backref("reservations", lazy="dynamic"))
     resource = db.relationship("AiResource", back_populates="reservations")
+
+
+class AppSetting(db.Model):
+    key = db.Column(db.String(120), primary_key=True)
+    value = db.Column(db.Text, nullable=False, default="")
+    label = db.Column(db.String(120), nullable=False, default="")
+    help_text = db.Column(db.String(255), nullable=False, default="")
+    sort_order = db.Column(db.Integer, nullable=False, default=100)
+    updated_at = db.Column(
+        db.DateTime,
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+    )
+
+
+class GuideItem(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(80), unique=True, nullable=False, index=True)
+    category = db.Column(db.String(80), nullable=False)
+    title = db.Column(db.String(160), nullable=False)
+    body = db.Column(db.Text, nullable=False, default="")
+    sort_order = db.Column(db.Integer, nullable=False, default=100)
+    is_active = db.Column(db.Boolean, nullable=False, default=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(
+        db.DateTime,
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+    )
 
 
 class UsageLog(db.Model):

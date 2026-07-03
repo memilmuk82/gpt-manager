@@ -41,6 +41,8 @@ def test_reservation_create_and_cancel_flow(client, app):
             "start_at": "2026-07-02T09:00",
             "end_at": "2026-07-02T10:00",
             "purpose": "수업 자료 준비",
+            "work_type": "워크북 개발",
+            "safety_confirmed": "on",
         },
         follow_redirects=False,
     )
@@ -110,6 +112,8 @@ def test_reservation_conflict_rejects_overlap_on_same_resource(client, app):
             "start_at": "2026-07-02T09:30",
             "end_at": "2026-07-02T10:30",
             "purpose": "겹치는 예약",
+            "work_type": "워크북 개발",
+            "safety_confirmed": "on",
         },
     )
     body = response.get_data(as_text=True)
@@ -146,6 +150,8 @@ def test_reservation_allows_back_to_back_and_different_resource(client, app):
             "start_at": "2026-07-02T10:00",
             "end_at": "2026-07-02T11:00",
             "purpose": "바로 이어지는 예약",
+            "work_type": "워크북 개발",
+            "safety_confirmed": "on",
         },
     )
     different_resource = client.post(
@@ -155,6 +161,8 @@ def test_reservation_allows_back_to_back_and_different_resource(client, app):
             "start_at": "2026-07-02T09:30",
             "end_at": "2026-07-02T10:30",
             "purpose": "다른 리소스 예약",
+            "work_type": "워크북 개발",
+            "safety_confirmed": "on",
         },
     )
 
@@ -189,6 +197,8 @@ def test_cancelled_reservation_does_not_block_new_reservation(client, app):
             "start_at": "2026-07-02T09:30",
             "end_at": "2026-07-02T10:30",
             "purpose": "새 예약",
+            "work_type": "워크북 개발",
+            "safety_confirmed": "on",
         },
     )
 
@@ -213,6 +223,8 @@ def test_inactive_resource_cannot_be_reserved(client, app):
             "start_at": "2026-07-02T09:00",
             "end_at": "2026-07-02T10:00",
             "purpose": "비활성 예약",
+            "work_type": "워크북 개발",
+            "safety_confirmed": "on",
         },
     )
 
@@ -234,6 +246,8 @@ def test_reservation_end_must_be_after_start(client, app):
             "start_at": "2026-07-02T10:00",
             "end_at": "2026-07-02T10:00",
             "purpose": "잘못된 시간",
+            "work_type": "워크북 개발",
+            "safety_confirmed": "on",
         },
     )
 

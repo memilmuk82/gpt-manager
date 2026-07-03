@@ -58,8 +58,8 @@ OCI Ubuntu
 주요 환경변수:
 
 ```env
-APP_TITLE=생성형 AI 계정 공동 사용 지원 시스템
-ORGANIZATION_NAME=학교
+APP_TITLE=ChatGPT Pro 5X 공동 사용 지원 시스템
+ORGANIZATION_NAME=종로산업정보학교
 SECRET_KEY=<strong-random-secret>
 DATABASE_URL=sqlite:///instance/app.db
 APP_ENCRYPTION_KEY=<fernet-key>
@@ -71,6 +71,8 @@ GOOGLE_REDIRECT_URI=https://dev-gpt.memilmuk82.com/auth/google/callback
 ALLOWED_GOOGLE_DOMAIN=senedu.kr
 ADMIN_EMAILS=<comma-separated-admin-emails>
 ASSISTANT_ADMIN_EMAILS=<comma-separated-assistant-admin-emails>
+REVIEW_ADMIN_EMAIL=review.admin@senedu.kr
+REVIEW_ADMIN_PASSWORD=<review-admin-password>
 GEMINI_MODEL=gemini-3.5-flash
 GEMINI_MAX_INPUT_CHARS=3000
 GEMINI_MAX_OUTPUT_TOKENS=1200
@@ -85,12 +87,16 @@ MAX_DAILY_AI_CALLS_PER_USER=50
 id: int PK
 email: string unique nullable false
 name: string
+department: string
+extension: string
 password_hash: string nullable
 role: string default 'user'  # user/admin/assistant_admin
 google_sub: string nullable unique
 auth_provider: string default 'local'
 approval_status: string default 'approved'  # pending/approved/suspended
 is_active: bool default true
+is_auth_manager: bool default false
+sort_order: int default 100
 created_at: datetime
 updated_at: datetime
 ```
@@ -112,6 +118,8 @@ name: string
 provider: string
 description: text nullable
 is_active: bool default true
+is_auth_manager: bool default false
+sort_order: int default 100
 created_at: datetime
 updated_at: datetime
 ```
@@ -131,7 +139,10 @@ user_id: FK User.id
 resource_id: FK AiResource.id
 start_at: datetime
 end_at: datetime
+work_type: string
 purpose: string
+description: text
+safety_confirmed: bool
 status: string  # reserved, cancelled, completed
 created_at: datetime
 updated_at: datetime
@@ -142,6 +153,46 @@ updated_at: datetime
 ```text
 같은 resource_id에서 cancelled가 아닌 예약끼리 시간이 겹치면 생성 불가
 조건: new_start < existing_end AND new_end > existing_start
+```
+
+
+### AppSetting
+
+```text
+key: string PK
+value: text
+label: string
+help_text: string
+sort_order: int
+updated_at: datetime
+```
+
+용도:
+
+```text
+앱 제목, 학교/부서명, 인증 안내, 업무게시판 안내, 로그아웃 안내, AI 활용 권장 순서, 기본 사용 시간, 장시간 사용 기준을 관리자 화면에서 수정한다.
+템플릿에서는 context_processor의 setting_value(key, default)로 조회한다.
+```
+
+### GuideItem
+
+```text
+id: int PK
+code: string unique
+category: string
+title: string
+body: text
+sort_order: int
+is_active: bool
+created_at: datetime
+updated_at: datetime
+```
+
+용도:
+
+```text
+사용 안내 화면에 표시되는 적합 업무, 부적합 업무, 개인정보/민감정보, 평가 보안, 학생부 안내 문구를 관리자가 수정한다.
+HTML 문자열은 실행하지 않고 텍스트로 표시한다.
 ```
 
 ### UsageLog
@@ -189,10 +240,10 @@ updated_at: datetime
 
 ```text
 비로그인 사용자:
-- index/login/register/google login/callback, /terms, /privacy 접근 가능
+- index/login/register/google login/callback, /guide, /terms, /privacy 접근 가능
 
 pending 사용자:
-- /auth/pending, logout, /terms, /privacy 접근 가능
+- /auth/pending, logout, /guide, /terms, /privacy 접근 가능
 
 user:
 - 홈/사용 안내 접근
@@ -205,13 +256,14 @@ user:
 assistant_admin:
 - user 권한
 - /admin 접근
-- /admin/users에서 pending 사용자 승인/정지
+- /admin에서 설정 관리, 안내문구 관리, 사용자 관리, 등록 요청 관리, 통계 조회, 전체 테스트 실행
+- /admin/users에서 사용자 승인/정지/수정
 
 admin:
 - assistant_admin과 동일한 운영 관리 접근
 ```
 
-현재 보조관리자는 DB 컬럼 추가 없이 `User.role == "assistant_admin"`으로 구분한다.
+보조관리자는 `User.role == "assistant_admin"`으로 구분한다. 관리자는 `admin`, 보조관리자는 `assistant_admin`, 일반 사용자는 `user` role을 사용한다.
 
 ## 6. 주요 Route
 
@@ -245,9 +297,27 @@ POST /auth/logout
 GET  /reservations              # 내 예약
 GET  /reservations/today        # 날짜별 전체 예약 현황
 GET  /reservations/new          # 사용 신청
+GET  /reservations/conflicts    # 동시간대 예약 충돌 확인 JSON API
 POST /reservations
 POST /reservations/<id>/cancel
 POST /reservations/<id>/complete
+```
+
+
+### Admin
+
+```text
+GET  /admin                         # 관리자 허브 및 섹션 화면
+GET  /admin/users                   # 사용자 관리 섹션 호환 URL
+POST /admin/settings                # AppSetting 저장
+POST /admin/guides                  # GuideItem 저장
+POST /admin/users                   # 사용자 추가
+POST /admin/users/bulk              # CSV 사용자 일괄 등록
+POST /admin/users/<id>/update       # 사용자 정보 수정
+POST /admin/users/<id>/approve      # 등록 요청 승인
+POST /admin/users/<id>/suspend      # 사용자 비활성/등록 요청 반려
+POST /admin/users/<id>/activate     # 사용자 활성화
+POST /admin/tests/run               # pytest 전체 테스트 실행
 ```
 
 ### Logs
@@ -411,4 +481,19 @@ CSRF 보호 도입
 SQLite 백업 자동화
 Docker PostgreSQL 전환
 권한 세분화
+```
+
+
+## 9. SQLite 호환 보정 및 기본 데이터
+
+```text
+기존 SQLite DB에 신규 컬럼이 없으면 앱 시작 시 ALTER TABLE로 누락 컬럼을 추가한다.
+TESTING 설정에서는 자동 시드를 건너뛰어 테스트 격리를 유지한다.
+운영/개발 DB에는 기본 AppSetting, GuideItem, GPT Pro 리소스, 리뷰용 관리자 계정을 자동 생성한다.
+```
+
+기본 데이터 출처:
+
+```text
+app/defaults.py
 ```

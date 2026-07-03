@@ -15,6 +15,7 @@
 - `docs/decisions/SECURITY_DECISIONS.md`
 - `docs/decisions/TECH_STACK_DECISIONS.md`
 - `docs/deployment/OCI_DEV_SERVER_SETUP.md`
+- `docs/development/2026-07-03_ADMIN_RESERVATION_UI_UPDATE.md`
 - `docs/development/DEVELOPMENT_LOG.md`
 - `docs/development/RELEASE_CHECKLIST.md`
 - `docs/development/TEST_REPORT.md`

@@ -1,17 +1,35 @@
 # 생성형 AI 계정 공동 사용 지원 시스템
 
+## 리뷰용 테스트 계정
+
+```text
+역할: 관리자
+이메일: review.admin@senedu.kr
+초기 비밀번호: ReviewAdmin!2026
+```
+
+실제 운영 전에는 `REVIEW_ADMIN_EMAIL`, `REVIEW_ADMIN_PASSWORD` 환경변수로 리뷰용 계정을 변경하거나, 관리자 화면에서 별도 계정을 만든 뒤 기본 계정을 비활성화하세요.
+
+## 개발 배경과 기술 선택 이유
+
+이 프로젝트는 종로산업정보학교 AI컴퓨터과의 1년 학과 커리큘럼을 반영해, 학생들이 2학기 개인 프로젝트에서 유사한 구조의 서비스를 만들 수 있도록 Flask - SQLite - OCI 흐름을 우선해 설계했습니다. 현재 학생들은 3월부터 Python, Flask, SQLite를 학습했고, 현재 단계에서는 Flask와 SQLite로 CRUD 웹사이트를 직접 만들고 있습니다. 기본 개발 환경은 WSL2 Ubuntu입니다.
+
+2학기에는 SQLAlchemy를 이용해 백엔드 데이터 모델을 다루고, 칸반보드로 개인 프로젝트 일정과 기능 구현 과정을 관리할 예정입니다. 프론트엔드는 생성형 AI의 도움을 받아 화면을 빠르게 개선하되, 백엔드 기본 뼈대와 핵심 CRUD 흐름은 학생들이 직접 만들도록 수업을 구성합니다. 이후 가능하면 OCI에 개인 인스턴스를 구축해 배포하고, 어려운 경우 학교 서버에 올려 시연회를 진행할 예정입니다.
+
+따라서 이 앱은 복잡한 클라우드 관리형 DB나 과도한 프레임워크보다, 학생들이 수업에서 배운 Flask, SQLite, WSL2 Ubuntu 기반 개발 흐름에서 출발해 SQLAlchemy와 서버 배포까지 자연스럽게 확장할 수 있는 구조를 선택했습니다.
+
 Flask 기반의 공용 생성형 AI 계정 예약·사용 기록 관리 웹앱입니다. Gemini API는 자유 채팅이 아니라 사용자가 작성한 프롬프트를 점검하고 개선하는 정형 기능에만 사용합니다.
 
 ## 1. 현재 상태
 
 ```text
-상태: Release Candidate 운영 검증 완료 + 법적 고지 페이지 배포 완료
-최근 검증일: 2026-07-02
+상태: 관리자/예약/안내 UI 확장 및 문서화 완료
+최근 검증일: 2026-07-03
 테스트: uv run pytest, 55 passed
 E2E: npm run test:e2e, 1 passed
 운영 도메인: https://dev-gpt.memilmuk82.com
 배포: OCI Ubuntu + Docker Compose + Gunicorn + Nginx + HTTPS
-최근 기능 배포 커밋: 337e677 feat: add legal policy pages
+최근 기능 브랜치: codex/admin-reservation-ui-docs
 ```
 
 ## 2. 프로젝트 성격
@@ -35,15 +53,15 @@ E2E: npm run test:e2e, 1 passed
 Google OAuth 로그인
 senedu.kr 계정 자동 승인
 외부 로컬/Google 계정 관리자 승인 대기
-관리자 및 보조관리자 사용자 승인/정지 관리
+관리자 및 보조관리자 사용자 승인/정지/수정/CSV 일괄 등록 관리
 공용 생성형 AI 계정 예약 생성/조회/취소/완료
 오늘 예약 전체 현황 조회
-예약 충돌 검증
+예약 충돌 검증 및 충돌 확인 버튼
 사용 로그 작성/조회
 사용자별 Gemini API Key 암호화 저장/삭제/확인
 Gemini 기반 프롬프트 점검 결과 저장/조회
-관리자 대시보드 요약
-사용 안내 화면
+관리자 설정 관리, 안내문구 관리, 사용자 통계, 전체 테스트 실행
+관리자가 수정할 수 있는 사용 안내 화면
 공통 Footer Copyright/정보관리책임자 표시
 /terms 이용약관 페이지
 /privacy 개인정보처리방침 페이지
@@ -62,6 +80,8 @@ cp .env.example .env
 ```text
 SECRET_KEY
 APP_ENCRYPTION_KEY
+REVIEW_ADMIN_EMAIL
+REVIEW_ADMIN_PASSWORD
 GOOGLE_CLIENT_ID
 GOOGLE_CLIENT_SECRET
 GOOGLE_REDIRECT_URI
@@ -175,8 +195,9 @@ docker compose exec web python -c "from app import create_app; from app.extensio
 ```text
 1. ADMIN_EMAILS 또는 ASSISTANT_ADMIN_EMAILS에 포함된 이메일로 회원가입 또는 Google 로그인
 2. /admin 에서 전체 요약 확인
-3. /admin/users 에서 pending 사용자 승인
-4. 필요 시 사용자 정지
+3. /admin 에서 설정 관리, 안내문구 관리, 사용자 관리, 등록 요청 관리, 통계 조회 실행
+4. /admin/users 에서 사용자 수정, 활성/비활성, 권한, 인증번호 담당자 여부 관리
+5. 필요 시 CSV 일괄 등록 또는 전체 테스트 실행
 ```
 
 ## 9. 제출 시연 흐름

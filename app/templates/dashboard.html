@@ -1,91 +1,51 @@
 {% extends "base.html" %}
 
-{% block title %}홈 - {{ config.get("APP_TITLE", "ChatGPT Pro 5X 공동 사용 지원 시스템") }}{% endblock %}
+{% block title %}홈 - {{ setting_value('app_title', config.get('APP_TITLE', 'ChatGPT Pro 5X 공동 사용 지원 시스템')) }}{% endblock %}
 
 {% block content %}
   <section class="space-y-6">
-    <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-      <div>
-        <p class="text-sm font-semibold text-slate-500">홈</p>
-        <h1 class="mt-2 text-3xl font-extrabold text-slate-950">{{ current_user.name }}님, 환영합니다.</h1>
-        <p class="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
-          ChatGPT Pro는 교육과정 개발, 교재 개발, 워크북 제작, 정책 분석, 코드 검토 등 고난도 교육 연구 업무 지원을 목적으로 운영됩니다.
-        </p>
-      </div>
-      <div class="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 shadow-sm">
-        {{ current_user.email }}
-      </div>
-    </div>
-
-    <div class="grid gap-4 lg:grid-cols-2">
-      <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <p class="text-sm font-semibold text-slate-500">현재 사용중</p>
+    <div class="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-600 shadow-sm">접속 계정: {{ current_user.email }}</div>
+    <div class="grid gap-5 lg:grid-cols-2">
+      <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <p class="text-sm font-bold text-slate-500">✓ 현재 사용중</p>
         {% if current_reservation %}
-          <h2 class="mt-2 text-xl font-bold text-slate-950">{{ current_reservation.purpose }}</h2>
-          <dl class="mt-4 space-y-2 text-sm text-slate-600">
-            <div class="flex justify-between gap-3"><dt>사용자</dt><dd class="font-semibold text-slate-900">{{ current_reservation.user.name }}</dd></div>
-            <div class="flex justify-between gap-3"><dt>계정</dt><dd>{{ current_reservation.resource.name }}</dd></div>
-            <div class="flex justify-between gap-3"><dt>종료 예정</dt><dd>{{ current_reservation.end_at.strftime("%Y-%m-%d %H:%M") }}</dd></div>
-          </dl>
+          <h2 class="mt-3 text-2xl font-extrabold text-slate-950">{{ current_reservation.purpose }}</h2>
+          <p class="mt-3 text-base text-slate-600">{{ current_reservation.user.name }} / {{ current_reservation.resource.name }}</p>
+          <p class="mt-2 text-sm text-slate-500">종료 예정 {{ current_reservation.end_at.strftime('%Y-%m-%d %H:%M') }}</p>
         {% else %}
-          <h2 class="mt-2 text-xl font-bold text-slate-950">현재 사용중인 사용자가 없습니다</h2>
-          <p class="mt-3 text-sm leading-6 text-slate-600">사용 전 오늘 예약 현황을 확인해 주세요.</p>
+          <h2 class="mt-3 text-2xl font-extrabold text-slate-950">현재 사용중인 사용자가 없습니다</h2>
+          <p class="mt-3 text-base leading-7 text-slate-600">사용 전 오늘 예약 현황을 확인해 주세요.</p>
         {% endif %}
       </section>
 
-      <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <p class="text-sm font-semibold text-slate-500">다음 예약</p>
+      <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <p class="text-sm font-bold text-slate-500">▣ 다음 예약</p>
         {% if next_reservation %}
-          <h2 class="mt-2 text-xl font-bold text-slate-950">{{ next_reservation.purpose }}</h2>
-          <dl class="mt-4 space-y-2 text-sm text-slate-600">
-            <div class="flex justify-between gap-3"><dt>사용자</dt><dd class="font-semibold text-slate-900">{{ next_reservation.user.name }}</dd></div>
-            <div class="flex justify-between gap-3"><dt>계정</dt><dd>{{ next_reservation.resource.name }}</dd></div>
-            <div class="flex justify-between gap-3"><dt>시작</dt><dd>{{ next_reservation.start_at.strftime("%Y-%m-%d %H:%M") }}</dd></div>
-          </dl>
+          <h2 class="mt-3 text-2xl font-extrabold text-slate-950">{{ next_reservation.purpose }}</h2>
+          <p class="mt-3 text-base text-slate-600">{{ next_reservation.user.name }} / {{ next_reservation.resource.name }}</p>
+          <p class="mt-2 text-sm text-slate-500">시작 {{ next_reservation.start_at.strftime('%Y-%m-%d %H:%M') }}</p>
         {% else %}
-          <h2 class="mt-2 text-xl font-bold text-slate-950">예정된 다음 예약이 없습니다</h2>
-          <p class="mt-3 text-sm leading-6 text-slate-600">필요한 경우 사용 신청을 등록해 주세요.</p>
+          <h2 class="mt-3 text-2xl font-extrabold text-slate-950">예정된 다음 예약이 없습니다</h2>
+          <p class="mt-3 text-base leading-7 text-slate-600">필요한 경우 사용 신청을 등록해 주세요.</p>
         {% endif %}
       </section>
     </div>
 
     {% include "partials/_auth_info.html" %}
 
-    <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-      <h2 class="text-lg font-bold text-slate-950">빠른 이동</h2>
-      <div class="mt-4 grid gap-3 md:grid-cols-3">
-        <a class="rounded-2xl border border-slate-200 p-4 transition hover:border-slate-300 hover:bg-slate-50" href="{{ url_for('reservations.new') }}">
-          <span class="block font-bold text-slate-950">사용 신청</span>
-          <span class="mt-1 block text-sm text-slate-600">예약 등록 또는 즉시 사용 시작</span>
-        </a>
-        <a class="rounded-2xl border border-slate-200 p-4 transition hover:border-slate-300 hover:bg-slate-50" href="{{ url_for('reservations.today') }}">
-          <span class="block font-bold text-slate-950">오늘 예약</span>
-          <span class="mt-1 block text-sm text-slate-600">오늘 사용 예정 확인</span>
-        </a>
-        <a class="rounded-2xl border border-slate-200 p-4 transition hover:border-slate-300 hover:bg-slate-50" href="{{ url_for('main.guide') }}">
-          <span class="block font-bold text-slate-950">사용 안내</span>
-          <span class="mt-1 block text-sm text-slate-600">적합 업무와 주의사항 확인</span>
-        </a>
-      </div>
-    </section>
+    <div class="grid gap-4 md:grid-cols-3">
+      <a class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-300 hover:bg-slate-50" href="{{ url_for('reservations.new') }}"><span class="text-lg font-extrabold text-slate-950">+ 사용 신청</span><span class="mt-2 block text-sm text-slate-600">예약 등록 또는 즉시 사용 시작</span></a>
+      <a class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-300 hover:bg-slate-50" href="{{ url_for('reservations.today') }}"><span class="text-lg font-extrabold text-slate-950">▣ 오늘 예약</span><span class="mt-2 block text-sm text-slate-600">오늘 사용 예정 확인</span></a>
+      <a class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-300 hover:bg-slate-50" href="{{ url_for('main.guide') }}"><span class="text-lg font-extrabold text-slate-950">ⓘ 사용 안내</span><span class="mt-2 block text-sm text-slate-600">적합 업무와 주의사항 확인</span></a>
+    </div>
 
-    <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-      <div class="flex items-center justify-between gap-4">
-        <h2 class="text-lg font-bold text-slate-950">오늘 예약</h2>
-        <a class="rounded-full border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-700 hover:bg-slate-50" href="{{ url_for('reservations.today') }}">전체 보기</a>
-      </div>
-      <div class="mt-4 space-y-3">
+    <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div class="flex items-center justify-between gap-4"><h2 class="text-xl font-extrabold text-slate-950">▣ 오늘 예약</h2><a class="text-sm font-bold text-blue-700 hover:text-blue-900" href="{{ url_for('reservations.today') }}">전체 보기</a></div>
+      <div class="mt-5 space-y-3">
         {% for reservation in today_reservations %}
-          <div class="rounded-2xl border border-slate-100 bg-slate-50 p-4 text-sm">
-            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <p class="font-bold text-slate-950">{{ reservation.purpose }}</p>
-              <span class="w-fit rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">{{ reservation.status }}</span>
-            </div>
-            <p class="mt-2 text-slate-600">{{ reservation.user.name }} / {{ reservation.resource.name }}</p>
-            <p class="mt-1 text-slate-500">{{ reservation.start_at.strftime("%m-%d %H:%M") }} ~ {{ reservation.end_at.strftime("%m-%d %H:%M") }}</p>
-          </div>
+          <article class="rounded-xl border border-slate-200 bg-slate-50 p-4"><h3 class="font-extrabold text-slate-950">{{ reservation.purpose }}</h3><p class="mt-2 text-sm text-slate-600">{{ reservation.user.name }} / {{ reservation.work_type or reservation.resource.name }}</p><p class="mt-1 text-sm text-slate-500">{{ reservation.start_at.strftime('%m-%d %H:%M') }} ~ {{ reservation.end_at.strftime('%m-%d %H:%M') }}</p></article>
         {% else %}
-          <p class="py-6 text-center text-sm text-slate-500">오늘 예약이 없습니다.</p>
+          <p class="rounded-xl border border-slate-200 bg-slate-50 px-5 py-6 text-sm text-slate-500">오늘 예약이 없습니다.</p>
         {% endfor %}
       </div>
     </section>

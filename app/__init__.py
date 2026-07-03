@@ -8,6 +8,7 @@ from flask_login import current_user, logout_user
 from app.admin import admin_bp
 from app.auth import auth_bp
 from app.config import Config
+from app.defaults import DEFAULT_GUIDES, DEFAULT_SETTINGS
 from app.extensions import db, login_manager
 from app.logs import logs_bp
 from app.prompts import prompts_bp
@@ -35,6 +36,16 @@ def create_app(config_object: type[Config] | None = None) -> Flask:
     app.register_blueprint(settings_bp)
     app.register_blueprint(admin_bp)
 
+    @app.context_processor
+    def inject_app_settings():
+        def setting_value(key: str, default: str = "") -> str:
+            from app.models import AppSetting
+
+            setting = db.session.get(AppSetting, key)
+            return setting.value if setting else default
+
+        return {"setting_value": setting_value}
+
     @app.before_request
     def enforce_user_approval():
         allowed_endpoints = {
@@ -43,6 +54,7 @@ def create_app(config_object: type[Config] | None = None) -> Flask:
             "main.healthz",
             "main.terms",
             "main.privacy",
+            "main.guide",
             "auth.login",
             "auth.login_post",
             "auth.register",
@@ -65,6 +77,7 @@ def create_app(config_object: type[Config] | None = None) -> Flask:
     with app.app_context():
         db.create_all()
         _ensure_sqlite_schema_compatibility(app)
+        _seed_default_records(app)
 
     return app
 
@@ -84,8 +97,91 @@ def _ensure_sqlite_schema_compatibility(app: Flask) -> None:
         migrations.append("ALTER TABLE user ADD COLUMN auth_provider VARCHAR(40) NOT NULL DEFAULT 'local'")
     if "approval_status" not in user_columns:
         migrations.append("ALTER TABLE user ADD COLUMN approval_status VARCHAR(20) NOT NULL DEFAULT 'approved'")
+    if "department" not in user_columns:
+        migrations.append("ALTER TABLE user ADD COLUMN department VARCHAR(120) NOT NULL DEFAULT ''")
+    if "extension" not in user_columns:
+        migrations.append("ALTER TABLE user ADD COLUMN extension VARCHAR(40) NOT NULL DEFAULT ''")
+    if "is_auth_manager" not in user_columns:
+        migrations.append("ALTER TABLE user ADD COLUMN is_auth_manager BOOLEAN NOT NULL DEFAULT 0")
+    if "sort_order" not in user_columns:
+        migrations.append("ALTER TABLE user ADD COLUMN sort_order INTEGER NOT NULL DEFAULT 100")
+
+    table_names = inspector.get_table_names()
+    if "reservation" in table_names:
+        reservation_columns = {column["name"] for column in inspector.get_columns("reservation")}
+        if "work_type" not in reservation_columns:
+            migrations.append("ALTER TABLE reservation ADD COLUMN work_type VARCHAR(120) NOT NULL DEFAULT ''")
+        if "description" not in reservation_columns:
+            migrations.append("ALTER TABLE reservation ADD COLUMN description TEXT NOT NULL DEFAULT ''")
+        if "safety_confirmed" not in reservation_columns:
+            migrations.append("ALTER TABLE reservation ADD COLUMN safety_confirmed BOOLEAN NOT NULL DEFAULT 0")
 
     for statement in migrations:
         db.session.execute(text(statement))
     if migrations:
+        db.session.commit()
+
+
+def _seed_default_records(app: Flask) -> None:
+    if app.config.get("TESTING"):
+        return
+
+    from app.models import AiResource, AppSetting, GuideItem, User
+
+    changed = False
+    for key, value, label, help_text, sort_order in DEFAULT_SETTINGS:
+        if db.session.get(AppSetting, key) is None:
+            db.session.add(
+                AppSetting(
+                    key=key,
+                    value=value,
+                    label=label,
+                    help_text=help_text,
+                    sort_order=sort_order,
+                )
+            )
+            changed = True
+
+    for code, category, title, body, sort_order, is_active in DEFAULT_GUIDES:
+        if GuideItem.query.filter_by(code=code).first() is None:
+            db.session.add(
+                GuideItem(
+                    code=code,
+                    category=category,
+                    title=title,
+                    body=body,
+                    sort_order=sort_order,
+                    is_active=is_active,
+                )
+            )
+            changed = True
+
+    if AiResource.query.filter_by(name="학교 공용 GPT Pro 5X 계정").first() is None:
+        db.session.add(
+            AiResource(
+                name="학교 공용 GPT Pro 5X 계정",
+                provider="OpenAI",
+                description="부서 공용 ChatGPT Pro 5X 계정",
+            )
+        )
+        changed = True
+
+    review_email = app.config.get("REVIEW_ADMIN_EMAIL", "review.admin@senedu.kr").strip().lower()
+    review_password = app.config.get("REVIEW_ADMIN_PASSWORD", "ReviewAdmin!2026")
+    if review_email and User.query.filter_by(email=review_email).first() is None:
+        user = User(
+            email=review_email,
+            name="리뷰용 관리자 계정",
+            department="시스템",
+            role="admin",
+            approval_status="approved",
+            is_active=True,
+            is_auth_manager=True,
+            sort_order=2,
+        )
+        user.set_password(review_password)
+        db.session.add(user)
+        changed = True
+
+    if changed:
         db.session.commit()
