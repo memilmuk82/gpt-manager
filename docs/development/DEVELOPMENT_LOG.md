@@ -669,7 +669,7 @@ guide_intro_text 기본 설정 추가
 ### 검증
 
 ```text
-uv run pytest: PASS, 64 passed
+uv run pytest: PASS, 65 passed
 npm run test:e2e: PASS, 1 passed
 docker compose up -d --build: PASS, gpt-manager-web-1 Up
 GET http://127.0.0.1:5000/healthz: 200 {"status":"ok"}
@@ -692,7 +692,31 @@ GET http://127.0.0.1:5000/healthz: 200 {"status":"ok"}
 ### 검증
 
 ```text
-uv run pytest: PASS, 64 passed
+uv run pytest: PASS, 65 passed
+npm run test:e2e: PASS, 1 passed
+docker compose up -d --build: PASS, gpt-manager-web-1 Up
+GET http://127.0.0.1:5000/healthz: 200 {"status":"ok"}
+```
+
+
+## 2026-07-03 - 개인 설정 및 API Key 화면 최신화
+
+### 변경
+
+```text
+상단 승인 사용자 badge를 개인 Gemini API Key 설정 링크로 전환
+미승인 사용자는 기존 badge 표시 유지
+Gemini API Key 설정 화면을 최신 카드형 UI로 정리
+저장 상태, 보안 안내, 새 API Key 저장 폼을 분리
+프롬프트 점검 화면으로 이동하는 버튼과 홈으로 이동하는 버튼 추가
+API Key 설정 화면에서 구버전 SETTINGS 표기 제거
+사용자 badge 링크와 API Key 설정 화면 렌더링 테스트 추가
+```
+
+### 검증
+
+```text
+uv run pytest: PASS, 65 passed
 npm run test:e2e: PASS, 1 passed
 docker compose up -d --build: PASS, gpt-manager-web-1 Up
 GET http://127.0.0.1:5000/healthz: 200 {"status":"ok"}

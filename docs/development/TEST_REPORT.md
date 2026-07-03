@@ -586,7 +586,7 @@ Google OAuth 신규/기존 사용자 승인 및 관리자 권한 부여
 전체 pytest:
 명령: uv run pytest
 결과: PASS
-PASS: 64
+PASS: 65
 FAIL: 0
 
 Playwright E2E:
@@ -620,7 +620,7 @@ guide_intro_text가 사용 안내 화면에 표시됨
 전체 pytest:
 명령: uv run pytest
 결과: PASS
-PASS: 64
+PASS: 65
 FAIL: 0
 
 Playwright E2E:
@@ -642,4 +642,37 @@ healthz: 200 {"status":"ok"}
 홈 화면에 프롬프트 점검 빠른 이동 카드 표시
 프롬프트 점검 목록과 새 점검 화면 렌더링
 구버전 PROMPT REVIEWS 텍스트 미노출
+```
+
+
+## 2026-07-03 개인 설정 및 API Key 화면 최신화 검증
+
+```text
+범위: 승인 사용자 badge의 /settings/api-key 링크, Gemini API Key 설정 화면 최신 UI, 구버전 SETTINGS 표기 제거
+
+전체 pytest:
+명령: uv run pytest
+결과: PASS
+PASS: 65
+FAIL: 0
+
+Playwright E2E:
+명령: npm run test:e2e
+결과: PASS
+PASS: 1
+FAIL: 0
+
+Docker Compose 리빌드:
+명령: docker compose up -d --build
+결과: PASS
+컨테이너: gpt-manager-web-1 Up
+healthz: 200 {"status":"ok"}
+```
+
+추가 테스트 범위:
+
+```text
+승인 사용자 badge가 /settings/api-key 링크로 렌더링됨
+Gemini API Key 설정 화면에 개인 설정 문구와 최신 제목 표시
+구버전 SETTINGS 텍스트 미노출
 ```

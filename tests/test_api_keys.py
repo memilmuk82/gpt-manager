@@ -26,6 +26,26 @@ def test_api_key_settings_requires_login(client):
     assert "/auth/login" in response.headers["Location"]
 
 
+def test_approved_user_badge_links_to_personal_api_key_settings(client, app):
+    with app.app_context():
+        create_user(name="이진선")
+
+    login(client)
+    dashboard_response = client.get("/dashboard")
+    settings_response = client.get("/settings/api-key")
+
+    dashboard_body = dashboard_response.get_data(as_text=True)
+    settings_body = settings_response.get_data(as_text=True)
+
+    assert dashboard_response.status_code == 200
+    assert settings_response.status_code == 200
+    assert 'href="/settings/api-key"' in dashboard_body
+    assert "이진선" in dashboard_body
+    assert "개인 설정" in settings_body
+    assert "♙ Gemini API Key" in settings_body
+    assert "SETTINGS" not in settings_body
+
+
 def test_api_key_is_encrypted_and_roundtrips(client, app):
     raw_api_key = "gemini-secret-key-1234"
     with app.app_context():

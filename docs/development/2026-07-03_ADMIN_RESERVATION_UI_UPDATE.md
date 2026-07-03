@@ -64,6 +64,7 @@ CSV 일괄 등록: email,name,department,extension,role,active,is_auth_manager,s
 개인정보 상세, 평가 보안 상세 앵커 링크 추가
 미등록 사용자 화면과 등록 요청 화면 디자인 정리
 프롬프트 점검 화면을 최신 카드/테이블/상세 결과 UI로 정리하고 홈 빠른 이동과 상단 메뉴에 노출
+개인 Gemini API Key 설정 화면을 최신 카드형 UI로 정리하고 상단 사용자 badge에서 바로 접근 가능하도록 개선
 ```
 
 ## 테스트 변경
@@ -78,7 +79,7 @@ tests/e2e/rc.spec.ts: 새 등록 요청/사용 신청 UI와 체크박스 흐름 
 
 ```text
 python3 -m py_compile app/models/__init__.py app/__init__.py app/admin/routes.py app/reservations/routes.py app/routes/main.py app/auth/routes.py app/config.py app/defaults.py: PASS
-uv run pytest: PASS, 64 passed
+uv run pytest: PASS, 65 passed
 npm run test:e2e: PASS, 1 passed
 Flask local server http://127.0.0.1:5001: PASS
 주요 화면 HTTP 200 확인: /dashboard, /reservations/new, /reservations/today, /reservations, /guide, /admin, 관리자 각 section
@@ -94,5 +95,6 @@ Flask local server http://127.0.0.1:5001: PASS
 Docker 이미지는 관리자 테스트 실행을 위해 dev dependency group도 설치
 주요 화면 문구 관리 Settings: auth_info_title, reservation_intro_text, reservation_helper_text, guide_intro_text
 프롬프트 점검 메뉴와 화면 문구 렌더링 테스트 추가
+Gemini API Key 설정 화면과 사용자 badge 링크 렌더링 테스트 추가
 SQLite 호환 보정은 기존 DB에 누락 컬럼을 추가하지만 복잡한 스키마 마이그레이션 도구를 대체하지는 않음
 ```

@@ -6,7 +6,7 @@
 RC 목표일: 2026-07-02
 현재 상태: 관리자/예약/안내 UI 확장 및 신청 항목 관리 반영 완료
 운영 도메인: https://dev-gpt.memilmuk82.com
-pytest: 64 passed
+pytest: 65 passed
 Playwright E2E: 1 passed
 Docker Compose rebuild: PASS
 ```
@@ -27,6 +27,7 @@ Docker Compose rebuild: PASS
 [x] 관리자 대시보드 확인
 [x] 관리자 설정/안내문구/주요 화면 문구/신청 항목/사용자/통계/테스트 실행 화면 확인
 [x] 프롬프트 점검 메뉴와 화면 최신 UI 확인
+[x] 개인 Gemini API Key 설정 화면과 사용자 badge 링크 확인
 [x] 보조관리자 관리자 화면 접근 확인
 [x] pytest 통과
 [x] README 실행 방법 확인

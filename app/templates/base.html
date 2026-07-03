@@ -28,7 +28,11 @@
           </a>
           <div class="flex flex-wrap items-center gap-2 text-sm">
             {% if current_user.is_authenticated %}
-              <span class="inline-flex h-10 items-center gap-2 rounded-full bg-slate-100 px-4 font-semibold text-slate-600">♙ {{ current_user.name if current_user.is_approved else '미등록 사용자' }} / {% if current_user.can_access_admin %}시스템{% else %}사용자{% endif %}</span>
+              {% if current_user.is_approved %}
+                <a class="inline-flex h-10 items-center gap-2 rounded-full bg-slate-100 px-4 font-semibold text-slate-600 transition hover:bg-slate-200 hover:text-slate-950" href="{{ url_for('settings.api_key') }}" title="Gemini API Key 등록">♙ {{ current_user.name }} / {% if current_user.can_access_admin %}시스템{% else %}사용자{% endif %}</a>
+              {% else %}
+                <span class="inline-flex h-10 items-center gap-2 rounded-full bg-slate-100 px-4 font-semibold text-slate-600">♙ 미등록 사용자 / 사용자</span>
+              {% endif %}
               <form method="post" action="{{ url_for('auth.logout') }}">
                 <button class="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50" type="submit">▣ 사용 종료</button>
               </form>
