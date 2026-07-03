@@ -1,5 +1,7 @@
 import csv
+import importlib.util
 import io
+import shutil
 import subprocess
 import sys
 from collections import defaultdict
@@ -10,9 +12,9 @@ from flask import abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
 from app.admin import admin_bp
-from app.defaults import DEFAULT_WORK_TYPES
 from app.extensions import db
 from app.models import (
+    AiResource,
     AppSetting,
     ApprovalStatus,
     GuideItem,
@@ -21,6 +23,7 @@ from app.models import (
     ReservationStatus,
     UsageLog,
     User,
+    WorkType,
 )
 
 ROLE_LABELS = {
@@ -71,6 +74,13 @@ def save_settings():
 @admin_bp.post("/guides")
 @admin_required
 def save_guides():
+    for setting in _guide_settings():
+        value = request.form.get(f"setting_{setting.key}", "").strip()
+        if not value:
+            flash(f"{setting.label} 항목을 입력하세요.", "error")
+            return redirect(url_for("admin.dashboard", section="guides"))
+        setting.value = value
+
     for guide in GuideItem.query.order_by(GuideItem.sort_order.asc()).all():
         prefix = f"guide_{guide.id}_"
         guide.category = request.form.get(prefix + "category", "").strip() or guide.category
@@ -81,6 +91,77 @@ def save_guides():
     db.session.commit()
     flash("안내 문구를 저장했습니다.", "success")
     return redirect(url_for("admin.dashboard", section="guides"))
+
+
+@admin_bp.post("/resources")
+@admin_required
+def save_resources():
+    for resource in AiResource.query.order_by(AiResource.name.asc()).all():
+        prefix = f"resource_{resource.id}_"
+        name = request.form.get(prefix + "name", "").strip()
+        provider = request.form.get(prefix + "provider", "").strip()
+        if not name or not provider:
+            flash("AI 리소스 이름과 제공사를 모두 입력하세요.", "error")
+            return redirect(url_for("admin.dashboard", section="resources"))
+        resource.name = name
+        resource.provider = provider
+        resource.description = request.form.get(prefix + "description", "").strip()
+        resource.is_active = request.form.get(prefix + "is_active") == "on"
+
+    new_name = request.form.get("new_resource_name", "").strip()
+    new_provider = request.form.get("new_resource_provider", "").strip()
+    new_description = request.form.get("new_resource_description", "").strip()
+    if new_name or new_provider or new_description:
+        if not new_name or not new_provider:
+            flash("새 AI 리소스의 이름과 제공사를 모두 입력하세요.", "error")
+            return redirect(url_for("admin.dashboard", section="resources"))
+        db.session.add(
+            AiResource(
+                name=new_name,
+                provider=new_provider,
+                description=new_description,
+                is_active=request.form.get("new_resource_is_active") == "on",
+            )
+        )
+
+    db.session.commit()
+    flash("AI 리소스 변경사항을 저장했습니다.", "success")
+    return redirect(url_for("admin.dashboard", section="resources"))
+
+
+@admin_bp.post("/work-types")
+@admin_required
+def save_work_types():
+    for work_type in WorkType.query.order_by(WorkType.sort_order.asc(), WorkType.name.asc()).all():
+        prefix = f"work_type_{work_type.id}_"
+        name = request.form.get(prefix + "name", "").strip()
+        if not name:
+            flash("작업유형 이름을 입력하세요.", "error")
+            return redirect(url_for("admin.dashboard", section="resources"))
+        work_type.name = name
+        work_type.sort_order = _int_or_default(request.form.get(prefix + "sort_order"), work_type.sort_order)
+        work_type.is_active = request.form.get(prefix + "is_active") == "on"
+
+    new_name = request.form.get("new_work_type_name", "").strip()
+    if new_name:
+        db.session.add(
+            WorkType(
+                name=new_name,
+                sort_order=_int_or_default(request.form.get("new_work_type_sort_order"), 100),
+                is_active=request.form.get("new_work_type_is_active") == "on",
+            )
+        )
+
+    db.session.flush()
+    active_count = WorkType.query.filter_by(is_active=True).count()
+    if active_count == 0:
+        db.session.rollback()
+        flash("최소 1개의 활성 작업유형이 필요합니다.", "error")
+        return redirect(url_for("admin.dashboard", section="resources"))
+
+    db.session.commit()
+    flash("작업유형 변경사항을 저장했습니다.", "success")
+    return redirect(url_for("admin.dashboard", section="resources"))
 
 
 @admin_bp.post("/users")
@@ -98,6 +179,10 @@ def create_user():
 
     user = User(email=email, name=name, approval_status=ApprovalStatus.APPROVED)
     _apply_user_form(user)
+    if _auth_manager_limit_exceeded(user):
+        db.session.rollback()
+        flash("인증번호 담당자는 최대 2명까지만 지정할 수 있습니다.", "error")
+        return redirect(url_for("admin.dashboard", section="users"))
     user.set_password(password)
     db.session.add(user)
     db.session.commit()
@@ -113,6 +198,10 @@ def update_user(user_id: int):
         flash("자기 자신의 관리자 권한은 해제할 수 없습니다.", "error")
         return redirect(url_for("admin.dashboard", section="users", edit_user_id=user.id))
     _apply_user_form(user)
+    if _auth_manager_limit_exceeded(user):
+        db.session.rollback()
+        flash("인증번호 담당자는 최대 2명까지만 지정할 수 있습니다.", "error")
+        return redirect(url_for("admin.dashboard", section="users", edit_user_id=user.id))
     db.session.commit()
     flash(f"{user.email} 사용자 정보를 저장했습니다.", "success")
     return redirect(url_for("admin.dashboard", section="users"))
@@ -154,6 +243,20 @@ def bulk_users():
             flash(error, "error")
         if len(errors) > 5:
             flash(f"외 {len(errors) - 5}건의 오류가 있습니다. 한 건이라도 실패하면 저장하지 않습니다.", "error")
+        return redirect(url_for("admin.dashboard", section="users"))
+
+    existing_auth_managers = User.query.filter_by(
+        is_auth_manager=True,
+        is_active=True,
+        approval_status=ApprovalStatus.APPROVED,
+    ).count()
+    new_auth_managers = sum(
+        1
+        for row, _, _, _ in prepared
+        if _csv_bool(row.get("is_auth_manager"), False) and _csv_bool(row.get("active"), True)
+    )
+    if existing_auth_managers + new_auth_managers > 2:
+        flash("인증번호 담당자는 최대 2명까지만 지정할 수 있습니다.", "error")
         return redirect(url_for("admin.dashboard", section="users"))
 
     for row, email, name, role in prepared:
@@ -218,7 +321,7 @@ def run_tests():
     result = None
     try:
         completed = subprocess.run(
-            [sys.executable, "-m", "pytest"],
+            _pytest_command(),
             cwd=Path(__file__).resolve().parents[2],
             capture_output=True,
             text=True,
@@ -255,15 +358,37 @@ def _admin_context(section: str = "overview", test_result: dict | None = None) -
         "section": section,
         "stats": stats,
         "settings": AppSetting.query.order_by(AppSetting.sort_order.asc()).all(),
+        "guide_settings": _guide_settings(),
         "guides": GuideItem.query.order_by(GuideItem.sort_order.asc()).all(),
+        "resources": AiResource.query.order_by(AiResource.name.asc()).all(),
+        "work_types": WorkType.query.order_by(WorkType.sort_order.asc(), WorkType.name.asc()).all(),
         "users": users,
         "pending_users": pending_users,
         "role_labels": ROLE_LABELS,
         "edit_user": edit_user,
         "admin_stats": _usage_statistics(users, reservations),
-        "work_types": DEFAULT_WORK_TYPES,
         "test_result": test_result,
     }
+
+
+def _guide_settings() -> list[AppSetting]:
+    keys = ["board_reference_message", "auth_message", "logout_notice"]
+    settings = AppSetting.query.filter(AppSetting.key.in_(keys)).all()
+    return sorted(settings, key=lambda setting: keys.index(setting.key))
+
+
+def _auth_manager_limit_exceeded(user: User) -> bool:
+    if not user.is_auth_manager or not user.is_active or user.approval_status != ApprovalStatus.APPROVED:
+        return False
+    with db.session.no_autoflush:
+        query = User.query.filter_by(
+            is_auth_manager=True,
+            is_active=True,
+            approval_status=ApprovalStatus.APPROVED,
+        )
+        if user.id is not None:
+            query = query.filter(User.id != user.id)
+        return query.count() >= 2
 
 
 def _apply_user_form(user: User) -> None:
@@ -320,6 +445,15 @@ def _csv_bool(value: str | None, default: bool) -> bool:
     if value is None or value == "":
         return default
     return value.strip().lower() in {"1", "true", "yes", "y", "on", "활성", "예"}
+
+
+def _pytest_command() -> list[str]:
+    if importlib.util.find_spec("pytest") is not None:
+        return [sys.executable, "-m", "pytest"]
+    uv_path = shutil.which("uv")
+    if uv_path:
+        return [uv_path, "run", "--frozen", "pytest"]
+    return [sys.executable, "-m", "pytest"]
 
 
 def _pytest_summary(output: str) -> str:

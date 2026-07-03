@@ -8,7 +8,7 @@ from flask_login import current_user, logout_user
 from app.admin import admin_bp
 from app.auth import auth_bp
 from app.config import Config
-from app.defaults import DEFAULT_GUIDES, DEFAULT_SETTINGS
+from app.defaults import DEFAULT_GUIDES, DEFAULT_SETTINGS, DEFAULT_WORK_TYPES
 from app.extensions import db, login_manager
 from app.logs import logs_bp
 from app.prompts import prompts_bp
@@ -44,7 +44,21 @@ def create_app(config_object: type[Config] | None = None) -> Flask:
             setting = db.session.get(AppSetting, key)
             return setting.value if setting else default
 
-        return {"setting_value": setting_value}
+        def auth_manager_users(limit: int = 2):
+            from app.models import ApprovalStatus, User
+
+            return (
+                User.query.filter_by(
+                    is_auth_manager=True,
+                    is_active=True,
+                    approval_status=ApprovalStatus.APPROVED,
+                )
+                .order_by(User.sort_order.asc(), User.name.asc())
+                .limit(limit)
+                .all()
+            )
+
+        return {"setting_value": setting_value, "auth_manager_users": auth_manager_users}
 
     @app.before_request
     def enforce_user_approval():
@@ -126,7 +140,7 @@ def _seed_default_records(app: Flask) -> None:
     if app.config.get("TESTING"):
         return
 
-    from app.models import AiResource, AppSetting, GuideItem, User
+    from app.models import AiResource, AppSetting, GuideItem, User, WorkType
 
     changed = False
     for key, value, label, help_text, sort_order in DEFAULT_SETTINGS:
@@ -154,6 +168,11 @@ def _seed_default_records(app: Flask) -> None:
                     is_active=is_active,
                 )
             )
+            changed = True
+
+    for index, name in enumerate(DEFAULT_WORK_TYPES, start=1):
+        if WorkType.query.filter_by(name=name).first() is None:
+            db.session.add(WorkType(name=name, sort_order=index * 10, is_active=True))
             changed = True
 
     if AiResource.query.filter_by(name="학교 공용 GPT Pro 5X 계정").first() is None:

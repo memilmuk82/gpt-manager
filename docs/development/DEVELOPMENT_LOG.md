@@ -622,3 +622,29 @@ python3 -m py_compile app/services/access_policy.py app/services/oauth_service.p
 uv run pytest: PASS, 55 passed
 npm run test:e2e: PASS, 1 passed
 ```
+
+
+## 2026-07-03 - 신청 항목 관리 및 검증 보강
+
+### 변경
+
+```text
+WorkType 모델 추가 및 DEFAULT_WORK_TYPES 시드 처리
+관리자 신청 항목 관리 섹션 추가: AI 리소스와 작업유형 생성/수정/활성화 관리
+사용 신청 화면 작업유형을 DB active WorkType 기준으로 표시하고 비어 있으면 기본값 fallback
+안내 문구 관리에서 GPT 접속/인증번호 안내 Settings도 함께 수정 가능하도록 확장
+인증번호 담당자 최대 2명 제한을 사용자 추가/수정/CSV 일괄 등록에 적용
+Google OAuth 로그인 사용자는 승인 상태와 관리자 권한으로 등록 또는 승격
+관리자 전체 테스트 실행이 pytest 모듈 미탑재 환경에서 uv run --frozen pytest로 fallback
+Dockerfile에서 관리자 테스트 실행 지원을 위해 dev dependency group 설치
+README, PROJECT_STATUS, RELEASE_CHECKLIST, TEST_REPORT, 변경 기록 문서 최신화
+```
+
+### 검증
+
+```text
+uv run pytest: PASS, 61 passed
+npm run test:e2e: PASS, 1 passed
+docker compose up -d --build: PASS, gpt-manager-web-1 Up
+GET http://127.0.0.1:5000/healthz: 200 {"status":"ok"}
+```

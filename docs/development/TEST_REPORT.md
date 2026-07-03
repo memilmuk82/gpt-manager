@@ -244,6 +244,12 @@ FAIL: 0
 결과: PASS
 PASS: 1
 FAIL: 0
+
+Docker Compose 리빌드:
+명령: docker compose up -d --build
+결과: PASS
+컨테이너: gpt-manager-web-1 Up
+healthz: 200 {"status":"ok"}
 검증 범위: 메인 페이지 접속, 회원가입/로그인, 예약 목록 조회, 예약 추가, 예약 상태 변경, API Key 등록/교체/삭제, 새로고침 후 데이터 유지
 
 환경 준비:
@@ -534,4 +540,39 @@ E2E 등록 요청/로그인/사용 신청/예약 완료/API Key 흐름 유지
 python3 -m py_compile app/services/access_policy.py app/services/oauth_service.py app/config.py app/auth/routes.py: PASS
 uv run pytest: PASS, 55 passed
 npm run test:e2e: PASS, 1 passed
+```
+
+
+## 2026-07-03 신청 항목 관리 및 검증 보강 결과
+
+```text
+범위: AI 리소스/작업유형 관리자 관리, 안내 문구 Settings 연동, 인증번호 담당자 2명 제한, Google OAuth 관리자 승인 정책, 관리자 pytest fallback, Docker dev dependency 설치
+
+전체 pytest:
+명령: uv run pytest
+결과: PASS
+PASS: 61
+FAIL: 0
+
+Playwright E2E:
+명령: npm run test:e2e
+결과: PASS
+PASS: 1
+FAIL: 0
+
+Docker Compose 리빌드:
+명령: docker compose up -d --build
+결과: PASS
+컨테이너: gpt-manager-web-1 Up
+healthz: 200 {"status":"ok"}
+```
+
+추가 테스트 범위:
+
+```text
+관리자 AI 리소스/작업유형 저장 후 사용 신청 폼 반영
+안내 문구 관리에서 GPT 접속/인증번호 안내 Settings 저장 후 홈 화면 반영
+인증번호 담당자 최대 2명 제한
+관리자 테스트 실행 명령: python -m pytest 및 uv run --frozen pytest fallback
+Google OAuth 신규/기존 사용자 승인 및 관리자 권한 부여
 ```

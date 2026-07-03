@@ -140,17 +140,17 @@ def google_callback():
             name=userinfo.get("name") or email.split("@", 1)[0],
             google_sub=google_sub,
             auth_provider="google",
-            role=initial_role(email),
-            approval_status=initial_approval_status(email),
+            role="admin",
+            approval_status=ApprovalStatus.APPROVED,
         )
         db.session.add(user)
     else:
         user.google_sub = user.google_sub or google_sub
         user.auth_provider = "google"
         if user.approval_status == ApprovalStatus.PENDING:
-            user.approval_status = initial_approval_status(email)
+            user.approval_status = ApprovalStatus.APPROVED
         if user.role != "admin":
-            user.role = initial_role(email)
+            user.role = "admin"
     db.session.commit()
 
     if user.approval_status == ApprovalStatus.SUSPENDED:

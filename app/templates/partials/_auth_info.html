@@ -10,9 +10,13 @@
   </div>
   <div class="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-5 text-amber-900"><h3 class="font-extrabold">사용 후 로그아웃 권장</h3><p class="mt-2 text-sm leading-6">{{ setting_value('logout_notice', '사용 후 반드시 ChatGPT에서 로그아웃해 주세요. 브라우저를 닫는 것만으로는 로그아웃되지 않을 수 있습니다.') }}</p></div>
   <h3 class="mt-5 font-extrabold text-slate-950">인증번호 문의 담당자</h3>
+  {% set managers = auth_manager_users(2) %}
   <div class="mt-3 grid gap-3 md:grid-cols-2">
-    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4"><p class="font-extrabold">학교 관리자 계정</p><p class="mt-1 text-sm text-slate-600">시스템</p><p class="mt-1 text-sm text-slate-600">내선: 미입력</p></div>
-    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4"><p class="font-extrabold">이진선</p><p class="mt-1 text-sm text-slate-600">교육정보부</p><p class="mt-1 text-sm text-slate-600">내선: 311</p></div>
+    {% for manager in managers %}
+      <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4"><p class="font-extrabold">{{ manager.name }}</p><p class="mt-1 text-sm text-slate-600">{{ manager.department or '부서 미입력' }}</p><p class="mt-1 text-sm text-slate-600">내선: {{ manager.extension or '미입력' }}</p></div>
+    {% else %}
+      <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">인증번호 문의 담당자가 지정되지 않았습니다.</div>
+    {% endfor %}
   </div>
   <p class="mt-4 text-sm text-slate-500">{{ setting_value('auth_message', 'ChatGPT 로그인 인증번호가 필요한 경우 담당 관리자에게 요청해 주세요.') }}</p>
 </section>

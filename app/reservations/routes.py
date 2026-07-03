@@ -5,7 +5,7 @@ from flask_login import current_user, login_required
 
 from app.defaults import DEFAULT_WORK_TYPES
 from app.extensions import db
-from app.models import AiResource, AppSetting, Reservation, ReservationStatus
+from app.models import AiResource, AppSetting, Reservation, ReservationStatus, WorkType
 from app.reservations import reservations_bp
 from app.services.reservation_service import (
     ReservationValidationError,
@@ -54,7 +54,7 @@ def new():
     return render_template(
         "reservations/new.html",
         resources=_active_resources(),
-        work_types=DEFAULT_WORK_TYPES,
+        work_types=_active_work_types(),
         default_duration=_setting_int("default_duration_minutes", 60),
         max_duration=_setting_int("max_duration_minutes", 180),
     )
@@ -107,7 +107,7 @@ def create():
         return render_template(
             "reservations/new.html",
             resources=_active_resources(),
-            work_types=DEFAULT_WORK_TYPES,
+            work_types=_active_work_types(),
             default_duration=_setting_int("default_duration_minutes", 60),
             max_duration=_setting_int("max_duration_minutes", 180),
         ), 400
@@ -173,6 +173,15 @@ def _selected_date(raw_value: str) -> date:
 
 def _active_resources():
     return AiResource.query.filter_by(is_active=True).order_by(AiResource.name.asc()).all()
+
+
+def _active_work_types() -> list[str]:
+    work_types = (
+        WorkType.query.filter_by(is_active=True)
+        .order_by(WorkType.sort_order.asc(), WorkType.name.asc())
+        .all()
+    )
+    return [work_type.name for work_type in work_types] or DEFAULT_WORK_TYPES
 
 
 def _setting_int(key: str, default: int) -> int:

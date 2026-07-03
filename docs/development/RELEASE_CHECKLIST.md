@@ -4,9 +4,9 @@
 
 ```text
 RC 목표일: 2026-07-02
-현재 상태: RC 운영 검증 완료 + 법적 고지 페이지 배포 완료
+현재 상태: 관리자/예약/안내 UI 확장 및 신청 항목 관리 반영 완료
 운영 도메인: https://dev-gpt.memilmuk82.com
-pytest: 55 passed
+pytest: 61 passed
 Playwright E2E: 1 passed
 Docker Compose rebuild: PASS
 ```
@@ -25,6 +25,7 @@ Docker Compose rebuild: PASS
 [x] 오늘 예약 화면 확인
 [x] 사용 로그 작성 확인
 [x] 관리자 대시보드 확인
+[x] 관리자 설정/안내문구/신청 항목/사용자/통계/테스트 실행 화면 확인
 [x] 보조관리자 관리자 화면 접근 확인
 [x] pytest 통과
 [x] README 실행 방법 확인
@@ -75,10 +76,11 @@ UI 대규모 변경
 11. Footer에서 이용약관과 개인정보처리방침 페이지 이동 확인
 12. 로그아웃
 13. 관리자 또는 보조관리자 계정 로그인
-14. 사용자 승인 화면 확인
-15. uv run pytest 실행
-16. npm run test:e2e 실행
-17. docker compose down/up 후 데이터 유지 확인
+14. 관리자 설정/안내문구/신청 항목/사용자/통계 화면 확인
+15. 사용자 승인 화면 확인
+16. uv run pytest 실행
+17. npm run test:e2e 실행
+18. docker compose down/up 또는 docker compose up -d --build 후 데이터 유지 확인
 ```
 
 ## 5. 제출 설명 핵심 문장

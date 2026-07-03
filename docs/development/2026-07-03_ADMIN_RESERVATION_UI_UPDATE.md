@@ -17,6 +17,7 @@ README에 Flask - SQLite - OCI 선택 이유와 AI컴퓨터과 수업 맥락 추
 AppSetting 모델 추가
 GuideItem 모델 추가
 User 모델에 department, extension, is_auth_manager, sort_order 추가
+WorkType 모델 추가 및 기본 작업유형 시드 추가
 Reservation 모델에 work_type, description, safety_confirmed 추가
 SQLite 기존 DB 호환 ALTER TABLE 보정 추가
 실행 DB에 기본 설정, 기본 안내문구, 기본 GPT Pro 리소스, 리뷰용 관리자 계정 자동 시드 추가
@@ -29,18 +30,18 @@ SQLite 기존 DB 호환 ALTER TABLE 보정 추가
 ```text
 /admin 카드형 관리자 허브 디자인 적용
 설정 관리: 앱 제목, 학교/부서명, 인증 안내, 업무게시판 안내, 로그아웃 안내, AI 활용 권장 순서, 기본 사용 시간, 장시간 사용 기준 수정
-안내 문구 관리: GuideItem 분류, 제목, 정렬 순서, 표시 여부, 본문 수정
-사용자 관리: 사용자 추가, 수정, 활성/비활성, 권한 변경, 인증번호 담당자 여부, 부서, 내선, 정렬 순서 관리
-CSV 일괄 등록: email,name,department,extension,role,active,is_auth_manager,sort_order 컬럼 검증 후 일괄 등록
+안내 문구 관리: GuideItem 분류, 제목, 정렬 순서, 표시 여부, 본문 수정 및 GPT 접속/인증번호 안내 Settings 수정
+사용자 관리: 사용자 추가, 수정, 활성/비활성, 권한 변경, 인증번호 담당자 여부, 부서, 내선, 정렬 순서 관리, 인증번호 담당자 최대 2명 제한
+CSV 일괄 등록: email,name,department,extension,role,active,is_auth_manager,sort_order 컬럼 검증 후 일괄 등록, 인증번호 담당자 2명 제한 검증
 등록 요청 관리: pending 사용자 승인/반려 분리 표시
 통계 조회: 사용자별/작업 유형별 예약 수, 예약 기준 사용 시간, 완료 기준 실제 사용 시간 조회
-전체 테스트 실행: 관리자 화면에서 현재 Python 실행 파일로 pytest 실행
+전체 테스트 실행: 관리자 화면에서 현재 Python pytest 또는 uv run --frozen pytest fallback으로 테스트 실행
 ```
 
 ## 예약/사용 신청 기능
 
 ```text
-작업 유형 드롭다운을 DEFAULT_WORK_TYPES 기준으로 표시
+작업 유형 드롭다운을 DB WorkType active 목록 기준으로 표시하고 비어 있으면 DEFAULT_WORK_TYPES fallback
 작업명과 작업 설명 입력 UI 정리
 사용 전 확인 체크 항목 필수화
 시작 시간 + 사용 시간으로 종료 예정 시간 자동 계산
@@ -76,7 +77,7 @@ tests/e2e/rc.spec.ts: 새 등록 요청/사용 신청 UI와 체크박스 흐름 
 
 ```text
 python3 -m py_compile app/models/__init__.py app/__init__.py app/admin/routes.py app/reservations/routes.py app/routes/main.py app/auth/routes.py app/config.py app/defaults.py: PASS
-uv run pytest: PASS, 55 passed
+uv run pytest: PASS, 61 passed
 npm run test:e2e: PASS, 1 passed
 Flask local server http://127.0.0.1:5001: PASS
 주요 화면 HTTP 200 확인: /dashboard, /reservations/new, /reservations/today, /reservations, /guide, /admin, 관리자 각 section
@@ -89,5 +90,6 @@ Flask local server http://127.0.0.1:5001: PASS
 리뷰용 관리자 기본 계정은 REVIEW_ADMIN_EMAIL, REVIEW_ADMIN_PASSWORD 환경변수로 변경 가능
 실제 운영 전 기본 리뷰 계정 비밀번호 변경 또는 비활성화 필요
 관리자 화면의 전체 테스트 실행은 서버 자원을 사용하므로 운영 중 반복 실행은 주의
+Docker 이미지는 관리자 테스트 실행을 위해 dev dependency group도 설치
 SQLite 호환 보정은 기존 DB에 누락 컬럼을 추가하지만 복잡한 스키마 마이그레이션 도구를 대체하지는 않음
 ```

@@ -15,4 +15,4 @@ def test_index_page_returns_200():
         response = client.get("/")
 
     assert response.status_code == 200
-    assert "ChatGPT Pro 5X 공동 사용 지원 시스템" in response.get_data(as_text=True)
+    assert "사용자 인증" in response.get_data(as_text=True)

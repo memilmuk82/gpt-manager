@@ -1,5 +1,5 @@
 from app.extensions import db
-from app.models import ApprovalStatus, User
+from app.models import AiResource, AppSetting, ApprovalStatus, GuideItem, User, WorkType
 
 
 def create_user(email="teacher@senedu.kr", name="Teacher", role="user", approval_status="approved") -> User:
@@ -71,3 +71,138 @@ def test_assistant_admin_can_access_admin_dashboard(client, app):
 
     assert dashboard_response.status_code == 200
     assert users_response.status_code == 200
+
+
+def test_admin_can_manage_resources_and_work_types_for_reservation_form(client, app):
+    with app.app_context():
+        create_user(email="admin@senedu.kr", name="Admin", role="admin")
+        resource = AiResource(name="기존 리소스", provider="OpenAI", is_active=True)
+        work_type = WorkType(name="기존 업무", sort_order=10, is_active=True)
+        db.session.add_all([resource, work_type])
+        db.session.commit()
+        resource_id = resource.id
+        work_type_id = work_type.id
+
+    login(client, email="admin@senedu.kr")
+    resource_response = client.post(
+        "/admin/resources",
+        data={
+            f"resource_{resource_id}_name": "수정 리소스",
+            f"resource_{resource_id}_provider": "OpenAI",
+            f"resource_{resource_id}_description": "수정 설명",
+            f"resource_{resource_id}_is_active": "on",
+            "new_resource_name": "새 리소스",
+            "new_resource_provider": "OpenAI",
+            "new_resource_description": "새 설명",
+            "new_resource_is_active": "on",
+        },
+        follow_redirects=False,
+    )
+    work_type_response = client.post(
+        "/admin/work-types",
+        data={
+            f"work_type_{work_type_id}_name": "수정 업무",
+            f"work_type_{work_type_id}_sort_order": "10",
+            f"work_type_{work_type_id}_is_active": "on",
+            "new_work_type_name": "새 업무",
+            "new_work_type_sort_order": "20",
+            "new_work_type_is_active": "on",
+        },
+        follow_redirects=False,
+    )
+
+    assert resource_response.status_code == 302
+    assert work_type_response.status_code == 302
+    form_response = client.get("/reservations/new")
+    body = form_response.get_data(as_text=True)
+    assert "수정 리소스 (OpenAI)" in body
+    assert "새 리소스 (OpenAI)" in body
+    assert "수정 업무" in body
+    assert "새 업무" in body
+
+
+def test_admin_guides_can_update_gpt_access_messages(client, app):
+    with app.app_context():
+        create_user(email="admin@senedu.kr", name="Admin", role="admin")
+        db.session.add_all([
+            AppSetting(key="board_reference_message", value="기존 접속 안내", label="접속 안내", help_text="", sort_order=1),
+            AppSetting(key="auth_message", value="기존 인증 안내", label="인증 안내", help_text="", sort_order=2),
+            AppSetting(key="logout_notice", value="기존 로그아웃 안내", label="로그아웃 안내", help_text="", sort_order=3),
+            GuideItem(code="GUIDE_TEST", category="테스트", title="테스트 안내", body="본문", sort_order=1, is_active=True),
+        ])
+        db.session.commit()
+        guide = GuideItem.query.filter_by(code="GUIDE_TEST").one()
+
+    login(client, email="admin@senedu.kr")
+    response = client.post(
+        "/admin/guides",
+        data={
+            "setting_board_reference_message": "새 접속 안내",
+            "setting_auth_message": "새 인증 안내",
+            "setting_logout_notice": "새 로그아웃 안내",
+            f"guide_{guide.id}_category": "테스트",
+            f"guide_{guide.id}_title": "테스트 안내",
+            f"guide_{guide.id}_sort_order": "1",
+            f"guide_{guide.id}_is_active": "on",
+            f"guide_{guide.id}_body": "본문",
+        },
+        follow_redirects=False,
+    )
+
+    assert response.status_code == 302
+    dashboard = client.get("/dashboard")
+    body = dashboard.get_data(as_text=True)
+    assert "새 접속 안내" in body
+    assert "새 인증 안내" in body
+    assert "새 로그아웃 안내" in body
+
+
+def test_auth_manager_is_limited_to_two_users(client, app):
+    with app.app_context():
+        create_user(email="admin@senedu.kr", name="Admin", role="admin")
+        manager1 = create_user(email="manager1@senedu.kr", name="Manager 1")
+        manager1.is_auth_manager = True
+        manager1.is_active = True
+        manager2 = create_user(email="manager2@senedu.kr", name="Manager 2")
+        manager2.is_auth_manager = True
+        manager2.is_active = True
+        target = create_user(email="manager3@senedu.kr", name="Manager 3")
+        db.session.commit()
+        target_id = target.id
+
+    login(client, email="admin@senedu.kr")
+    response = client.post(
+        f"/admin/users/{target_id}/update",
+        data={
+            "name": "Manager 3",
+            "department": "정보부",
+            "extension": "333",
+            "role": "user",
+            "sort_order": "100",
+            "is_active": "on",
+            "is_auth_manager": "on",
+        },
+        follow_redirects=True,
+    )
+
+    assert response.status_code == 200
+    assert "인증번호 담당자는 최대 2명까지만 지정할 수 있습니다." in response.get_data(as_text=True)
+    with app.app_context():
+        assert db.session.get(User, target_id).is_auth_manager is False
+
+
+def test_admin_pytest_command_falls_back_to_uv_when_pytest_module_is_missing(monkeypatch):
+    from app.admin import routes
+
+    monkeypatch.setattr(routes.importlib.util, "find_spec", lambda name: None)
+    monkeypatch.setattr(routes.shutil, "which", lambda name: "/usr/local/bin/uv" if name == "uv" else None)
+
+    assert routes._pytest_command() == ["/usr/local/bin/uv", "run", "--frozen", "pytest"]
+
+
+def test_admin_pytest_command_uses_current_python_when_pytest_module_exists(monkeypatch):
+    from app.admin import routes
+
+    monkeypatch.setattr(routes.importlib.util, "find_spec", lambda name: object())
+
+    assert routes._pytest_command() == [routes.sys.executable, "-m", "pytest"]

@@ -9,7 +9,7 @@ WORKDIR /app
 RUN pip install --no-cache-dir uv
 
 COPY pyproject.toml ./
-RUN uv pip install --system .
+RUN uv pip install --system --group dev .
 
 COPY . .
 RUN mkdir -p /app/instance
