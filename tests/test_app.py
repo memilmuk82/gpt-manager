@@ -19,27 +19,36 @@ def test_index_page_returns_200():
 
 
 def test_dashboard_shows_missing_usage_log_alert_and_metrics(client, app):
-    from datetime import datetime
+    from datetime import datetime, timedelta
 
     from app.extensions import db
     from app.models import AiResource, Reservation, ReservationStatus, User
 
+    now = datetime.now()
     with app.app_context():
         user = User(email="teacher@example.com", name="Teacher")
         user.set_password("password123")
         resource = AiResource(name="GPT Pro", provider="OpenAI")
         db.session.add_all([user, resource])
         db.session.flush()
-        db.session.add(
+        db.session.add_all([
             Reservation(
                 user_id=user.id,
                 resource_id=resource.id,
-                start_at=datetime(2026, 7, 2, 9, 0),
-                end_at=datetime(2026, 7, 2, 10, 0),
+                start_at=now - timedelta(days=1, hours=1),
+                end_at=now - timedelta(days=1),
                 purpose="로그 미작성 예약",
                 status=ReservationStatus.COMPLETED,
-            )
-        )
+            ),
+            Reservation(
+                user_id=user.id,
+                resource_id=resource.id,
+                start_at=now - timedelta(days=45, hours=1),
+                end_at=now - timedelta(days=45),
+                purpose="오래된 로그 미작성 예약",
+                status=ReservationStatus.COMPLETED,
+            ),
+        ])
         db.session.commit()
 
     client.post("/auth/login", data={"email": "teacher@example.com", "password": "password123"})
@@ -49,6 +58,7 @@ def test_dashboard_shows_missing_usage_log_alert_and_metrics(client, app):
     assert response.status_code == 200
     assert "사용 로그 작성 필요" in body
     assert "로그 미작성 예약" in body
+    assert "오래된 로그 미작성 예약" not in body
     assert "내 월간 예약" in body
 
 

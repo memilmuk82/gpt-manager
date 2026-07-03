@@ -1,4 +1,4 @@
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 
 from flask import Blueprint, jsonify, render_template
 from flask_login import current_user, login_required
@@ -46,11 +46,13 @@ def dashboard():
     )
     today_reservations = today_query.order_by(Reservation.start_at.asc()).limit(8).all()
     month_start = datetime.combine(now.date().replace(day=1), time.min)
+    missing_log_cutoff = now - timedelta(days=30)
     missing_log_reservations = [
         reservation
-        for reservation in Reservation.query.filter_by(
-            user_id=current_user.id,
-            status=ReservationStatus.COMPLETED,
+        for reservation in Reservation.query.filter(
+            Reservation.user_id == current_user.id,
+            Reservation.status == ReservationStatus.COMPLETED,
+            Reservation.end_at >= missing_log_cutoff,
         ).order_by(Reservation.end_at.desc()).all()
         if reservation.usage_logs.count() == 0
     ]
