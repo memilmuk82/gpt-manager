@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 
-{% block title %}{{ title }} - {{ config.get("APP_TITLE", "생성형 AI 계정 공동 사용 지원 시스템") }}{% endblock %}
+{% block title %}{{ title }} - {{ config.get("APP_TITLE", "ChatGPT Pro 5X 공동 사용 지원 시스템") }}{% endblock %}
 
 {% block content %}
-  <article class="mx-auto max-w-4xl space-y-8">
-    <div class="border-b border-slate-200 pb-5">
-      <p class="text-sm font-medium text-teal-700">종로산업정보학교</p>
-      <h1 class="mt-2 text-3xl font-bold text-slate-950">{{ title }}</h1>
+  <article class="mx-auto max-w-4xl space-y-6">
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <p class="text-sm font-semibold text-slate-500">{{ config.get("ORGANIZATION_NAME", "종로산업정보학교") }}</p>
+      <h1 class="mt-2 text-3xl font-extrabold text-slate-950">{{ title }}</h1>
     </div>
 
-    <div class="space-y-4">
+    <div class="rounded-2xl border border-slate-200 bg-white p-6 text-sm leading-7 text-slate-700 shadow-sm [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:text-slate-950 [&_h2]:mt-6 [&_h2]:text-xl [&_h2]:font-bold [&_h2]:text-slate-950 [&_h3]:mt-5 [&_h3]:font-bold [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mt-3">
       {{ document_html }}
     </div>
   </article>

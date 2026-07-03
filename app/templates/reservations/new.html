@@ -1,46 +1,128 @@
 {% extends "base.html" %}
 
-{% block title %}New Reservation - GPT Share Manager vNext{% endblock %}
+{% block title %}사용 신청 - {{ config.get("APP_TITLE", "ChatGPT Pro 5X 공동 사용 지원 시스템") }}{% endblock %}
 
 {% block content %}
-  <section class="mx-auto max-w-2xl space-y-6">
-    <div>
-      <p class="text-sm font-medium uppercase tracking-wide text-teal-700">Reservations</p>
-      <h1 class="mt-2 text-3xl font-bold">새 예약</h1>
-      <p class="mt-3 text-zinc-600">예약 시간은 같은 AI 리소스에서 서로 겹칠 수 없습니다.</p>
+  <section class="mx-auto max-w-4xl space-y-6">
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <p class="text-sm font-semibold text-slate-500">사용 신청</p>
+      <h1 class="mt-2 text-3xl font-extrabold text-slate-950">사용 신청</h1>
+      <p class="mt-3 text-sm leading-6 text-slate-600">
+        GPT Pro는 교육과정 개발, 교재 개발, 워크북 제작, 정책 분석, 코드 검토 등 고난도 교육 연구 업무 지원을 목적으로 운영됩니다. 예약 등록은 시작 시간과 사용 시간을 기준으로 종료 예정 시간이 자동 계산됩니다.
+      </p>
     </div>
 
-    <form class="space-y-5 rounded-md border border-zinc-200 bg-white p-6" method="post" action="{{ url_for('reservations.create') }}">
-      <div>
-        <label class="block text-sm font-medium text-zinc-700" for="resource_id">AI 리소스</label>
-        <select class="mt-2 w-full rounded-md border border-zinc-300 px-3 py-2" id="resource_id" name="resource_id" required>
-          <option value="">선택</option>
-          {% for resource in resources %}
-            <option value="{{ resource.id }}">{{ resource.name }} ({{ resource.provider }})</option>
-          {% endfor %}
-        </select>
-      </div>
-
-      <div class="grid gap-4 sm:grid-cols-2">
+    <form id="reservation-form" class="space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" method="post" action="{{ url_for('reservations.create') }}">
+      <div class="grid gap-4 lg:grid-cols-2">
         <div>
-          <label class="block text-sm font-medium text-zinc-700" for="start_at">시작</label>
-          <input class="mt-2 w-full rounded-md border border-zinc-300 px-3 py-2" id="start_at" name="start_at" type="datetime-local" required>
+          <label class="block text-sm font-semibold text-slate-700" for="resource_id">AI 리소스</label>
+          <select class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm focus:border-slate-950 focus:outline-none focus:ring-1 focus:ring-slate-950" id="resource_id" name="resource_id" required>
+            <option value="">선택</option>
+            {% for resource in resources %}
+              <option value="{{ resource.id }}">{{ resource.name }} ({{ resource.provider }})</option>
+            {% endfor %}
+          </select>
         </div>
         <div>
-          <label class="block text-sm font-medium text-zinc-700" for="end_at">종료</label>
-          <input class="mt-2 w-full rounded-md border border-zinc-300 px-3 py-2" id="end_at" name="end_at" type="datetime-local" required>
+          <label class="block text-sm font-semibold text-slate-700" for="work_type">작업 유형</label>
+          <select class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm focus:border-slate-950 focus:outline-none focus:ring-1 focus:ring-slate-950" id="work_type" name="work_type">
+            <option value="">작업 유형 선택</option>
+            <option>일반 AI로 해결되지 않는 업무</option>
+            <option>장시간 추론</option>
+            <option>복수 문서 종합 분석</option>
+            <option>코드 검토 및 설계</option>
+            <option>정책.교육과정 검토</option>
+            <option>보고서 작성</option>
+            <option>워크북 개발</option>
+            <option>교과서 미발행 과목 교재 개발</option>
+            <option>공개 자료 통합 분석</option>
+            <option>다수 PDF 종합 분석</option>
+            <option>교육과정 설계</option>
+            <option>NCS 능력단위 분석</option>
+            <option>교육청 승인 문서 작성 지원</option>
+          </select>
         </div>
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-zinc-700" for="purpose">목적</label>
-        <input class="mt-2 w-full rounded-md border border-zinc-300 px-3 py-2" id="purpose" name="purpose" type="text" maxlength="255" required>
+        <label class="block text-sm font-semibold text-slate-700" for="purpose">작업명</label>
+        <input class="mt-2 w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm focus:border-slate-950 focus:outline-none focus:ring-1 focus:ring-slate-950" id="purpose" name="purpose" type="text" maxlength="255" placeholder="예: 일본어I 워크북 제작" required>
       </div>
 
-      <div class="flex gap-3">
-        <button class="rounded-md bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800" type="submit">예약 생성</button>
-        <a class="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100" href="{{ url_for('reservations.index') }}">취소</a>
+      <div class="grid gap-4 lg:grid-cols-3">
+        <div>
+          <label class="block text-sm font-semibold text-slate-700" for="start_at">시작 시간</label>
+          <input class="mt-2 w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm focus:border-slate-950 focus:outline-none focus:ring-1 focus:ring-slate-950" id="start_at" name="start_at" type="datetime-local" required>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-slate-700" for="duration_minutes">사용 시간</label>
+          <select class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm focus:border-slate-950 focus:outline-none focus:ring-1 focus:ring-slate-950" id="duration_minutes">
+            <option value="30">30분</option>
+            <option value="60" selected>1시간</option>
+            <option value="120">2시간</option>
+            <option value="180">3시간</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-slate-700" for="end_at">종료 예정 시간</label>
+          <input class="mt-2 w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm focus:border-slate-950 focus:outline-none focus:ring-1 focus:ring-slate-950" id="end_at" name="end_at" type="datetime-local" required>
+        </div>
+      </div>
+      <p class="text-sm leading-6 text-slate-500">시작 시간과 사용 시간을 기준으로 자동 입력됩니다. 필요하면 직접 수정할 수 있습니다.</p>
+
+      <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+        <h2 class="text-sm font-bold text-amber-950">사용 전 확인</h2>
+        <div class="mt-3 grid gap-2 text-sm leading-6 text-amber-950">
+          <label class="flex gap-2"><input class="mt-1" type="checkbox" checked required> <span>개인정보·민감정보를 입력하지 않습니다.</span></label>
+          <label class="flex gap-2"><input class="mt-1" type="checkbox" checked required> <span>평가·출제 자료를 입력하지 않습니다.</span></label>
+          <label class="flex gap-2"><input class="mt-1" type="checkbox" checked required> <span>실제 학생 생활기록부 자료를 입력하지 않습니다.</span></label>
+          <label class="flex gap-2"><input class="mt-1" type="checkbox" checked required> <span>실제 학생 자료를 이용한 생기부 문구 생성, 평가총평 생성, 상담문구 초안 생성을 하지 않습니다.</span></label>
+        </div>
+      </div>
+
+      <div id="conflict-message" class="hidden rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold text-emerald-800">
+        이 Flask 버전은 별도 사전 조회 버튼 없이 예약 등록 시 서버에서 충돌을 자동 검증합니다.
+      </div>
+
+      <div class="flex flex-wrap gap-3">
+        <button class="rounded-full border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50" type="button" id="conflict-button">충돌 확인</button>
+        <button class="rounded-full bg-slate-950 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800" type="submit" aria-label="예약 생성">예약 등록</button>
+        <button class="rounded-full border border-slate-300 bg-slate-100 px-5 py-2.5 text-sm font-semibold text-slate-800 hover:bg-slate-200" type="button" id="start-now-button">지금 사용 시작</button>
+        <a class="rounded-full border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50" href="{{ url_for('reservations.index') }}">취소</a>
       </div>
     </form>
   </section>
+
+  <script>
+    (function () {
+      const start = document.getElementById('start_at');
+      const end = document.getElementById('end_at');
+      const duration = document.getElementById('duration_minutes');
+      const form = document.getElementById('reservation-form');
+      const pad = (value) => String(value).padStart(2, '0');
+      const toLocalInput = (date) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+      const updateEnd = () => {
+        if (!start.value) return;
+        const base = new Date(start.value);
+        base.setMinutes(base.getMinutes() + Number(duration.value || 60));
+        end.value = toLocalInput(base);
+      };
+      const setNow = () => {
+        const now = new Date();
+        now.setSeconds(0, 0);
+        start.value = toLocalInput(now);
+        updateEnd();
+      };
+      if (!start.value) setNow();
+      start.addEventListener('change', updateEnd);
+      duration.addEventListener('change', updateEnd);
+      document.getElementById('conflict-button').addEventListener('click', function () {
+        document.getElementById('conflict-message').classList.remove('hidden');
+      });
+      document.getElementById('start-now-button').addEventListener('click', function () {
+        setNow();
+        if (form.reportValidity()) form.submit();
+      });
+    })();
+  </script>
 {% endblock %}

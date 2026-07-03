@@ -1,39 +1,34 @@
 {% extends "base.html" %}
 
-{% block title %}Prompt Reviews - GPT Share Manager vNext{% endblock %}
+{% block title %}프롬프트 점검 - {{ config.get("APP_TITLE", "ChatGPT Pro 5X 공동 사용 지원 시스템") }}{% endblock %}
 
 {% block content %}
   <section class="space-y-6">
-    <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-      <div>
-        <p class="text-sm font-medium uppercase text-teal-700">Prompt Reviews</p>
-        <h1 class="mt-2 text-3xl font-bold">프롬프트 점검</h1>
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p class="text-sm font-semibold text-slate-500">PROMPT REVIEWS</p>
+          <h1 class="mt-2 text-3xl font-extrabold text-slate-950">프롬프트 점검</h1>
+        </div>
+        <a class="rounded-full bg-slate-950 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800" href="{{ url_for('prompts.new') }}">새 점검</a>
       </div>
-      <a class="rounded-md bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800" href="{{ url_for('prompts.new') }}">새 점검</a>
     </div>
 
-    <div class="overflow-hidden rounded-md border border-zinc-200 bg-white">
-      <table class="min-w-full divide-y divide-zinc-200 text-sm">
-        <thead class="bg-zinc-50 text-left text-zinc-600">
-          <tr>
-            <th class="px-4 py-3 font-medium">목표</th>
-            <th class="px-4 py-3 font-medium">모델</th>
-            <th class="px-4 py-3 font-medium">생성일</th>
-            <th class="px-4 py-3 font-medium">보기</th>
-          </tr>
+    <div class="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <table class="min-w-full divide-y divide-slate-200 text-sm">
+        <thead class="bg-slate-50 text-left text-slate-600">
+          <tr><th class="px-4 py-3 font-semibold">목표</th><th class="px-4 py-3 font-semibold">모델</th><th class="px-4 py-3 font-semibold">생성일</th><th class="px-4 py-3 font-semibold">보기</th></tr>
         </thead>
-        <tbody class="divide-y divide-zinc-100">
+        <tbody class="divide-y divide-slate-100">
           {% for review in reviews %}
             <tr>
-              <td class="px-4 py-3">{{ review.review_goal }}</td>
-              <td class="px-4 py-3 text-zinc-600">{{ review.model_name }}</td>
-              <td class="px-4 py-3 text-zinc-600">{{ review.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
-              <td class="px-4 py-3"><a class="text-teal-700 hover:text-teal-900" href="{{ url_for('prompts.show', review_id=review.id) }}">열기</a></td>
+              <td class="px-4 py-3 font-semibold text-slate-900">{{ review.review_goal }}</td>
+              <td class="px-4 py-3 text-slate-600">{{ review.model_name }}</td>
+              <td class="px-4 py-3 text-slate-600">{{ review.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+              <td class="px-4 py-3"><a class="font-semibold text-slate-900 hover:text-slate-600" href="{{ url_for('prompts.show', review_id=review.id) }}">열기</a></td>
             </tr>
           {% else %}
-            <tr>
-              <td class="px-4 py-6 text-zinc-500" colspan="4">저장된 점검 결과가 없습니다.</td>
-            </tr>
+            <tr><td class="px-4 py-8 text-center text-slate-500" colspan="4">저장된 점검 결과가 없습니다.</td></tr>
           {% endfor %}
         </tbody>
       </table>

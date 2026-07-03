@@ -1,27 +1,21 @@
 {% extends "base.html" %}
 
-{% block title %}로그인 - {{ config.get("APP_TITLE", "생성형 AI 계정 공동 사용 지원 시스템") }}{% endblock %}
+{% block title %}로그인 - {{ config.get("APP_TITLE", "ChatGPT Pro 5X 공동 사용 지원 시스템") }}{% endblock %}
 
 {% block content %}
   <section class="mx-auto max-w-md space-y-6">
-    <div>
-      <p class="text-sm font-medium text-teal-700">{{ config.get("ORGANIZATION_NAME", "학교") }}</p>
-      <h1 class="mt-2 text-2xl font-bold text-slate-950">로그인</h1>
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <p class="text-sm font-semibold text-slate-500">{{ config.get("ORGANIZATION_NAME", "종로산업정보학교") }}</p>
+      <h1 class="mt-2 text-3xl font-extrabold text-slate-950">로그인</h1>
       <p class="mt-2 text-sm leading-6 text-slate-600">로컬 계정 또는 Google 계정으로 로그인합니다.</p>
     </div>
 
-    <a class="inline-flex rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100" href="{{ url_for('auth.google_login') }}">Google 로그인</a>
+    <a class="inline-flex rounded-full border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50" href="{{ url_for('auth.google_login') }}">Google 로그인</a>
 
-    <form class="space-y-4 rounded-lg border border-slate-200 bg-white p-5 shadow-sm" method="post" action="{{ url_for('auth.login_post', next=request.args.get('next')) }}">
-      <label class="block text-sm font-medium">
-        이메일
-        <input class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2" name="email" type="email" required autocomplete="email">
-      </label>
-      <label class="block text-sm font-medium">
-        비밀번호
-        <input class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2" name="password" type="password" required autocomplete="current-password">
-      </label>
-      <button class="rounded-md bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800" type="submit">로그인</button>
+    <form class="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm" method="post" action="{{ url_for('auth.login_post', next=request.args.get('next')) }}">
+      <label class="block text-sm font-semibold text-slate-700">이메일<input class="mt-2 w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm" name="email" type="email" required autocomplete="email"></label>
+      <label class="block text-sm font-semibold text-slate-700">비밀번호<input class="mt-2 w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm" name="password" type="password" required autocomplete="current-password"></label>
+      <button class="rounded-full bg-slate-950 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800" type="submit">로그인</button>
     </form>
   </section>
 {% endblock %}
