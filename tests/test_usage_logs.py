@@ -166,3 +166,24 @@ def test_user_cannot_view_another_users_usage_log(client, app):
     assert index_response.status_code == 200
     assert "다른 사용자 로그" not in index_response.get_data(as_text=True)
     assert show_response.status_code == 404
+
+
+def test_usage_log_filters_by_keyword_work_type_and_resource(client, app):
+    with app.app_context():
+        user = create_user()
+        resource = create_resource()
+        other_resource = create_resource(name="GPT Pro 공용 계정 B")
+        db.session.add_all([
+            UsageLog(user_id=user.id, resource_id=resource.id, work_type="수업", summary="활동지 작성", prompt_text="활동지"),
+            UsageLog(user_id=user.id, resource_id=other_resource.id, work_type="행정", summary="가정통신문 작성"),
+        ])
+        db.session.commit()
+        resource_id = resource.id
+
+    login(client)
+    response = client.get(f"/logs?q=활동지&work_type=수업&resource_id={resource_id}")
+    body = response.get_data(as_text=True)
+
+    assert response.status_code == 200
+    assert "활동지 작성" in body
+    assert "가정통신문 작성" not in body

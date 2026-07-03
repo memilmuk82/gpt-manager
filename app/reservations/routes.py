@@ -2,6 +2,7 @@ from datetime import date, datetime, time
 
 from flask import flash, jsonify, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
+from sqlalchemy import or_
 
 from app.defaults import DEFAULT_WORK_TYPES
 from app.extensions import db
@@ -18,12 +19,24 @@ from app.services.reservation_service import (
 @reservations_bp.get("")
 @login_required
 def index():
-    reservations = (
-        Reservation.query.filter_by(user_id=current_user.id)
-        .order_by(Reservation.start_at.desc())
-        .all()
-    )
-    return render_template("reservations/index.html", reservations=reservations)
+    filters = {
+        "q": request.args.get("q", "").strip(),
+        "status": request.args.get("status", "").strip(),
+    }
+    query = Reservation.query.filter_by(user_id=current_user.id)
+    if filters["q"]:
+        like = f"%{filters['q']}%"
+        query = query.filter(
+            or_(
+                Reservation.purpose.ilike(like),
+                Reservation.work_type.ilike(like),
+                Reservation.description.ilike(like),
+            )
+        )
+    if filters["status"] in {ReservationStatus.RESERVED, ReservationStatus.COMPLETED, ReservationStatus.CANCELLED}:
+        query = query.filter(Reservation.status == filters["status"])
+    reservations = query.order_by(Reservation.start_at.desc()).all()
+    return render_template("reservations/index.html", reservations=reservations, filters=filters)
 
 
 @reservations_bp.get("/today")

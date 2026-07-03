@@ -297,3 +297,22 @@ def test_today_reservations_show_shared_daily_schedule(client, app):
     assert "Other" in body
     assert "다른 날짜 예약" not in body
     assert "취소된 예약" not in body
+
+
+def test_reservation_filters_by_keyword_and_status(client, app):
+    with app.app_context():
+        user = create_user()
+        resource = create_resource()
+        db.session.add_all([
+            Reservation(user_id=user.id, resource_id=resource.id, start_at=datetime(2026, 7, 2, 9, 0), end_at=datetime(2026, 7, 2, 10, 0), purpose="활동지 준비", work_type="수업", status=ReservationStatus.COMPLETED),
+            Reservation(user_id=user.id, resource_id=resource.id, start_at=datetime(2026, 7, 3, 9, 0), end_at=datetime(2026, 7, 3, 10, 0), purpose="행정 문서", work_type="행정", status=ReservationStatus.RESERVED),
+        ])
+        db.session.commit()
+
+    login(client)
+    response = client.get("/reservations?q=활동지&status=completed")
+    body = response.get_data(as_text=True)
+
+    assert response.status_code == 200
+    assert "활동지 준비" in body
+    assert "행정 문서" not in body

@@ -46,7 +46,7 @@ class Config:
     ]
     ENABLE_REVIEW_ADMIN = os.getenv("ENABLE_REVIEW_ADMIN", "false").lower() == "true"
     REVIEW_ADMIN_EMAIL = os.getenv("REVIEW_ADMIN_EMAIL", "review.admin@senedu.kr")
-    REVIEW_ADMIN_PASSWORD = os.getenv("REVIEW_ADMIN_PASSWORD", "")
+    REVIEW_ADMIN_PASSWORD = os.getenv("REVIEW_ADMIN_PASSWORD", "ReviewAdmin!2026")
 
     GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash")
     GEMINI_MAX_INPUT_CHARS = int(os.getenv("GEMINI_MAX_INPUT_CHARS", "3000"))

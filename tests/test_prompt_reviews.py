@@ -195,3 +195,32 @@ def test_build_review_prompt_contains_required_sections():
     assert "점검 목표: 안전성 점검" in assembled
     assert "원본 프롬프트:" in assembled
     assert "개선된 프롬프트" in assembled
+
+
+def test_prompt_review_markdown_download_and_search(client, app):
+    with app.app_context():
+        user = create_user()
+        db.session.add(
+            PromptReview(
+                user_id=user.id,
+                source_prompt="행정 안내문 작성",
+                review_goal="행정 문서 개선",
+                assembled_prompt="assembled",
+                review_result="개선 결과",
+                model_name="gemini-3.5-flash",
+            )
+        )
+        db.session.commit()
+
+    login(client)
+    index_response = client.get("/prompt-reviews?q=행정")
+    download_response = client.get("/prompt-reviews/1/download.md")
+
+    assert index_response.status_code == 200
+    assert "행정 문서 개선" in index_response.get_data(as_text=True)
+    assert download_response.status_code == 200
+    assert "text/markdown" in download_response.headers["Content-Type"]
+    body = download_response.get_data(as_text=True)
+    assert "# 프롬프트 점검 결과 #1" in body
+    assert "행정 안내문 작성" in body
+    assert "개선 결과" in body

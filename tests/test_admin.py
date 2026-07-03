@@ -1,5 +1,7 @@
 from app.extensions import db
-from app.models import AiResource, AppSetting, ApprovalStatus, GuideItem, User, WorkType
+from datetime import datetime
+
+from app.models import AiResource, AppSetting, ApprovalStatus, AuditLog, GuideItem, Reservation, ReservationStatus, UsageLog, User, WorkType
 
 
 def create_user(email="teacher@senedu.kr", name="Teacher", role="user", approval_status="approved") -> User:
@@ -254,3 +256,74 @@ def test_guide_page_shows_quick_links_for_all_active_guides(client, app):
     assert response.status_code == 200
     for label in ["적합 상세", "부적합 상세", "민감정보 상세", "평가보안 상세", "학생부 상세"]:
         assert label in body
+
+
+def test_admin_monthly_report_markdown_download(client, app):
+    with app.app_context():
+        admin = create_user(email="admin@senedu.kr", name="Admin", role="admin")
+        user = create_user(email="teacher@senedu.kr", name="Teacher")
+        resource = AiResource(name="GPT Pro", provider="OpenAI")
+        db.session.add(resource)
+        db.session.flush()
+        reservation = Reservation(
+            user_id=user.id,
+            resource_id=resource.id,
+            start_at=datetime(2026, 7, 2, 9, 0),
+            end_at=datetime(2026, 7, 2, 10, 0),
+            purpose="수업 준비",
+            work_type="수업 자료",
+            status=ReservationStatus.COMPLETED,
+        )
+        db.session.add(reservation)
+        db.session.flush()
+        db.session.add(UsageLog(user_id=user.id, reservation_id=reservation.id, resource_id=resource.id, work_type="수업 자료", summary="활동지 초안"))
+        db.session.commit()
+
+    login(client, email="admin@senedu.kr")
+    page = client.get("/admin?section=reports&month=2026-07")
+    download = client.get("/admin/reports/monthly.md?month=2026-07")
+
+    assert page.status_code == 200
+    assert "월간 운영 보고서" in page.get_data(as_text=True)
+    assert download.status_code == 200
+    assert "text/markdown" in download.headers["Content-Type"]
+    body = download.get_data(as_text=True)
+    assert "생성형 AI 계정 월간 운영 보고서 (2026-07)" in body
+    assert "수업 자료" in body
+    assert "활동지 초안" in body
+
+
+def test_admin_actions_create_audit_log(client, app):
+    with app.app_context():
+        create_user(email="admin@senedu.kr", name="Admin", role="admin")
+        pending = create_user(email="pending@senedu.kr", name="Pending", approval_status="pending")
+        pending_id = pending.id
+
+    login(client, email="admin@senedu.kr")
+    response = client.post(f"/admin/users/{pending_id}/approve", follow_redirects=False)
+
+    assert response.status_code == 302
+    with app.app_context():
+        audit_log = AuditLog.query.one()
+        assert audit_log.action == "users.approve"
+        assert audit_log.target_id == str(pending_id)
+        assert "pending@senedu.kr" in audit_log.summary
+
+    audit_page = client.get("/admin?section=audit")
+    assert audit_page.status_code == 200
+    assert "users.approve" in audit_page.get_data(as_text=True)
+
+
+def test_admin_user_filters(client, app):
+    with app.app_context():
+        create_user(email="admin@senedu.kr", name="Admin", role="admin")
+        create_user(email="assistant@senedu.kr", name="Assistant", role="assistant_admin", approval_status="approved")
+        create_user(email="teacher@senedu.kr", name="Teacher", role="user", approval_status="approved")
+
+    login(client, email="admin@senedu.kr")
+    response = client.get("/admin?section=users&q=assistant&role=assistant_admin&status=active")
+    body = response.get_data(as_text=True)
+
+    assert response.status_code == 200
+    assert "assistant@senedu.kr" in body
+    assert "teacher@senedu.kr" not in body

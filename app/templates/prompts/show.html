@@ -10,7 +10,7 @@
           <h1 class="flex items-center gap-2 text-2xl font-extrabold text-slate-950">✓ 점검 결과</h1>
           <p class="mt-3 text-sm leading-6 text-slate-600">{{ review.model_name }} · {{ review.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
         </div>
-        <a class="inline-flex h-11 items-center rounded-xl border border-slate-300 bg-white px-5 text-sm font-extrabold text-slate-700 hover:bg-slate-50" href="{{ url_for('prompts.index') }}">목록</a>
+        <div class="flex flex-wrap gap-2"><a class="inline-flex h-11 items-center rounded-xl border border-slate-300 bg-white px-5 text-sm font-extrabold text-slate-700 hover:bg-slate-50" href="{{ url_for('prompts.download', review_id=review.id) }}">Markdown 다운로드</a><a class="inline-flex h-11 items-center rounded-xl border border-slate-300 bg-white px-5 text-sm font-extrabold text-slate-700 hover:bg-slate-50" href="{{ url_for('prompts.index') }}">목록</a></div>
       </div>
     </div>
 

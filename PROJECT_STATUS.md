@@ -15,7 +15,7 @@
 ```text
 상태: 운영 보안/예약-로그 연동 보완 및 문서화 완료
 최근 기능 브랜치: codex/admin-reservation-ui-docs
-pytest: PASS, 71 passed
+pytest: PASS, 77 passed
 Docker Compose rebuild: PASS, gpt-manager-web-1 Up, /healthz 200
 운영 Health Check: PASS, /healthz 200 {"status":"ok"}
 HTTPS 도메인: PASS, dev-gpt.memilmuk82.com 200 OK
@@ -30,8 +30,9 @@ Playwright E2E: PASS, 1 passed
 운영 보안 보완: CSRF 보호, Google OAuth 권한 정책 보정, 리뷰용 관리자 계정 opt-in, Gemini 일일 호출 제한 구현 완료
 예약-로그 연동: 완료 예약 사용 로그 작성 유도 및 자동 선택 구현 완료
 SQLite 백업/복원 스크립트 및 문서화 완료
+잔여 확장 기능: 월간 운영 보고서, 프롬프트 Markdown 다운로드, 감사 로그, 검색/필터, 법률 검토 체크리스트 구현 완료
 신청 항목 관리(AI 리소스/작업유형), 인증번호 담당자 2명 제한, 관리자 테스트 실행 fallback, 주요 화면 문구 Settings 관리, 프롬프트 점검 UI 최신화, 개인 Gemini API Key 설정 및 사용자 badge 바로가기 접근성 개선: 구현 완료
-변경 기록: docs/development/2026-07-03_ADMIN_RESERVATION_UI_UPDATE.md, docs/development/2026-07-03_SECURITY_OPERATION_HARDENING.md
+변경 기록: docs/development/2026-07-03_ADMIN_RESERVATION_UI_UPDATE.md, docs/development/2026-07-03_SECURITY_OPERATION_HARDENING.md, docs/development/2026-07-03_REMAINING_FEATURES_COMPLETION.md
 ```
 
 ## 3. 확정된 방향
@@ -93,15 +94,15 @@ Google OAuth 로그인
 승인 사용자 홈 화면
 사용 신청/내 예약/오늘 예약
 DB 기반 작업 유형 드롭다운, 사용 전 확인, 사용 시간 자동 계산, 충돌 확인 API
-사용 로그
+사용 로그 및 검색/필터
 Gemini API Key 설정 및 사용자 badge 바로가기
-프롬프트 점검 최신 화면/상단 메뉴/홈 빠른 이동
+프롬프트 점검 최신 화면/상단 메뉴/홈 빠른 이동/Markdown 다운로드
 사용 안내
 공통 Footer 법적 고지 링크
 이용약관/개인정보처리방침 페이지
 관리자/보조관리자 대시보드
 사용자 승인/정지/수정/CSV 일괄 등록 관리, 인증번호 담당자 최대 2명 제한
-관리자 설정 관리, 안내문구 관리, 주요 화면 문구 관리, AI 리소스/작업유형 관리, 등록 요청 관리, 통계 조회, 전체 테스트 실행
+관리자 설정 관리, 안내문구 관리, 주요 화면 문구 관리, AI 리소스/작업유형 관리, 등록 요청 관리, 통계 조회, 월간 운영 보고서, 감사 로그, 전체 테스트 실행
 ```
 
 ## 7. 권한 정책
@@ -140,7 +141,7 @@ Port binding: 127.0.0.1:5000 -> container 5000
 ```text
 명령: uv run pytest
 결과: PASS
-PASS: 71
+PASS: 77
 FAIL: 0
 ```
 

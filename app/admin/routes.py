@@ -4,11 +4,13 @@ import io
 import shutil
 import subprocess
 import sys
+from calendar import monthrange
 from collections import defaultdict
+from datetime import date, datetime, time
 from functools import wraps
 from pathlib import Path
 
-from flask import abort, flash, redirect, render_template, request, url_for
+from flask import Response, abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
 from app.admin import admin_bp
@@ -16,6 +18,7 @@ from app.extensions import db
 from app.models import (
     AiResource,
     AppSetting,
+    AuditLog,
     ApprovalStatus,
     GuideItem,
     PromptReview,
@@ -57,6 +60,18 @@ def users():
     return render_template("admin/dashboard.html", **_admin_context(section="users"))
 
 
+@admin_bp.get("/reports/monthly.md")
+@admin_required
+def monthly_report_download():
+    report = _monthly_report_context()
+    filename = f"gpt-manager-monthly-report-{report['month']}.md"
+    return Response(
+        report["markdown"],
+        mimetype="text/markdown; charset=utf-8",
+        headers={"Content-Disposition": f"attachment; filename={filename}"},
+    )
+
+
 @admin_bp.post("/settings")
 @admin_required
 def save_settings():
@@ -66,6 +81,7 @@ def save_settings():
             flash(f"{setting.label} 항목을 입력하세요.", "error")
             return redirect(url_for("admin.dashboard", section="settings"))
         setting.value = value
+    _record_audit("settings.update", "settings", "app", "관리자 설정을 저장했습니다.")
     db.session.commit()
     flash("설정 변경사항을 저장했습니다.", "success")
     return redirect(url_for("admin.dashboard", section="settings"))
@@ -88,6 +104,7 @@ def save_guides():
         guide.body = request.form.get(prefix + "body", "").strip()
         guide.sort_order = _int_or_default(request.form.get(prefix + "sort_order"), guide.sort_order)
         guide.is_active = request.form.get(prefix + "is_active") == "on"
+    _record_audit("guides.update", "guides", "all", "안내 문구를 저장했습니다.")
     db.session.commit()
     flash("안내 문구를 저장했습니다.", "success")
     return redirect(url_for("admin.dashboard", section="guides"))
@@ -124,6 +141,7 @@ def save_resources():
             )
         )
 
+    _record_audit("resources.update", "ai_resource", "all", "AI 리소스 변경사항을 저장했습니다.")
     db.session.commit()
     flash("AI 리소스 변경사항을 저장했습니다.", "success")
     return redirect(url_for("admin.dashboard", section="resources"))
@@ -159,6 +177,7 @@ def save_work_types():
         flash("최소 1개의 활성 작업유형이 필요합니다.", "error")
         return redirect(url_for("admin.dashboard", section="resources"))
 
+    _record_audit("work_types.update", "work_type", "all", "작업유형 변경사항을 저장했습니다.")
     db.session.commit()
     flash("작업유형 변경사항을 저장했습니다.", "success")
     return redirect(url_for("admin.dashboard", section="resources"))
@@ -185,6 +204,8 @@ def create_user():
         return redirect(url_for("admin.dashboard", section="users"))
     user.set_password(password)
     db.session.add(user)
+    db.session.flush()
+    _record_audit("users.create", "user", str(user.id), f"{user.email} 사용자를 추가했습니다.")
     db.session.commit()
     flash(f"{name} 사용자를 추가했습니다.", "success")
     return redirect(url_for("admin.dashboard", section="users"))
@@ -202,6 +223,7 @@ def update_user(user_id: int):
         db.session.rollback()
         flash("인증번호 담당자는 최대 2명까지만 지정할 수 있습니다.", "error")
         return redirect(url_for("admin.dashboard", section="users", edit_user_id=user.id))
+    _record_audit("users.update", "user", str(user.id), f"{user.email} 사용자 정보를 저장했습니다.")
     db.session.commit()
     flash(f"{user.email} 사용자 정보를 저장했습니다.", "success")
     return redirect(url_for("admin.dashboard", section="users"))
@@ -273,6 +295,7 @@ def bulk_users():
         )
         user.set_password("password123")
         db.session.add(user)
+    _record_audit("users.bulk_create", "user", "bulk", f"CSV 사용자 {len(prepared)}명을 일괄 등록했습니다.")
     db.session.commit()
     flash(f"CSV 사용자 {len(prepared)}명을 일괄 등록했습니다.", "success")
     return redirect(url_for("admin.dashboard", section="users"))
@@ -284,6 +307,7 @@ def approve_user(user_id: int):
     user = db.session.get(User, user_id) or abort(404)
     user.approval_status = ApprovalStatus.APPROVED
     user.is_active = True
+    _record_audit("users.approve", "user", str(user.id), f"{user.email} 계정을 승인했습니다.")
     db.session.commit()
     flash(f"{user.email} 계정을 승인했습니다.", "success")
     return redirect(url_for("admin.dashboard", section="requests"))
@@ -299,6 +323,7 @@ def suspend_user(user_id: int):
 
     user.approval_status = ApprovalStatus.SUSPENDED
     user.is_active = False
+    _record_audit("users.suspend", "user", str(user.id), f"{user.email} 계정을 비활성화했습니다.")
     db.session.commit()
     flash(f"{user.email} 계정을 비활성화했습니다.", "success")
     return redirect(url_for("admin.dashboard", section="users"))
@@ -310,6 +335,7 @@ def activate_user(user_id: int):
     user = db.session.get(User, user_id) or abort(404)
     user.approval_status = ApprovalStatus.APPROVED
     user.is_active = True
+    _record_audit("users.activate", "user", str(user.id), f"{user.email} 계정을 활성화했습니다.")
     db.session.commit()
     flash(f"{user.email} 계정을 활성화했습니다.", "success")
     return redirect(url_for("admin.dashboard", section="users"))
@@ -333,6 +359,8 @@ def run_tests():
             "summary": _pytest_summary(completed.stdout + "\n" + completed.stderr),
             "output": (completed.stdout + "\n" + completed.stderr)[-12000:],
         }
+        _record_audit("tests.run", "pytest", str(completed.returncode), result["summary"])
+        db.session.commit()
         flash("전체 테스트 실행이 완료되었습니다.", "success" if completed.returncode == 0 else "error")
     except Exception as exc:  # pragma: no cover - 운영 환경 보호용
         result = {"returncode": 1, "summary": str(exc), "output": str(exc)}
@@ -341,8 +369,9 @@ def run_tests():
 
 
 def _admin_context(section: str = "overview", test_result: dict | None = None) -> dict:
-    users = User.query.order_by(User.sort_order.asc(), User.approval_status.asc(), User.name.asc()).all()
-    pending_users = [user for user in users if user.approval_status == ApprovalStatus.PENDING]
+    all_users = User.query.order_by(User.sort_order.asc(), User.approval_status.asc(), User.name.asc()).all()
+    users = _filtered_users(all_users)
+    pending_users = [user for user in all_users if user.approval_status == ApprovalStatus.PENDING]
     reservations = Reservation.query.all()
     usage_logs = UsageLog.query.all()
     stats = {
@@ -358,6 +387,9 @@ def _admin_context(section: str = "overview", test_result: dict | None = None) -
         "section": section,
         "stats": stats,
         "settings": AppSetting.query.order_by(AppSetting.sort_order.asc()).all(),
+        "user_filters": _user_filter_values(),
+        "report": _monthly_report_context(),
+        "audit_logs": AuditLog.query.order_by(AuditLog.created_at.desc()).limit(100).all(),
         "guide_settings": _guide_settings(),
         "guides": GuideItem.query.order_by(GuideItem.sort_order.asc()).all(),
         "resources": AiResource.query.order_by(AiResource.name.asc()).all(),
@@ -366,9 +398,124 @@ def _admin_context(section: str = "overview", test_result: dict | None = None) -
         "pending_users": pending_users,
         "role_labels": ROLE_LABELS,
         "edit_user": edit_user,
-        "admin_stats": _usage_statistics(users, reservations),
+        "admin_stats": _usage_statistics(all_users, reservations),
         "test_result": test_result,
     }
+
+
+def _filtered_users(users: list[User]) -> list[User]:
+    filters = _user_filter_values()
+    filtered = users
+    if filters["q"]:
+        needle = filters["q"].lower()
+        filtered = [
+            user
+            for user in filtered
+            if needle in user.name.lower()
+            or needle in user.email.lower()
+            or needle in (user.department or "").lower()
+        ]
+    if filters["role"]:
+        filtered = [user for user in filtered if user.role == filters["role"]]
+    if filters["status"] == "active":
+        filtered = [user for user in filtered if user.is_active and user.approval_status == ApprovalStatus.APPROVED]
+    elif filters["status"] == "inactive":
+        filtered = [user for user in filtered if not user.is_active or user.approval_status == ApprovalStatus.SUSPENDED]
+    elif filters["status"] == "pending":
+        filtered = [user for user in filtered if user.approval_status == ApprovalStatus.PENDING]
+    return filtered
+
+
+def _user_filter_values() -> dict:
+    return {
+        "q": request.args.get("q", "").strip(),
+        "role": request.args.get("role", "").strip(),
+        "status": request.args.get("status", "").strip(),
+    }
+
+
+def _monthly_report_context() -> dict:
+    raw_month = request.args.get("month", "").strip()
+    today = date.today()
+    try:
+        year, month = [int(part) for part in raw_month.split("-", 1)] if raw_month else (today.year, today.month)
+        start_date = date(year, month, 1)
+    except (TypeError, ValueError):
+        start_date = date(today.year, today.month, 1)
+    last_day = monthrange(start_date.year, start_date.month)[1]
+    end_date = date(start_date.year, start_date.month, last_day)
+    start_at = datetime.combine(start_date, time.min)
+    end_at = datetime.combine(end_date, time.max)
+
+    reservations = Reservation.query.filter(
+        Reservation.start_at >= start_at,
+        Reservation.start_at <= end_at,
+    ).all()
+    usage_logs = UsageLog.query.filter(
+        UsageLog.created_at >= start_at,
+        UsageLog.created_at <= end_at,
+    ).order_by(UsageLog.created_at.asc()).all()
+    prompt_reviews = PromptReview.query.filter(
+        PromptReview.created_at >= start_at,
+        PromptReview.created_at <= end_at,
+    ).count()
+    stats = _usage_statistics(User.query.all(), reservations)
+    month_label = start_date.strftime("%Y-%m")
+    markdown = _build_monthly_report_markdown(month_label, stats, usage_logs, prompt_reviews)
+    return {
+        "month": month_label,
+        "start_date": start_date,
+        "end_date": end_date,
+        "stats": stats,
+        "usage_logs": usage_logs,
+        "prompt_reviews": prompt_reviews,
+        "markdown": markdown,
+    }
+
+
+def _build_monthly_report_markdown(month: str, stats: dict, usage_logs: list[UsageLog], prompt_reviews: int) -> str:
+    lines = [
+        f"# 생성형 AI 계정 월간 운영 보고서 ({month})",
+        "",
+        "## 요약",
+        "",
+        f"- 전체 예약: {stats['total_reservations']}건",
+        f"- 이용 사용자: {stats['target_users']}명",
+        f"- 예약 기준 사용 시간: {stats['reserved_minutes']}분",
+        f"- 완료 기준 실제 사용 시간: {stats['actual_minutes']}분",
+        f"- 사용 로그: {len(usage_logs)}건",
+        f"- 프롬프트 점검: {prompt_reviews}건",
+        "",
+        "## 작업 유형별 사용",
+        "",
+    ]
+    if stats["by_type"]:
+        for row in stats["by_type"]:
+            lines.append(f"- {row['work_type']}: {row['count']}건, 예약 {row['reserved']}분, 완료 {row['actual']}분")
+    else:
+        lines.append("- 집계된 작업 유형이 없습니다.")
+    lines.extend(["", "## 주요 사용 로그", ""])
+    if usage_logs:
+        for log in usage_logs[:20]:
+            user_name = log.user.name if log.user else "알 수 없음"
+            lines.append(f"- {log.created_at.strftime('%Y-%m-%d')} / {user_name} / {log.work_type}: {log.summary}")
+    else:
+        lines.append("- 작성된 사용 로그가 없습니다.")
+    lines.append("")
+    return "\n".join(lines)
+
+
+def _record_audit(action: str, target_type: str, target_id: str, summary: str) -> None:
+    db.session.add(
+        AuditLog(
+            actor_user_id=current_user.id if current_user.is_authenticated else None,
+            action=action,
+            target_type=target_type,
+            target_id=target_id,
+            summary=summary,
+            ip_address=request.headers.get("X-Forwarded-For", request.remote_addr or "").split(",", 1)[0],
+        )
+    )
 
 
 def _guide_settings() -> list[AppSetting]:

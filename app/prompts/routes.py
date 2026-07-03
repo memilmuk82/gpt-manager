@@ -1,7 +1,8 @@
 from datetime import datetime, time
 
-from flask import current_app, flash, redirect, render_template, request, url_for
+from flask import Response, current_app, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
+from sqlalchemy import or_
 
 from app.extensions import db
 from app.models import PromptReview, UserApiKey
@@ -16,12 +17,19 @@ PROVIDER = "gemini"
 @prompts_bp.get("")
 @login_required
 def index():
-    reviews = (
-        PromptReview.query.filter_by(user_id=current_user.id)
-        .order_by(PromptReview.created_at.desc())
-        .all()
-    )
-    return render_template("prompts/index.html", reviews=reviews)
+    query_text = request.args.get("q", "").strip()
+    query = PromptReview.query.filter_by(user_id=current_user.id)
+    if query_text:
+        like = f"%{query_text}%"
+        query = query.filter(
+            or_(
+                PromptReview.review_goal.ilike(like),
+                PromptReview.source_prompt.ilike(like),
+                PromptReview.review_result.ilike(like),
+            )
+        )
+    reviews = query.order_by(PromptReview.created_at.desc()).all()
+    return render_template("prompts/index.html", reviews=reviews, query_text=query_text)
 
 
 @prompts_bp.get("/new")
@@ -93,8 +101,41 @@ def show(review_id: int):
     return render_template("prompts/show.html", review=review)
 
 
+@prompts_bp.get("/<int:review_id>/download.md")
+@login_required
+def download(review_id: int):
+    review = PromptReview.query.filter_by(id=review_id, user_id=current_user.id).first_or_404()
+    filename = f"prompt-review-{review.id}.md"
+    return Response(
+        _review_markdown(review),
+        mimetype="text/markdown; charset=utf-8",
+        headers={"Content-Disposition": f"attachment; filename={filename}"},
+    )
+
+
 def _get_user_api_key() -> UserApiKey | None:
     return UserApiKey.query.filter_by(user_id=current_user.id, provider=PROVIDER).first()
+
+
+def _review_markdown(review: PromptReview) -> str:
+    return "\n".join(
+        [
+            f"# 프롬프트 점검 결과 #{review.id}",
+            "",
+            f"- 생성일: {review.created_at.strftime('%Y-%m-%d %H:%M')}",
+            f"- 모델: {review.model_name}",
+            f"- 점검 목표: {review.review_goal}",
+            "",
+            "## 원본 프롬프트",
+            "",
+            review.source_prompt,
+            "",
+            "## Gemini 점검 결과",
+            "",
+            review.review_result,
+            "",
+        ]
+    )
 
 
 def _daily_review_limit_exceeded() -> bool:

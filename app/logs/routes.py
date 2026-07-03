@@ -1,5 +1,6 @@
 from flask import flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
+from sqlalchemy import or_
 
 from app.extensions import db
 from app.logs import logs_bp
@@ -9,12 +10,33 @@ from app.models import AiResource, Reservation, UsageLog
 @logs_bp.get("")
 @login_required
 def index():
-    logs = (
-        UsageLog.query.filter_by(user_id=current_user.id)
-        .order_by(UsageLog.created_at.desc())
-        .all()
+    filters = {
+        "q": request.args.get("q", "").strip(),
+        "work_type": request.args.get("work_type", "").strip(),
+        "resource_id": request.args.get("resource_id", type=int),
+    }
+    query = UsageLog.query.filter_by(user_id=current_user.id)
+    if filters["q"]:
+        like = f"%{filters['q']}%"
+        query = query.filter(
+            or_(
+                UsageLog.summary.ilike(like),
+                UsageLog.prompt_text.ilike(like),
+                UsageLog.result_note.ilike(like),
+            )
+        )
+    if filters["work_type"]:
+        query = query.filter(UsageLog.work_type == filters["work_type"])
+    if filters["resource_id"]:
+        query = query.filter(UsageLog.resource_id == filters["resource_id"])
+    logs = query.order_by(UsageLog.created_at.desc()).all()
+    return render_template(
+        "logs/index.html",
+        logs=logs,
+        filters=filters,
+        resources=AiResource.query.filter_by(is_active=True).order_by(AiResource.name.asc()).all(),
+        work_types=[row[0] for row in db.session.query(UsageLog.work_type).filter_by(user_id=current_user.id).distinct().all()],
     )
-    return render_template("logs/index.html", logs=logs)
 
 
 @logs_bp.get("/new")
