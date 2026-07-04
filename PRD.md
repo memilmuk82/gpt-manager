@@ -5,6 +5,10 @@
 [README](README.md) · [현재 상태](PROJECT_STATUS.md) · [시스템 설계](SYSTEM_DESIGN.md)
 
 
+## 문서 성격
+
+이 문서는 초기 요구사항과 제품 범위를 정리한 기준 문서입니다. 현재 구현 상태와 검증 결과는 [PROJECT_STATUS.md](PROJECT_STATUS.md)를 기준으로 확인하고, 세부 설계는 [SYSTEM_DESIGN.md](SYSTEM_DESIGN.md)를 기준으로 확인합니다.
+
 ## 1. 프로젝트명
 
 ```text

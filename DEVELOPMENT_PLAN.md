@@ -5,6 +5,10 @@
 [README](README.md) · [현재 상태](PROJECT_STATUS.md) · [개발 로그](docs/development/DEVELOPMENT_LOG.md)
 
 
+## 문서 성격
+
+이 문서는 초기 개발 일정과 Phase 계획을 보존하는 기록 문서입니다. 현재 완료 상태와 운영 검증 결과는 [PROJECT_STATUS.md](PROJECT_STATUS.md), 상세 변경 이력은 [docs/development/DEVELOPMENT_LOG.md](docs/development/DEVELOPMENT_LOG.md)를 기준으로 확인합니다.
+
 ## 1. 마감 기준
 
 ```text
@@ -228,13 +232,15 @@ AI Provider/API Key 설정
 README
 ```
 
-### 시간이 있으면 완료
+### 추가로 완료된 확장 기능
 
 ```text
 운영 보고서 생성
 프롬프트 결과 Markdown 다운로드
-관리자 리소스 관리 UI 개선
+관리자 리소스/작업유형 관리 UI
 사용 통계 요약
+관리자 테스트 실행과 테스트 파일별 설명 표시
+BYOK Provider 확장과 Anthropic 기본 추천 모델 정리
 ```
 
 ### 하지 않는다
@@ -305,12 +311,14 @@ Tailwind CDN으로 최소 화면만 구성
 
 ```text
 작성 시점: 2026-07-04
-상태: 운영 편의 기능 보완, UI 개선, 문서 포털 정리 완료
+상태: 운영 편의 기능 보완, UI 개선, 문서 포털 정리, 테스트 설명 화면 반영 완료
 운영 도메인: https://dev-gpt.memilmuk82.com
-pytest: 84 passed
+pytest: 88 passed
 Playwright E2E: 1 passed
 Docker Compose + Gunicorn + Nginx + HTTPS 운영 확인
 오늘 예약 화면, 월간 예약 캘린더, 미작성 로그 알림 구현 완료
+BYOK OpenAI/Gemini/Anthropic Provider 설정과 프롬프트 정리 구현 완료
+관리자 테스트 실행 결과의 파일별 검증 설명 표시 완료
 보조관리자 권한, 월간 운영 보고서, 감사 로그, DB 백업/CSV 내보내기 구현 완료
 /terms, /privacy Markdown 법적 고지 페이지 구현 완료
 ```

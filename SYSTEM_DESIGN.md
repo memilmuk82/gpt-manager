@@ -487,20 +487,7 @@ curl https://dev-gpt.memilmuk82.com/terms
 curl https://dev-gpt.memilmuk82.com/privacy
 ```
 
-## 12. 향후 확장
-
-```text
-CSRF 보호 도입
-관리자 리소스 관리 UI
-사용 통계 차트
-월간 보고서 생성
-SQLite 백업 자동화
-Docker PostgreSQL 전환
-권한 세분화
-```
-
-
-## 9. SQLite 호환 보정 및 기본 데이터
+## 12. SQLite 호환 보정 및 기본 데이터
 
 ```text
 기존 SQLite DB에 신규 컬럼이 없으면 앱 시작 시 ALTER TABLE로 누락 컬럼을 추가한다.
@@ -512,4 +499,14 @@ TESTING 설정에서는 자동 시드를 건너뛰어 테스트 격리를 유지
 
 ```text
 app/defaults.py
+```
+
+## 13. 향후 확장
+
+```text
+사용 통계 차트 시각화
+Docker PostgreSQL 전환 리허설
+권한 세분화 정책 검토
+운영 DB 백업/복원 절차 정례화
+기관 기준 이용약관/개인정보처리방침 최종 검토
 ```

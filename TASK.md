@@ -3,7 +3,7 @@
 ## ✅ 현재 작업
 
 ```text
-문서 정리, 중복 제거, 내용 최신화, 구조화, 적절한 이모지 적용 완료
+문서 구조 점검, 최신 상태 반영, 테스트 메뉴 설명 강화, BYOK 모델 정책 정리 완료
 ```
 
 ## 📌 현재 상태
@@ -12,9 +12,9 @@
 기준 브랜치: master
 운영 도메인: https://dev-gpt.memilmuk82.com
 최근 검증 기준: 2026-07-04
-uv run pytest: 84 passed
+uv run pytest: 88 passed
 npm run test:e2e: 1 passed
-Docker Compose 재빌드: 완료 기록 있음
+Docker Compose 재빌드: PASS, gpt-manager-web-1 Up
 ```
 
 ## 📚 문서 역할
@@ -33,20 +33,19 @@ EDUCATION.md: 교육 철학과 기술 선정 이유
 ## 🧩 최근 정리 내용
 
 ```text
-README 포털 구조 개선
-중복된 기술 선택/문서 목록 설명 축약
-PROJECT_STATUS 최신 상태 반영
-TASK 현재 작업 최신화
-CODEX_START_HERE 최신 작업 안내로 정리
-RELEASE_CHECKLIST 검증 수치 최신화
-MANIFEST 누락 문서 반영
-Markdown 링크와 코드블록 검증 대상 정리
+README 포털 구조 유지 및 현재 상태 최신화
+PROJECT_STATUS 최신 검증 결과 반영
+PROJECT_INSTRUCTIONS에 구현된 기능은 패스하고 미구현만 처리하는 원칙 반영
+관리자 테스트 실행 화면에 테스트 파일별 설명/상태 표시 추가
+Anthropic Claude 기본 추천 모델을 Opus 4.8 기준으로 정리
+SYSTEM_DESIGN 섹션 번호와 향후 확장 목록 정리
+RELEASE_CHECKLIST, TEST_REPORT, DEVELOPMENT_LOG 최신화
 ```
 
 ## 🧪 최근 검증 기준
 
 ```text
-uv run pytest: PASS, 84 passed
+uv run pytest: PASS, 88 passed
 npm run test:e2e: PASS, 1 passed
 운영 /healthz: 200 {"status":"ok"}
 /terms, /privacy: 200 OK
