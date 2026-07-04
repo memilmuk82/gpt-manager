@@ -40,7 +40,7 @@ Google OAuth 로그인 또는 운영 Redirect URI 설정 확인
 사용 로그 작성 가능
 OpenAI, Google Gemini, Anthropic Claude Provider별 API Key 등록/삭제 가능
 BYOK 프롬프트 정리 기능 실행 가능
-생성/점검 결과 저장 가능
+생성/정리 결과 저장 가능
 README로 시연 흐름 설명 가능
 이용약관/개인정보처리방침/정보관리책임자 안내 가능
 pytest 기본 테스트 통과
@@ -375,7 +375,7 @@ docs/development/TEST_REPORT.md
 ```text
 실행 확인
 로그인 확인
-Gemini API 확인
+BYOK Provider 연결 확인
 예약/로그/프롬프트 정리 시연
 README 오타 수정
 제출 자료 정리

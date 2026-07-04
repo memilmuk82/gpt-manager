@@ -30,9 +30,9 @@
 
 ### 프롬프트 정리
 
-- 사용자가 입력한 프롬프트의 명확성, 안전성, 활용성 점검
+- 사용자가 입력한 요청의 구조화와 프롬프트 정리
 - OpenAI, Google Gemini, Anthropic Claude API를 활용한 개선 의견 생성
-- 점검 결과 저장 및 재조회
+- 정리 결과 저장 및 재조회
 - 사용자별 최근 24시간 호출 제한 관리
 
 ### 관리자 기능
@@ -100,7 +100,7 @@ Google OAuth 로그인을 사용하는 경우 다음 항목을 처리할 수 있
 - 프롬프트 내용
 - 결과 메모
 - 프롬프트 정리 목표
-- OpenAI, Google Gemini, Anthropic Claude API에 전송하기 위해 조립된 점검 프롬프트
+- OpenAI, Google Gemini, Anthropic Claude API에 전송하기 위해 조립된 정리 프롬프트
 - 프롬프트 정리 결과
 - 사용 모델명
 - 생성 및 수정 시간
@@ -166,7 +166,7 @@ Google OAuth 로그인 과정에서 Google 계정 인증 화면과 Google OAuth 
 
 ### OpenAI, Google Gemini, Anthropic Claude API
 
-프롬프트 정리 기능을 사용하는 경우 사용자가 입력한 프롬프트, 점검 목표, 점검을 위해 조립된 요청 내용이 OpenAI, Google Gemini, Anthropic Claude API 처리 목적으로 Google 측 API에 전송될 수 있습니다.
+프롬프트 정리 기능을 사용하는 경우 사용자가 입력한 프롬프트, 정리 목표, 정리를 위해 조립된 요청 내용이 OpenAI, Google Gemini, Anthropic Claude API 처리 목적으로 해당 외부 Provider에 전송될 수 있습니다.
 
 이용자는 OpenAI, Google Gemini, Anthropic Claude API로 전송되는 프롬프트에 학생 개인정보, 학생 성적, 상담 내용, 생활기록부 민감정보, 평가 문항 원본, 비공개 내부 자료를 입력해서는 안 됩니다.
 
@@ -197,7 +197,7 @@ OpenAI, Google Gemini, Anthropic Claude API의 데이터 처리, 보안, 보관 
 본 시스템은 개인정보와 인증 정보를 보호하기 위해 다음 조치를 적용합니다.
 
 - 비밀번호 해시 저장
-- LLM API Key 서버 암호화 저장
+- 선택 시 LLM API Key 서버 암호화 저장
 - 프론트엔드에 API Key 전체 값 노출 금지
 - HTTPS 기반 운영
 - 세션 쿠키 HttpOnly 설정

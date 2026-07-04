@@ -17,7 +17,7 @@
 인증: auth/login, auth/register, auth/pending
 예약: reservations/index, reservations/new, reservations/today, reservations/calendar
 사용 로그: logs/index, logs/new, logs/show
-프롬프트 점검: prompts/index, prompts/new, prompts/show
+프롬프트 정리: prompts/index, prompts/new, prompts/show
 설정: settings/api_key, settings/macros
 관리자: admin/dashboard, admin/users
 ```

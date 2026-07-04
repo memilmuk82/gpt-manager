@@ -148,7 +148,7 @@ Phase: Phase 5
 결과: PASS
 PASS: 36
 FAIL: 0
-수정 내용: PromptReview 모델, 프롬프트 점검 화면, Gemini 호출 service, mock 테스트 추가
+수정 내용: PromptReview 모델, 프롬프트 정리 화면, LLM adapter 호출 service, mock 테스트 추가
 재테스트 결과: 36 passed
 ```
 
@@ -338,8 +338,8 @@ user.approval_status: PASS
 예약 목록 조회: PASS
 예약 추가: PASS
 예약 완료 상태 변경: PASS
-Gemini API Key 등록/교체: PASS
-Gemini API Key 삭제: PASS
+AI Provider/API Key 등록/교체: PASS
+AI Provider/API Key 삭제: PASS
 CRUD 후 세션 유지: PASS
 
 운영 OAuth 검증:
@@ -552,7 +552,7 @@ GET /reservations/conflicts?resource_id=<id>&start_at=2026-07-03T17:45&end_at=20
 검증 범위:
 
 ```text
-기존 인증/관리자/예약/로그/API Key/프롬프트 점검 테스트 유지
+기존 인증/관리자/예약/로그/API Key/프롬프트 정리 테스트 유지
 새 예약 필수 입력값 work_type, safety_confirmed 반영
 E2E 등록 요청/로그인/사용 신청/예약 완료/API Key 흐름 유지
 관리자 주요 섹션 렌더링 확인
@@ -637,10 +637,10 @@ guide_intro_text가 사용 안내 화면에 표시됨
 ```
 
 
-## 2026-07-03 프롬프트 점검 UI 최신화 검증
+## 2026-07-03 프롬프트 정리 UI 최신화 검증
 
 ```text
-범위: 상단 프롬프트 점검 메뉴, 홈 빠른 이동, 프롬프트 점검 목록/생성/상세 화면 최신 UI, 구버전 PROMPT REVIEWS 표기 제거
+범위: 상단 프롬프트 정리 메뉴, 홈 빠른 이동, 프롬프트 정리 목록/생성/상세 화면 최신 UI, 구버전 PROMPT REVIEWS 표기 제거
 
 전체 pytest:
 명령: uv run pytest
@@ -664,8 +664,8 @@ healthz: 200 {"status":"ok"}
 추가 테스트 범위:
 
 ```text
-홈 화면에 프롬프트 점검 빠른 이동 카드 표시
-프롬프트 점검 목록과 새 점검 화면 렌더링
+홈 화면에 프롬프트 정리 빠른 이동 카드 표시
+프롬프트 정리 목록과 새 정리 화면 렌더링
 구버전 PROMPT REVIEWS 텍스트 미노출
 ```
 
@@ -673,7 +673,7 @@ healthz: 200 {"status":"ok"}
 ## 2026-07-03 개인 설정 및 API Key 화면 최신화 검증
 
 ```text
-범위: 승인 사용자 badge의 /settings/api-key 링크, Gemini API Key 설정 화면 최신 UI, 구버전 SETTINGS 표기 제거
+범위: 승인 사용자 badge의 /settings/api-key 링크, AI Provider/API Key 설정 화면 최신 UI, 구버전 SETTINGS 표기 제거
 
 전체 pytest:
 명령: uv run pytest
@@ -698,7 +698,7 @@ healthz: 200 {"status":"ok"}
 
 ```text
 승인 사용자 badge가 /settings/api-key 링크로 렌더링됨
-Gemini API Key 설정 화면에 개인 설정 문구와 최신 제목 표시
+AI Provider/API Key 설정 화면에 개인 설정 문구와 최신 제목 표시
 구버전 SETTINGS 텍스트 미노출
 ```
 
@@ -739,7 +739,7 @@ SYSTEM_DESIGN의 CSRF 보호 상태와 테스트 수치 최신화
 ## 🧪 2026-07-04 RC 운영 CRUD 검증 더미데이터 검증
 
 ```text
-범위: 시연용 사용자, 리소스, 작업유형, 예약, 사용 로그, 프롬프트 점검, API Key, 감사 로그 seed
+범위: 시연용 사용자, 리소스, 작업유형, 예약, 사용 로그, 프롬프트 정리, API Key, 감사 로그 seed
 
 문법 검사:
 명령: python3 -m py_compile scripts/seed_demo_data.py
@@ -764,7 +764,7 @@ AI 리소스: 4개
 김도연 사용자 내 예약: 5건
 김도연 사용자 완료 예약 중 미작성 로그: 1건
 사용 로그: 4건
-프롬프트 점검 기록: 4건
+프롬프트 정리 기록: 4건
 감사 로그: 4건
 운영 공지 배너: true
 ```
@@ -799,4 +799,20 @@ uv run pytest tests/test_api_keys.py tests/test_prompt_reviews.py tests/test_adm
 결과:
 ```text
 36 passed
+```
+
+## 2026-07-04 BYOK 문서 정합성 정리 검증
+
+범위: 전체 Markdown 문서의 BYOK 프롬프트 정리 용어 통일, README 중복 설명 축소, 법적 페이지 렌더링 확인
+
+명령:
+```bash
+uv run pytest
+npm run test:e2e
+```
+
+결과:
+```text
+pytest: PASS, 88 passed
+Playwright E2E: PASS, 1 passed
 ```

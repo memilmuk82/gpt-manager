@@ -76,7 +76,7 @@ Vercel/Firebase보다 Flask 구조와 맞다.
 OCI 단일 인스턴스에서 충분하다.
 ```
 
-## 6. Gemini 경량 모델 채택
+## 6. BYOK LLM Provider 채택
 
 채택 이유:
 

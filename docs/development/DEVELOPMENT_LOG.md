@@ -12,7 +12,7 @@
 ```text
 새 교육자료 생성 앱은 만들지 않음
 기존 GPT 공유앱을 Flask 기반으로 재설계
-Gemini API는 프롬프트 점검/개선에 사용
+BYOK LLM API는 프롬프트 정리/개선에 사용
 SQLite + Docker Compose + OCI 단일 인스턴스 사용
 2026-07-02 RC1, 2026-07-03 기능 동결 원칙 채택
 ```
@@ -23,7 +23,7 @@ SQLite + Docker Compose + OCI 단일 인스턴스 사용
 수업안/평가계획 생성기는 NotebookLM/ChatGPT로 대체 가능성이 높음
 사용자가 실제로 계속 쓸 가능성이 낮음
 기존 GPT 공유앱은 운영 시스템으로 앱의 존재 이유가 명확함
-프롬프트 점검기는 Gemini API 활용 조건을 자연스럽게 충족함
+프롬프트 정리기는 BYOK LLM API 활용 조건을 자연스럽게 충족함
 ```
 
 ### 다음 작업
@@ -56,7 +56,7 @@ pytest 기본 테스트 작성
 로그인 구현 제외
 Google OAuth 구현 제외
 예약 CRUD 제외
-Gemini API 호출 제외
+BYOK LLM API 호출 제외
 API Key 암호화 제외
 관리자 화면 제외
 ```
@@ -99,7 +99,7 @@ POST 로그아웃 구현
 
 ```text
 Google OAuth 구현 제외
-Gemini API 구현 제외
+BYOK LLM API 구현 제외
 예약 CRUD 제외
 사용 로그 구현 제외
 API Key 암호화 구현 제외
@@ -160,7 +160,7 @@ uv run pytest: 25 passed
 ### 다음 작업
 
 ```text
-Phase 4 Gemini API Key 암호화 설정 구현
+Phase 4 AI Provider/API Key 암호화 설정 구현
 UserApiKey 모델, Fernet 암호화, 등록/삭제/마스킹 테스트 추가
 ```
 
@@ -173,7 +173,7 @@ cryptography 의존성 사용
 UserApiKey 모델 추가
 Fernet 기반 암호화/복호화 service 추가
 /settings/api-key 화면 추가
-Gemini API Key 등록/교체/삭제 구현
+AI Provider/API Key 등록/교체/삭제 구현
 저장 상태 마지막 4자리 마스킹 표시
 저장된 키 복호화 확인 기능 추가
 내비게이션과 대시보드 문구 갱신
@@ -196,8 +196,8 @@ uv run pytest: 30 passed
 ### 다음 작업
 
 ```text
-Phase 5 프롬프트 점검기 구현
-PromptReview 모델, Gemini 호출 service, mock 테스트 작성
+Phase 5 프롬프트 정리기 구현
+PromptReview 모델, LLM adapter 호출 service, mock 테스트 작성
 ```
 
 
@@ -213,13 +213,13 @@ PromptReview 모델, Gemini 호출 service, mock 테스트 작성
 
 ```text
 PromptReview 모델 추가
-프롬프트 점검 목록/입력/상세 화면 추가
-점검 프롬프트 조립 service 추가
+프롬프트 정리 목록/입력/상세 화면 추가
+정리 프롬프트 조립 service 추가
 Gemini REST 호출 service 추가
-저장된 Gemini API Key 복호화 후 호출에 사용
-Gemini 호출부 mock 테스트 추가
+저장된 AI Provider/API Key 복호화 후 호출에 사용
+LLM adapter 호출부 mock 테스트 추가
 입력 길이 제한 및 사용자별 접근 제한 구현
-GEMINI_MODEL 기본값을 gemini-3.1-flash-lite로 갱신
+Gemini Provider 기본 모델을 gemini-3.1-flash-lite로 갱신
 ```
 
 ### 예정 보강
@@ -351,7 +351,7 @@ npm run test:e2e: 1 passed
 예약 목록 조회
 예약 추가
 예약 완료 상태 변경
-Gemini API Key 등록/교체/삭제
+AI Provider/API Key 등록/교체/삭제
 새로고침 후 예약/API Key 상태 유지 확인
 ```
 
@@ -681,17 +681,17 @@ GET http://127.0.0.1:5000/healthz: 200 {"status":"ok"}
 ```
 
 
-## 2026-07-03 - 프롬프트 점검 UI 최신화
+## 2026-07-03 - 프롬프트 정리 UI 최신화
 
 ### 변경
 
 ```text
-상단 네비게이션에 프롬프트 점검 메뉴 추가
-홈 빠른 이동에 프롬프트 점검 카드 추가
-프롬프트 점검 목록 화면에서 구버전 PROMPT REVIEWS 표기를 제거하고 최신 카드/테이블 톤으로 정리
-새 프롬프트 점검 화면 입력 폼과 민감정보 경고 UI 정리
-점검 결과 상세 화면을 원본 프롬프트와 Gemini 점검 결과 2열 카드로 정리
-프롬프트 점검 메뉴/화면 문구 렌더링 테스트 추가
+상단 네비게이션에 프롬프트 정리 메뉴 추가
+홈 빠른 이동에 프롬프트 정리 카드 추가
+프롬프트 정리 목록 화면에서 구버전 PROMPT REVIEWS 표기를 제거하고 최신 카드/테이블 톤으로 정리
+새 프롬프트 정리 화면 입력 폼과 민감정보 경고 UI 정리
+정리 결과 상세 화면을 원본 요청과 AI 정리 결과 2열 카드로 정리
+프롬프트 정리 메뉴/화면 문구 렌더링 테스트 추가
 ```
 
 ### 검증
@@ -709,11 +709,11 @@ GET http://127.0.0.1:5000/healthz: 200 {"status":"ok"}
 ### 변경
 
 ```text
-상단 승인 사용자 badge를 개인 Gemini API Key 설정 링크로 전환
+상단 승인 사용자 badge를 개인 AI Provider/API Key 설정 링크로 전환
 미승인 사용자는 기존 badge 표시 유지
-Gemini API Key 설정 화면을 최신 카드형 UI로 정리
+AI Provider/API Key 설정 화면을 최신 카드형 UI로 정리
 저장 상태, 보안 안내, 새 API Key 저장 폼을 분리
-프롬프트 점검 화면으로 이동하는 버튼과 홈으로 이동하는 버튼 추가
+프롬프트 정리 화면으로 이동하는 버튼과 홈으로 이동하는 버튼 추가
 API Key 설정 화면에서 구버전 SETTINGS 표기 제거
 사용자 badge 링크와 API Key 설정 화면 렌더링 테스트 추가
 ```
@@ -770,12 +770,12 @@ scripts/seed_demo_data.py 추가
 시연용 사용자 6명 생성
 AI 리소스 4개와 작업유형 4개 생성
 오늘/과거/미래/취소/완료 예약 12건 생성
-사용 로그 4건과 프롬프트 점검 기록 4건 생성
-Gemini API Key 더미 암호화 저장 3건 생성
+사용 로그 4건과 프롬프트 정리 기록 4건 생성
+AI Provider/API Key 더미 암호화 저장 3건 생성
 관리자 감사 로그 4건 생성
 운영 공지 배너 활성화
 README에 더미 계정과 seed 실행 방법 문서화
-프롬프트 점검 실제 라우트 /prompt-reviews 문서 보정
+프롬프트 정리 실제 라우트 /prompt-reviews 문서 보정
 ```
 
 ### 검증
@@ -795,8 +795,17 @@ uv run python scripts/seed_demo_data.py --date 2026-07-04: PASS
 API Key 기본 비저장, 선택 시 LLM_KEY_ENCRYPTION_SECRET 기반 암호화 저장 구현
 Provider별 모델 선택, 모델 목록 새로고침 fallback, 연결 테스트 구현
 OpenRouter는 구현 범위에서 제외
-프롬프트 점검 흐름을 구조화된 프롬프트 정리 기능으로 확장
+프롬프트 정리 흐름을 구조화된 프롬프트 정리 기능으로 확장
 일일/월간/5초 연속 요청 제한 적용
 관리자 화면에 API Key 원문 없는 등록 상태 메타데이터만 표시
 README, SYSTEM_DESIGN, PRD, PROJECT_STATUS, PROJECT_INSTRUCTIONS, 보안/법적 문서 반영
+```
+
+## 2026-07-04 - BYOK 문서 정합성 및 중복 정리
+
+```text
+프로젝트 전체 Markdown 문서의 Gemini 단일 Provider/프롬프트 점검 표현을 BYOK 프롬프트 정리 기준으로 정리
+README의 BYOK 보안 상세 중복 설명을 SECURITY_DECISIONS와 ADR 0004 참조 구조로 축소
+ADR 0002를 superseded 문서로 정리하고 ADR 0004를 현재 기준으로 명확화
+법적 문서의 외부 Provider 전송 설명을 OpenAI, Google Gemini, Anthropic Claude 기준으로 정리
 ```

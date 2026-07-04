@@ -63,8 +63,8 @@ CSV 일괄 등록: email,name,department,extension,role,active,is_auth_manager,s
 사용 안내 화면은 GuideItem 데이터와 guide_intro_text Settings 기반으로 표시
 개인정보 상세, 평가 보안 상세 앵커 링크 추가
 미등록 사용자 화면과 등록 요청 화면 디자인 정리
-프롬프트 점검 화면을 최신 카드/테이블/상세 결과 UI로 정리하고 홈 빠른 이동과 상단 메뉴에 노출
-개인 Gemini API Key 설정 화면을 최신 카드형 UI로 정리하고 상단 사용자 badge에서 바로 접근 가능하도록 개선
+프롬프트 정리 화면을 최신 카드/테이블/상세 결과 UI로 정리하고 홈 빠른 이동과 상단 메뉴에 노출
+개인 AI Provider/API Key 설정 화면을 최신 카드형 UI로 정리하고 상단 사용자 badge에서 바로 접근 가능하도록 개선
 ```
 
 ## 테스트 변경
@@ -94,7 +94,7 @@ Flask local server http://127.0.0.1:5001: PASS
 관리자 화면의 전체 테스트 실행은 서버 자원을 사용하므로 운영 중 반복 실행은 주의
 Docker 이미지는 관리자 테스트 실행을 위해 dev dependency group도 설치
 주요 화면 문구 관리 Settings: auth_info_title, reservation_intro_text, reservation_helper_text, guide_intro_text
-프롬프트 점검 메뉴와 화면 문구 렌더링 테스트 추가
-Gemini API Key 설정 화면과 사용자 badge 링크 렌더링 테스트 추가
+프롬프트 정리 메뉴와 화면 문구 렌더링 테스트 추가
+AI Provider/API Key 설정 화면과 사용자 badge 링크 렌더링 테스트 추가
 SQLite 호환 보정은 기존 DB에 누락 컬럼을 추가하지만 복잡한 스키마 마이그레이션 도구를 대체하지는 않음
 ```

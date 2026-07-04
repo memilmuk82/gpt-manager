@@ -29,5 +29,5 @@ README 오타 수정
 대규모 리팩토링
 DB 구조 변경
 인증 정책 변경
-Gemini 호출 구조 변경
+LLM adapter 호출 구조 변경
 ```

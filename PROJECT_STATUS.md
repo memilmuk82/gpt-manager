@@ -12,6 +12,7 @@
 목적: 공용 생성형 AI 계정 예약·사용 기록 관리 + BYOK 기반 AI 프롬프트 정리
 지원 Provider: OpenAI, Google Gemini, Anthropic Claude
 OpenRouter: 현재 미지원
+문서 기준: README는 요약, SECURITY_DECISIONS와 ADR 0004는 BYOK 상세 기준
 운영 도메인: https://dev-gpt.memilmuk82.com
 현재 브랜치: master
 ```

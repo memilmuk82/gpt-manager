@@ -44,7 +44,7 @@ OpenAI, Google Gemini, Anthropic Claude 사용자별 BYOK를 활용한 프롬프
 ## 3. 프로젝트 목적
 
 ```text
-교내 또는 팀 내 공용 AI 계정 사용을 예약·기록하고, 사용자가 작성한 프롬프트를 Gemini 경량 모델(기본값: `gemini-3.1-flash-lite`)로 점검·개선하는 Flask 기반 웹앱을 만든다.
+교내 또는 팀 내 공용 AI 계정 사용을 예약·기록하고, 사용자가 작성한 거친 요청을 BYOK LLM Provider로 구조화된 프롬프트로 정리·개선하는 Flask 기반 웹앱을 만든다.
 ```
 
 ## 4. 연수 제출 목표
@@ -56,7 +56,7 @@ OpenAI, Google Gemini, Anthropic Claude 사용자별 BYOK를 활용한 프롬프
 사용자 인증
 Google OAuth
 DB 저장
-Gemini API 활용
+BYOK LLM API 활용
 배포 가능성
 교육 현장 문제 해결
 ```
@@ -106,7 +106,7 @@ AI Provider/API Key 설정
 7. 예약 충돌 검증
 8. 사용 로그 작성
 9. 프롬프트 정리기
-10. 점검 결과 저장
+10. 정리 결과 저장
 11. 내 기록 조회
 12. 관리자/보조관리자 대시보드
 13. 오늘 예약 화면
@@ -123,7 +123,7 @@ AI Provider/API Key 설정
 1. 사용 로그 기반 월간 운영 보고서 생성
 2. 프롬프트 정리 결과 Markdown 다운로드
 3. 예약 완료 후 사용 로그 작성 유도
-4. 사용자별 일일 Gemini 호출 제한
+4. 사용자별 일일 LLM adapter 호출 제한
 ```
 
 ### 제외 기능
@@ -265,7 +265,7 @@ README로 설치/실행/시연 방법을 설명해야 한다.
 
 ```text
 기능이 많지 않아도 끝까지 작동한다.
-Gemini API 활용이 명확하다.
+BYOK LLM API 활용 범위와 사용자 책임이 명확하다.
 자유 챗봇이 아닌 정형 워크플로우 앱이다.
 기존 GPT 공유앱의 운영 문제와 연결된다.
 코드와 문서가 제출 가능한 수준이다.

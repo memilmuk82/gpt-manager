@@ -1,27 +1,13 @@
-# ADR 0002 - Gemini API를 프롬프트 점검기에 사용
+# ADR 0002 - 초기 단일 Provider 프롬프트 정리 결정
 
-## 결정
+## 상태
 
-Gemini API는 자유 챗봇이 아니라 프롬프트 점검/개선 기능에 사용한다.
+Superseded by [ADR 0004](0004-byok-llm-provider-settings.md).
 
-## 이유
+## 기존 결정
 
-```text
-연수 요구사항의 API 활용을 충족한다.
-경량 모델로도 충분한 작업이다.
-비용 통제가 쉽다.
-교사가 프롬프트 엔지니어링 개념을 몰라도 구조화된 프롬프트를 배울 수 있다.
-```
+초기 구현에서는 BYOK LLM API를 자유 챗봇이 아니라 프롬프트 정리/개선 기능에 제한해 사용했다. 당시 구현 범위는 Google Gemini 단일 Provider였다.
 
-## 제외
+## 현재 기준
 
-```text
-자유 채팅
-수업안/평가계획 생성
-교육과정 파일 분석
-학생정보 기반 생성
-```
-
-## 결과
-
-앱은 AI 생성기가 아니라 AI 사용 운영·개선 도구가 된다.
+현재 AI 기능은 사용자별 BYOK 방식으로 OpenAI, Google Gemini, Anthropic Claude 3개 Provider를 지원한다. 관리자는 공용 API Key를 제공하지 않고, OpenRouter는 현재 지원하지 않는다. API Key 저장과 관리자 표시 정책은 ADR 0004를 기준으로 한다.

@@ -18,7 +18,7 @@ Flask + Gunicorn
   ↓
 SQLite ./instance/app.db
   ↓
-Gemini API, Google OAuth
+BYOK LLM API, Google OAuth
 ```
 
 운영 배포:

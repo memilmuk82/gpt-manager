@@ -18,7 +18,7 @@ RC1 목표: 2026-07-02
 ```text
 새로운 교육 생성기 개발 금지
 기존 GPT 공유앱의 운영 문제를 Flask 앱으로 재설계
-Gemini API는 프롬프트 점검/개선에만 사용
+BYOK LLM API는 사용자 요청을 구조화된 프롬프트로 정리/개선하는 데만 사용
 3일 안에 완성 가능한 기능만 구현
 ```
 
@@ -61,10 +61,10 @@ AI 리소스 기본 데이터
 예약 CRUD
 예약 충돌 검증
 사용 로그 CRUD
-Gemini API Key 설정
+AI Provider/API Key 설정
 API Key 암호화 저장
-프롬프트 점검기 구현
-Gemini mock 테스트
+프롬프트 정리기 구현
+LLM adapter mock 테스트
 ```
 
 완료 기준:
@@ -72,7 +72,7 @@ Gemini mock 테스트
 ```text
 예약 생성/취소 가능
 사용 로그 작성 가능
-프롬프트 점검 실행 가능
+프롬프트 정리 실행 가능
 API Key 평문 저장 안 됨
 pytest 통과
 ```
@@ -178,13 +178,13 @@ Fernet 암호화
 암호화 테스트
 ```
 
-### Phase 5. 프롬프트 점검기
+### Phase 5. 프롬프트 정리기
 
 ```text
 PromptReview 모델
-프롬프트 점검 입력 폼
-점검 프롬프트 조립
-Gemini 호출
+프롬프트 정리 입력 폼
+정리 프롬프트 조립
+LLM adapter 호출
 결과 저장
 복사/조회
 mock 테스트
@@ -194,7 +194,7 @@ mock 테스트
 
 ```text
 관리자 대시보드
-전체 예약/로그/프롬프트 점검 결과 확인
+전체 예약/로그/프롬프트 정리 결과 확인
 AI 리소스 관리
 Google OAuth 로그인 및 senedu.kr 자동 승인/외부 계정 승인제
 가능하면 운영 보고서 생성
@@ -222,8 +222,8 @@ SQLite
 Google OAuth 구조
 예약 CRUD
 사용 로그
-Gemini API Key 설정
-프롬프트 점검기
+AI Provider/API Key 설정
+프롬프트 정리기
 기본 테스트
 README
 ```
@@ -278,8 +278,8 @@ README에 Redirect URI 설정 방법 문서화
 ### Gemini SDK/모델명 이슈가 생길 경우
 
 ```text
-GEMINI_MODEL 환경변수로 분리
-SDK 호출부를 gemini_service.py에 격리
+Provider별 추천 모델과 사용자 선택 모델로 분리
+Provider별 호출부를 app/services/llm adapter에 격리
 테스트는 mock으로 통과
 실제 호출은 설정 확인 후 진행
 ```
