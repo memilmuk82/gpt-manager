@@ -46,7 +46,7 @@ PROJECT_STATUS.md
 ## 검증
 
 ```text
-uv run pytest: PASS, 84 passed
+uv run pytest: PASS, 88 passed
 ```
 
 Docker Compose 리빌드, E2E, 컨테이너 health check, 로컬-원격 저장소 대조는 최종 커밋 전후로 별도 실행한다.

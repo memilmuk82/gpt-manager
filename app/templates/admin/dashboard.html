@@ -344,7 +344,41 @@
       <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"><div><h2 class="text-xl font-extrabold text-slate-950">♧ 전체 테스트 실행</h2><p class="mt-2 text-sm text-slate-600">서버에서 사용 가능한 Python/uv 테스트 환경으로 pytest를 실행합니다.</p></div><form method="post" action="{{ url_for('admin.run_tests') }}"><button class="rounded-xl bg-slate-950 px-5 py-2.5 text-sm font-extrabold text-white" type="submit">♧ 테스트 실행</button></form></div>
         {% if test_result %}
-          <div class="mt-5 grid gap-3 md:grid-cols-3"><div class="rounded-xl border border-slate-200 bg-slate-50 p-4"><p class="text-sm text-slate-500">결과</p><p class="mt-2 text-xl font-extrabold">{{ 'PASS' if test_result.returncode == 0 else 'FAIL' }}</p></div><div class="rounded-xl border border-slate-200 bg-slate-50 p-4 md:col-span-2"><p class="text-sm text-slate-500">요약</p><p class="mt-2 font-bold">{{ test_result.summary }}</p></div></div>
+          <div class="mt-5 grid gap-3 md:grid-cols-4">
+            <div class="rounded-xl border border-slate-200 bg-slate-50 p-4"><p class="text-sm text-slate-500">결과</p><p class="mt-2 text-xl font-extrabold">{{ 'PASS' if test_result.returncode == 0 else 'FAIL' }}</p></div>
+            <div class="rounded-xl border border-slate-200 bg-slate-50 p-4"><p class="text-sm text-slate-500">총 테스트</p><p class="mt-2 text-xl font-extrabold">{{ test_result.total_tests if test_result.total_tests is not none else '확인 불가' }}</p></div>
+            <div class="rounded-xl border border-slate-200 bg-slate-50 p-4"><p class="text-sm text-slate-500">소요 시간</p><p class="mt-2 text-xl font-extrabold">{{ test_result.duration if test_result.duration else '확인 불가' }}</p></div>
+            <div class="rounded-xl border border-slate-200 bg-slate-50 p-4"><p class="text-sm text-slate-500">요약</p><p class="mt-2 font-bold">{{ test_result.summary }}</p></div>
+          </div>
+
+          <div class="mt-5 rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <div class="border-b border-slate-200 px-5 py-4">
+              <h3 class="font-extrabold text-slate-950">테스트 설명</h3>
+              <p class="mt-1 text-sm text-slate-600">각 테스트 파일이 어떤 기능을 검증하는지와 이번 실행 결과를 함께 표시합니다.</p>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-slate-200 text-sm">
+                <thead class="bg-slate-50 text-left text-slate-600">
+                  <tr><th class="px-4 py-3">테스트 파일</th><th class="px-4 py-3">검증 대상</th><th class="px-4 py-3">주요 검증 내용</th><th class="px-4 py-3">결과</th></tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                  {% for test_file in test_result.test_files %}
+                    {% set status = test_file.status %}
+                    {% set status_class = 'bg-emerald-50 text-emerald-700 ring-emerald-100' if status == 'PASS' else 'bg-rose-50 text-rose-700 ring-rose-100' if status == 'FAIL' else 'bg-amber-50 text-amber-700 ring-amber-100' if status == 'SKIP' else 'bg-slate-100 text-slate-600 ring-slate-200' %}
+                    <tr class="align-top hover:bg-slate-50/80">
+                      <td class="whitespace-nowrap px-4 py-3 font-bold text-slate-950">{{ test_file.file }}</td>
+                      <td class="px-4 py-3 text-slate-700">{{ test_file.target }}</td>
+                      <td class="min-w-[24rem] px-4 py-3 leading-6 text-slate-600">{{ test_file.checks }}</td>
+                      <td class="whitespace-nowrap px-4 py-3"><span class="inline-flex rounded-full px-3 py-1 text-xs font-extrabold ring-1 {{ status_class }}">{{ status }}</span></td>
+                    </tr>
+                  {% else %}
+                    <tr><td class="px-4 py-8 text-center text-slate-500" colspan="4">표시할 테스트 파일 정보가 없습니다.</td></tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
           <details class="mt-5 rounded-xl border border-slate-300 bg-white p-4" open><summary class="cursor-pointer font-bold">상세 테스트 보기</summary><pre class="mt-4 max-h-[36rem] overflow-auto whitespace-pre-wrap rounded-xl bg-slate-950 p-4 text-xs leading-5 text-slate-100">{{ test_result.output }}</pre></details>
         {% endif %}
       </section>

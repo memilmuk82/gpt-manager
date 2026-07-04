@@ -1,6 +1,7 @@
 import csv
 import importlib.util
 import io
+import re
 import shutil
 import subprocess
 import sys
@@ -34,6 +35,57 @@ ROLE_LABELS = {
     "user": "일반 사용자",
     "assistant_admin": "보조관리자",
     "admin": "관리자",
+}
+
+TEST_FILE_DESCRIPTIONS = {
+    "tests/test_admin.py": {
+        "target": "관리자 기능",
+        "checks": "관리자/보조관리자 접근, 사용자 승인과 정지 제한, 리소스와 작업유형 관리, 안내 문구, 인증번호 담당자 제한, 테스트 실행, 월간 보고서, 감사 로그, 사용자 필터, CSV 내보내기, SQLite 백업",
+    },
+    "tests/test_api_keys.py": {
+        "target": "사용자 API Key 관리",
+        "checks": "API Key 설정 접근, Provider별 키 저장, 암호화 저장, 원문 미노출, 마지막 4자리 표시, 교체와 삭제, 연결 테스트, 모델 목록 갱신 fallback",
+    },
+    "tests/test_app.py": {
+        "target": "기본 화면과 대시보드",
+        "checks": "앱 팩토리 생성, 첫 화면 응답, 대시보드 사용 로그 알림, 최근 30일 기준 안내, 공지 배너 표시",
+    },
+    "tests/test_auth.py": {
+        "target": "사용자 인증",
+        "checks": "회원가입, 비밀번호 해시 저장, 중복 가입 차단, 로그인과 로그아웃, 승인/정지 상태 처리, 역할 부여, CSRF 보호",
+    },
+    "tests/test_config.py": {
+        "target": "설정과 DB 초기화",
+        "checks": "SQLite 상대 경로 보정, 메모리 DB 유지, 기존 사용자 테이블의 인증/승인 컬럼 자동 보강",
+    },
+    "tests/test_google_oauth.py": {
+        "target": "Google OAuth 로그인",
+        "checks": "OAuth 리다이렉트와 콜백, senedu 계정 자동 승인, 외부 계정 승인 정책, 기존 로컬 계정 연결, 미검증 이메일과 허용되지 않은 도메인 차단, 관리자 역할 보존",
+    },
+    "tests/test_health.py": {
+        "target": "헬스 체크",
+        "checks": "healthz 엔드포인트 응답 코드와 JSON 상태값",
+    },
+    "tests/test_legal_pages.py": {
+        "target": "약관과 개인정보처리방침",
+        "checks": "푸터 링크, 운영자 정보, 약관/개인정보 문서 렌더링, 승인 대기 사용자 접근, Markdown 반영, 스크립트 escape",
+    },
+    "tests/test_prompt_reviews.py": {
+        "target": "프롬프트 정리 기능",
+        "checks": "로그인과 API Key 요구, 현재 화면 문구, 저장된 키와 일회성 키 사용, 입력 길이 제한, 일일 한도와 연속 요청 제한, 사용자별 접근 제어, 프롬프트 조립, Markdown 다운로드, 검색, 템플릿과 Provider 표시",
+    },
+    "tests/test_reservations.py": {
+        "target": "예약 기능",
+        "checks": "예약 생성과 취소, 본인 예약 목록, 같은 리소스 시간 충돌, 연속 예약과 다른 리소스 허용, 취소 예약 제외, 비활성 리소스 차단, 시간 검증, 오늘 예약, 필터, 월간 캘린더, 사용 규칙 버전 기록",
+    },
+    "tests/test_usage_logs.py": {
+        "target": "사용 로그",
+        "checks": "예약 기반 사용 로그, 리소스 단독 로그, 예약 사전 선택, 타인 예약 사용 차단, 타인 로그 접근 차단, 키워드/작업유형/리소스 필터",
+    },
+    "tests/test_user_model.py": {
+        "target": "사용자 모델 보안",
+        "checks": "비밀번호 해시 검증, 잘못된 비밀번호 거부, 원문 비밀번호 미저장",
+    },
 }
 
 
@@ -407,16 +459,28 @@ def run_tests():
             timeout=120,
             check=False,
         )
+        output = completed.stdout + "\n" + completed.stderr
+        summary = _pytest_summary(output)
         result = {
             "returncode": completed.returncode,
-            "summary": _pytest_summary(completed.stdout + "\n" + completed.stderr),
-            "output": (completed.stdout + "\n" + completed.stderr)[-12000:],
+            "summary": summary,
+            "total_tests": _pytest_total_tests(summary),
+            "duration": _pytest_duration(summary),
+            "output": output[-12000:],
+            "test_files": _pytest_file_results(output),
         }
         _record_audit("tests.run", "pytest", str(completed.returncode), result["summary"])
         db.session.commit()
         flash("전체 테스트 실행이 완료되었습니다.", "success" if completed.returncode == 0 else "error")
     except Exception as exc:  # pragma: no cover - 운영 환경 보호용
-        result = {"returncode": 1, "summary": str(exc), "output": str(exc)}
+        result = {
+            "returncode": 1,
+            "summary": str(exc),
+            "total_tests": None,
+            "duration": None,
+            "output": str(exc),
+            "test_files": _pytest_file_results(""),
+        }
         flash("테스트 실행 중 오류가 발생했습니다.", "error")
     return render_template("admin/dashboard.html", **_admin_context(section="tests", test_result=result))
 
@@ -687,6 +751,88 @@ def _csv_bool(value: str | None, default: bool) -> bool:
     if value is None or value == "":
         return default
     return value.strip().lower() in {"1", "true", "yes", "y", "on", "활성", "예"}
+
+
+def _test_file_catalog() -> list[dict]:
+    repo_root = Path(__file__).resolve().parents[2]
+    discovered = sorted(path.as_posix() for path in (repo_root / "tests").glob("test_*.py"))
+    paths = sorted(set(TEST_FILE_DESCRIPTIONS) | {f"tests/{Path(path).name}" for path in discovered})
+    catalog = []
+    for test_path in paths:
+        description = TEST_FILE_DESCRIPTIONS.get(test_path, {})
+        catalog.append(
+            {
+                "file": test_path,
+                "target": description.get("target", "설명 미등록"),
+                "checks": description.get("checks", "설명 미등록"),
+            }
+        )
+    return catalog
+
+
+def _pytest_file_results(output: str) -> list[dict]:
+    rows = _test_file_catalog()
+    statuses = {row["file"]: "NOT RUN" for row in rows}
+    for line in output.splitlines():
+        _apply_pytest_line_status(statuses, line.strip())
+    return [{**row, "status": statuses[row["file"]]} for row in rows]
+
+
+def _apply_pytest_line_status(statuses: dict[str, str], line: str) -> None:
+    if not line:
+        return
+
+    verbose_match = re.match(r"^(tests/[^:\s]+\.py)::[^\s]+\s+(PASSED|FAILED|ERROR|SKIPPED|XFAIL|XPASS)\b", line)
+    if verbose_match:
+        path, status_text = verbose_match.groups()
+        _merge_pytest_status(statuses, path, _normalize_pytest_status(status_text))
+        return
+
+    error_match = re.search(r"\bERROR\s+(tests/[^\s:]+\.py)", line)
+    if error_match:
+        _merge_pytest_status(statuses, error_match.group(1), "FAIL")
+        return
+
+    progress_match = re.match(r"^(tests/[^\s:]+\.py)\s+([.FfEeSsXx]+)", line)
+    if progress_match:
+        path, progress = progress_match.groups()
+        if any(char in progress for char in "FfEe"):
+            status = "FAIL"
+        elif any(char in progress for char in "Ss"):
+            status = "SKIP"
+        elif any(char == "." for char in progress):
+            status = "PASS"
+        else:
+            status = "NOT RUN"
+        _merge_pytest_status(statuses, path, status)
+
+
+def _normalize_pytest_status(status_text: str) -> str:
+    if status_text in {"FAILED", "ERROR"}:
+        return "FAIL"
+    if status_text == "SKIPPED":
+        return "SKIP"
+    if status_text in {"PASSED", "XFAIL", "XPASS"}:
+        return "PASS"
+    return "NOT RUN"
+
+
+def _merge_pytest_status(statuses: dict[str, str], path: str, status: str) -> None:
+    if path not in statuses:
+        return
+    priority = {"NOT RUN": 0, "PASS": 1, "SKIP": 2, "FAIL": 3}
+    if priority[status] > priority[statuses[path]]:
+        statuses[path] = status
+
+
+def _pytest_total_tests(summary: str) -> int | None:
+    counts = [int(value) for value in re.findall(r"(\d+)\s+(?:passed|failed|errors?|skipped|xfailed|xpassed)", summary)]
+    return sum(counts) if counts else None
+
+
+def _pytest_duration(summary: str) -> str | None:
+    match = re.search(r"\bin\s+([0-9.]+s)\b", summary)
+    return match.group(1) if match else None
 
 
 def _pytest_command() -> list[str]:

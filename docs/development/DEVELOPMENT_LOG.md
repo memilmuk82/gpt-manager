@@ -809,3 +809,33 @@ README의 BYOK 보안 상세 중복 설명을 SECURITY_DECISIONS와 ADR 0004 참
 ADR 0002를 superseded 문서로 정리하고 ADR 0004를 현재 기준으로 명확화
 법적 문서의 외부 Provider 전송 설명을 OpenAI, Google Gemini, Anthropic Claude 기준으로 정리
 ```
+
+## 2026-07-04 - 테스트 메뉴 설명 강화 및 BYOK 지시문 최신화
+
+### 변경 배경
+
+관리자 전체 테스트 실행 화면이 pytest 원문 결과는 보여주지만, 각 테스트 파일이 어떤 기능을 검증하는지 이해하기 어려웠다. 또한 Anthropic Claude 기본 추천 모델 목록과 프로젝트 지시문에 현재 구현 상태 기준의 작업 원칙을 명확히 반영할 필요가 있었다.
+
+### 변경 내용
+
+- 관리자 테스트 실행 결과에 테스트 파일별 검증 대상, 주요 검증 내용, PASS/FAIL/SKIP/NOT RUN 상태 표시 추가
+- pytest 원문 로그와 기존 결과/요약 UI 유지
+- Anthropic Claude 기본 추천 모델에서 claude-opus-4-7 제거, claude-opus-4-8 반영
+- 모델 목록 새로고침 시 Provider API 조회 결과는 그대로 표시하는 기존 동작 유지
+- PROJECT_INSTRUCTIONS.md에 이미 구현된 기능은 패스하고 미구현/부분 구현/버그만 처리하는 원칙 추가
+- README, PROJECT_STATUS, SYSTEM_DESIGN, RELEASE_CHECKLIST, ADR 0004의 테스트 수치와 설명 최신화
+
+### 삭제/정리
+
+- 오래된 테스트 수치 문구를 현재 88 passed 기준으로 교체
+- 중복 구현이나 불필요한 코드 파일 삭제는 수행하지 않음. 삭제 가능한 독립 중복 파일은 확인되지 않았고, 기존 문서는 역할이 달라 보존함
+
+### 검증
+
+```text
+uv run python -m py_compile app/services/llm/registry.py: PASS
+uv run pytest tests/test_api_keys.py tests/test_prompt_reviews.py: PASS, 20 passed
+uv run pytest: PASS, 88 passed
+관리자 /admin/tests/run 렌더링 확인: PASS
+Anthropic API 새로고침 결과에 claude-opus-4-7 포함 시 그대로 반환 확인: PASS
+```

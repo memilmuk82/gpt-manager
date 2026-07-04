@@ -240,7 +240,7 @@ run.py                       Flask 앱 실행 진입점
 ```text
 상태: 전체 운영 편의 기능 보완 및 문서 포털 정리 완료
 최근 검증일: 2026-07-04
-테스트: uv run pytest, 84 passed
+테스트: uv run pytest, 88 passed
 E2E: npm run test:e2e, 1 passed
 운영 도메인: https://dev-gpt.memilmuk82.com
 배포: OCI Ubuntu + Docker Compose + Gunicorn + Nginx + HTTPS
@@ -289,14 +289,14 @@ CSRF 토큰 기반 POST 요청 보호
 관리자는 공용 API Key를 제공하지 않으며 OpenRouter는 현재 지원하지 않습니다.
 API Key는 기본적으로 서버 DB에 저장하지 않고, 사용자가 선택한 경우에만 암호화 저장합니다.
 서버 저장 시 API Key 원문은 화면/관리자/로그/DB 조회에 노출하지 않고 마지막 4자리만 표시합니다.
-모델 선택, 모델 목록 새로고침, 연결 테스트, Provider별 활성/비활성 설정을 제공합니다.
+모델 선택, 모델 목록 새로고침, 연결 테스트, Provider별 활성/비활성 설정을 제공합니다. Anthropic Claude 기본 추천 모델은 Sonnet 4.6, Haiku 4.5, Opus 4.8 기준이며, 새로고침 시 Provider API에서 조회된 전체 모델을 표시합니다.
 BYOK 기반 AI 프롬프트 정리 결과 저장/조회
 프롬프트 정리 템플릿 선택 및 자동 채우기
 프롬프트 정리 결과 Markdown 다운로드
 프롬프트 정리 결과 검색
 사용자별 일일 20회, 월간 500회, 5초 이내 연속 요청 차단 기본 제한 적용
 프롬프트 정리 화면은 상단 메뉴와 홈 빠른 이동에서 접근할 수 있습니다.
-관리자 설정 관리, 안내문구 관리, AI 리소스/작업유형 관리, 사용자 통계, 월간 운영 보고서, 감사 로그, 전체 테스트 실행
+관리자 설정 관리, 안내문구 관리, AI 리소스/작업유형 관리, 사용자 통계, 월간 운영 보고서, 감사 로그, 전체 테스트 실행 및 테스트 파일별 검증 설명 표시
 관리자 DB 백업 생성 및 다운로드
 관리자 사용자/예약/사용 로그 CSV 내보내기
 관리자 사용자 목록 검색/권한/상태 필터
@@ -529,7 +529,7 @@ uv run pytest
 현재 테스트 결과:
 
 ```text
-84 passed
+88 passed
 ```
 
 현재 테스트 범위:
@@ -553,6 +553,7 @@ CSRF 토큰 검증
 BYOK Provider별 API Key 암호화 저장/교체/삭제/마스킹 확인
 프롬프트 정리 LLM adapter 호출 mock, 일일/월간/연속 요청 제한, 템플릿, 저장/조회, 검색, Markdown 다운로드
 관리자 대시보드, AI 리소스/작업유형 관리, 사용자 승인/정지, 월간 보고서, 감사 로그, 사용자 필터
+관리자 테스트 실행 결과의 파일별 검증 대상, 주요 내용, PASS/FAIL/SKIP/NOT RUN 표시
 Footer 법적 고지 링크
 /terms, /privacy Markdown 렌더링
 Markdown raw HTML/script 이스케이프

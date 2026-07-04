@@ -10,7 +10,7 @@
 상태: 운영 편의 기능 보완 및 문서화 완료
 기준일: 2026-07-04
 운영 도메인: https://dev-gpt.memilmuk82.com
-pytest: 84 passed
+pytest: 88 passed
 Playwright E2E: 1 passed
 Docker Compose rebuild: PASS
 ```
@@ -33,6 +33,7 @@ Docker Compose rebuild: PASS
 [x] 완료 예약의 미작성 로그 알림 확인
 [x] 사용 로그 작성/검색/필터 확인
 [x] 관리자 대시보드 확인
+[x] 관리자 테스트 실행 결과의 파일별 검증 설명 표시 확인
 [x] 관리자 설정/안내문구/주요 화면 문구/신청 항목/사용자/통계/월간 보고서/감사 로그 확인
 [x] DB 백업과 CSV 내보내기 확인
 [x] 프롬프트 정리 메뉴와 화면 최신 UI 확인

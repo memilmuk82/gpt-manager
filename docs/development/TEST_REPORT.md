@@ -816,3 +816,33 @@ npm run test:e2e
 pytest: PASS, 88 passed
 Playwright E2E: PASS, 1 passed
 ```
+
+## 2026-07-04 테스트 메뉴 설명 강화 및 Anthropic 모델 정책 검증
+
+범위: 관리자 전체 테스트 실행 화면의 테스트 파일별 설명/상태 표시, Anthropic Claude 기본 추천 모델 목록, BYOK Provider 관련 회귀 검증
+
+명령:
+
+```bash
+uv run python -m py_compile app/services/llm/registry.py
+uv run pytest tests/test_api_keys.py tests/test_prompt_reviews.py
+uv run pytest
+```
+
+결과:
+
+```text
+py_compile: PASS
+관련 pytest: PASS, 20 passed
+전체 pytest: PASS, 88 passed
+```
+
+추가 확인:
+
+```text
+/admin/tests/run 렌더링: PASS
+테스트 설명 표 표시: PASS
+pytest 원문 로그 유지: PASS
+Anthropic 기본 fallback: claude-sonnet-4-6, claude-haiku-4-5, claude-opus-4-8
+Anthropic API 조회 결과에 claude-opus-4-7 포함 시 선택 가능 목록 유지: PASS
+```

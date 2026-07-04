@@ -21,7 +21,7 @@ PROVIDER_DEFINITIONS = {
         key="anthropic",
         label="Anthropic Claude",
         default_model="claude-sonnet-4-6",
-        recommended_models=("claude-sonnet-4-6", "claude-haiku-4-5", "claude-opus-4-7"),
+        recommended_models=("claude-sonnet-4-6", "claude-haiku-4-5", "claude-opus-4-8"),
     ),
 }
 
