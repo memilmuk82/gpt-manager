@@ -1,5 +1,23 @@
 # 생성형 AI 계정 공동 사용 지원 시스템
 
+## 리뷰용 테스트 계정
+
+리뷰용 관리자 계정은 기본으로 자동 생성되지 않습니다. 제출 시연이나 외부 리뷰에 임시 관리자 계정이 필요할 때만 `.env`에 아래 값을 명시합니다.
+
+```text
+역할: 관리자
+이메일: review.admin@senedu.kr
+임시 비밀번호: ReviewAdmin!2026
+```
+
+```text
+ENABLE_REVIEW_ADMIN=true
+REVIEW_ADMIN_EMAIL=review.admin@senedu.kr
+REVIEW_ADMIN_PASSWORD=ReviewAdmin!2026
+```
+
+이 계정은 Google OAuth 계정이 아닙니다. 로그인 화면의 Google 로그인 버튼이 아니라 이메일과 비밀번호 입력 폼에 위 이메일과 임시 비밀번호를 직접 입력해야 로그인됩니다. 운영 전에는 `ENABLE_REVIEW_ADMIN=false`로 두거나 관리자 화면에서 해당 계정을 비활성화하세요. 실제 운영 비밀번호로 재사용하지 않습니다.
+
 ## 프로젝트 소개
 
 이 프로젝트는 종로산업정보학교 AI컴퓨터과 교육과정에서 사용하는 실제 프로젝트입니다. 단순한 예제 코드가 아니라 학교 현장에서 공용 생성형 AI 계정을 사용할 때 생기는 예약, 승인, 충돌, 기록, 관리 문제를 해결하기 위해 제작되었습니다.
@@ -200,24 +218,6 @@ run.py                       Flask 앱 실행 진입점
 | `docs/images/admin-users.png` | 사용자 관리 | 사용자 수정, 활성/비활성, CSV 등록 | SQLAlchemy, form 처리, CSV parsing | 관리자 CRUD와 일괄 처리 |
 | `docs/images/usage-log.png` | 사용 로그 | 사용 결과와 프롬프트 기록 | 관계형 모델, 검색/필터 | 운영 기록의 필요성 |
 | `docs/images/settings-guide.png` | API Key/사용 안내 | Gemini API Key 저장, 안내 확인 | Fernet 암호화, Markdown/텍스트 렌더링 | 민감정보 처리와 안전 안내 |
-
-## 리뷰용 테스트 계정
-
-리뷰용 관리자 계정은 기본으로 자동 생성되지 않습니다. 제출 시연이나 외부 리뷰에 임시 관리자 계정이 필요할 때만 `.env`에 아래 값을 명시합니다.
-
-```text
-역할: 관리자
-이메일: review.admin@senedu.kr
-임시 비밀번호: ReviewAdmin!2026
-```
-
-```text
-ENABLE_REVIEW_ADMIN=true
-REVIEW_ADMIN_EMAIL=review.admin@senedu.kr
-REVIEW_ADMIN_PASSWORD=ReviewAdmin!2026
-```
-
-이 계정은 Google OAuth 계정이 아닙니다. 로그인 화면의 Google 로그인 버튼이 아니라 이메일과 비밀번호 입력 폼에 위 이메일과 임시 비밀번호를 직접 입력해야 로그인됩니다. 운영 전에는 `ENABLE_REVIEW_ADMIN=false`로 두거나 관리자 화면에서 해당 계정을 비활성화하세요. 실제 운영 비밀번호로 재사용하지 않습니다.
 
 ## 개발 배경과 기술 선택 이유
 
