@@ -10,6 +10,7 @@
 프로젝트명: gpt-share-manager-vnext
 표시명: ChatGPT Pro 5X 공동 사용 지원 시스템
 목적: 공용 생성형 AI 계정 예약·사용 기록 관리 + Gemini 기반 프롬프트 점검기
+Gemini 기본 모델: gemini-3.1-flash-lite
 운영 도메인: https://dev-gpt.memilmuk82.com
 현재 브랜치: master
 ```

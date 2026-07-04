@@ -44,7 +44,7 @@ REVIEW_ADMIN_PASSWORD=ReviewAdmin!2026
 사용자 승인과 권한 관리
 예약 충돌 방지
 사용 로그 관리
-Gemini 기반 프롬프트 점검
+Gemini 기반 프롬프트 점검 (기본 모델: gemini-3.1-flash-lite)
 관리자 대시보드
 CSV 내보내기와 SQLite 백업 등 운영 편의 기능
 Docker Compose 기반 배포
@@ -170,7 +170,7 @@ README에서는 기술 선택의 핵심 방향만 요약합니다. 상세한 교
 | 🗄️ 데이터 | SQLite + SQLAlchemy | 로컬 DB에서 시작해 ORM과 운영형 DB로 확장하기 좋습니다. |
 | 🎨 프론트엔드 | Jinja2 + Tailwind CSS + Vanilla JS | SPA 프레임워크 없이 웹 기본 동작을 학습할 수 있습니다. |
 | 📦 실행/배포 | Docker Compose + Gunicorn + Nginx + OCI | 개발 환경과 운영 환경의 차이를 실제로 경험할 수 있습니다. |
-| 🤖 AI 연동 | Gemini 프롬프트 점검 | 자유 채팅이 아니라 정해진 업무 기능으로 AI를 제한해 사용합니다. |
+| 🤖 AI 연동 | Gemini 프롬프트 점검 (`gemini-3.1-flash-lite`) | 자유 채팅이 아니라 정해진 업무 기능으로 AI를 제한해 사용합니다. |
 
 ## 🛠️ 이 프로젝트에서 학생들이 경험하는 것
 
@@ -201,7 +201,7 @@ app/                         Flask 애플리케이션 패키지
   auth/                      로컬 로그인, 회원가입, Google OAuth 인증
   logs/                      사용 로그 작성/조회 기능
   models/                    SQLAlchemy 모델 정의
-  prompts/                   Gemini 기반 프롬프트 점검 기능
+  prompts/                   Gemini 기반 프롬프트 점검 (기본 모델: gemini-3.1-flash-lite) 기능
   reservations/              예약 생성, 충돌 확인, 캘린더, 상태 변경
   routes/                    홈, 대시보드, 안내, 법적 페이지, health check
   services/                  암호화, OAuth, 프롬프트 점검, 예약 검증 등 도메인 서비스
@@ -286,7 +286,7 @@ CSRF 토큰 기반 POST 요청 보호
 사용 규칙 동의 버전 예약별 기록
 사용자별 Gemini API Key 암호화 저장/삭제/확인
 상단 사용자 badge에서 개인 Gemini API Key 설정으로 이동할 수 있습니다.
-Gemini 기반 프롬프트 점검 결과 저장/조회
+Gemini 기반 프롬프트 점검 (기본 모델: gemini-3.1-flash-lite) 결과 저장/조회
 프롬프트 점검 템플릿 선택 및 자동 채우기
 프롬프트 점검 결과 Markdown 다운로드
 프롬프트 점검 결과 검색

@@ -219,7 +219,7 @@ Gemini REST 호출 service 추가
 저장된 Gemini API Key 복호화 후 호출에 사용
 Gemini 호출부 mock 테스트 추가
 입력 길이 제한 및 사용자별 접근 제한 구현
-GEMINI_MODEL 기본값을 gemini-3.5-flash로 갱신
+GEMINI_MODEL 기본값을 gemini-3.1-flash-lite로 갱신
 ```
 
 ### 예정 보강

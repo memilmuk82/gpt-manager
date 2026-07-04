@@ -90,6 +90,6 @@ OCI 단일 인스턴스에서 충분하다.
 주의:
 
 ```text
-모델명은 .env의 GEMINI_MODEL로 관리한다.
+기본 모델은 gemini-3.1-flash-lite이며 모델명은 .env의 GEMINI_MODEL로 관리한다.
 코드에 모델명을 하드코딩하지 않는다.
 ```

@@ -106,13 +106,13 @@ def test_prompt_review_create_saves_mocked_gemini_result(client, app, monkeypatc
     with app.app_context():
         review = PromptReview.query.one()
         assert review.review_goal == "수업 활용성 개선"
-        assert review.model_name == "gemini-3.5-flash"
+        assert review.model_name == "gemini-3.1-flash-lite"
         assert "5학년 과학 수업" in review.source_prompt
         assert "점검 목표: 수업 활용성 개선" in review.assembled_prompt
         assert "핵심 문제" in review.review_result
 
     assert calls[0]["api_key"] == "gemini-secret-key-9999"
-    assert calls[0]["model"] == "gemini-3.5-flash"
+    assert calls[0]["model"] == "gemini-3.1-flash-lite"
     assert "5학년 과학 수업" in calls[0]["prompt"]
 
 
@@ -175,7 +175,7 @@ def test_user_cannot_view_another_users_prompt_review(client, app):
                 review_goal="비공개",
                 assembled_prompt="assembled",
                 review_result="secret",
-                model_name="gemini-3.5-flash",
+                model_name="gemini-3.1-flash-lite",
             )
         )
         db.session.commit()
@@ -207,7 +207,7 @@ def test_prompt_review_markdown_download_and_search(client, app):
                 review_goal="행정 문서 개선",
                 assembled_prompt="assembled",
                 review_result="개선 결과",
-                model_name="gemini-3.5-flash",
+                model_name="gemini-3.1-flash-lite",
             )
         )
         db.session.commit()

@@ -48,7 +48,7 @@ class Config:
     REVIEW_ADMIN_EMAIL = os.getenv("REVIEW_ADMIN_EMAIL", "review.admin@senedu.kr")
     REVIEW_ADMIN_PASSWORD = os.getenv("REVIEW_ADMIN_PASSWORD", "ReviewAdmin!2026")
 
-    GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash")
+    GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite")
     GEMINI_MAX_INPUT_CHARS = int(os.getenv("GEMINI_MAX_INPUT_CHARS", "3000"))
     GEMINI_MAX_OUTPUT_TOKENS = int(os.getenv("GEMINI_MAX_OUTPUT_TOKENS", "1200"))
     MAX_DAILY_AI_CALLS_PER_USER = int(os.getenv("MAX_DAILY_AI_CALLS_PER_USER", "50"))

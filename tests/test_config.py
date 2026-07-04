@@ -49,7 +49,7 @@ def test_legacy_sqlite_user_table_gets_phase6_columns(tmp_path):
         GOOGLE_REDIRECT_URI = "http://localhost:5000/auth/google/callback"
         ALLOWED_GOOGLE_DOMAIN = ""
         ADMIN_EMAILS = []
-        GEMINI_MODEL = "gemini-3.5-flash"
+        GEMINI_MODEL = "gemini-3.1-flash-lite"
         GEMINI_MAX_INPUT_CHARS = 3000
         GEMINI_MAX_OUTPUT_TOKENS = 1200
         MAX_DAILY_AI_CALLS_PER_USER = 50
