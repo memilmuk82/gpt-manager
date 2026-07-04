@@ -681,3 +681,38 @@ healthz: 200 {"status":"ok"}
 Gemini API Key 설정 화면에 개인 설정 문구와 최신 제목 표시
 구버전 SETTINGS 텍스트 미노출
 ```
+
+## 🧾 2026-07-04 운영 기능 보완 및 문서 정리 검증
+
+```text
+범위: 운영 편의 기능 보완 이후 README 포털화, 상태 문서 최신화, 릴리스 체크리스트 갱신, Markdown 링크/코드블록 검증
+
+전체 pytest:
+명령: uv run pytest
+결과: PASS
+PASS: 84
+FAIL: 0
+
+Playwright E2E:
+명령: npm run test:e2e
+결과: PASS
+PASS: 1
+FAIL: 0
+
+문서 검증:
+대상: 루트 및 docs/ 하위 Markdown 30개
+코드블록: PASS, 오류 0
+로컬 링크: PASS, 오류 0
+```
+
+추가 확인 범위:
+
+```text
+README의 리뷰용 테스트 계정 상단 배치
+Codex/ChatGPT 개발 보조 활용 사실 명시
+기술 선택 이유 중복 설명 축약 및 EDUCATION/TECH_STACK 문서로 연결
+PROJECT_STATUS, TASK, RELEASE_CHECKLIST 최신 수치 반영
+MANIFEST 누락 문서 반영
+SYSTEM_DESIGN의 CSRF 보호 상태와 테스트 수치 최신화
+```
+

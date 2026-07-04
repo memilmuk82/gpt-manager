@@ -726,3 +726,34 @@ npm run test:e2e: PASS, 1 passed
 docker compose up -d --build: PASS, gpt-manager-web-1 Up
 GET http://127.0.0.1:5000/healthz: 200 {"status":"ok"}
 ```
+
+## 🧹 2026-07-04 - 문서 구조 정리 및 최신화
+
+### 배경
+
+README가 프로젝트 포털, 교육과정, 기술 선택, 현재 상태, 주요 문서 목록을 모두 길게 반복하면서 `PROJECT_STATUS.md`, `docs/EDUCATION.md`, `docs/decisions/TECH_STACK_DECISIONS.md`와 역할이 일부 겹쳤다. 또한 `TASK.md`, `SYSTEM_DESIGN.md`, `docs/development/RELEASE_CHECKLIST.md`에는 이전 테스트 수치와 RC 기준 문구가 남아 있었다.
+
+### 변경
+
+```text
+README에 주요 섹션 이모지 적용
+README 기술 선택 상세 표를 요약 표로 축약하고 상세 문서 링크 유지
+README 하단 중복 문서 목록을 문서 관리 원칙으로 축약
+PROJECT_STATUS를 현재 상태 중심으로 재구성
+TASK를 현재 문서 정리 완료 상태와 다음 운영 TODO 중심으로 최신화
+CODEX_START_HERE를 현재 유지보수/문서 검증 흐름에 맞게 수정
+RELEASE_CHECKLIST를 2026-07-04 기준 테스트 수치와 운영 전 확인 항목으로 갱신
+MANIFEST에 누락된 교육/배포/법적/개발 기록 문서 반영
+SYSTEM_DESIGN의 CSRF 보호 상태와 테스트 수치 최신화
+DEVELOPMENT_PLAN의 현재 완료 상태 최신화
+```
+
+### 검증
+
+```text
+Markdown 코드블록 검증: PASS, 오류 0
+Markdown 로컬 링크 검증: PASS, 오류 0
+오래된 현재 상태 문구 검색: 현재 문서에서는 제거 완료
+과거 테스트 수치: DEVELOPMENT_LOG와 날짜별 TEST_REPORT 기록에는 이력 보존
+```
+

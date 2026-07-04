@@ -423,12 +423,12 @@ SESSION_COOKIE_HTTPONLY=True
 /terms, /privacy는 URL 공유 가능하되 인증 정보와 무관한 공개 문서만 제공
 ```
 
-CSRF 보호는 제출 이후 보완 과제로 남아 있다.
+CSRF 보호는 상태 변경 POST 요청에 적용되어 있으며, 관련 테스트로 회귀를 확인한다.
 
 ## 10. 테스트
 
 ```text
-uv run pytest: 55 passed
+uv run pytest: 84 passed
 npm run test:e2e: 1 passed
 ```
 

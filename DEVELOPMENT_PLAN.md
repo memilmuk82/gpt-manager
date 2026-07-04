@@ -304,14 +304,14 @@ Tailwind CDN으로 최소 화면만 구성
 ## 8. 현재 완료 상태
 
 ```text
-작성 시점: 2026-07-02
-상태: Release Candidate 운영 검증 완료 + 법적 고지 페이지 배포 완료
+작성 시점: 2026-07-04
+상태: 운영 편의 기능 보완, UI 개선, 문서 포털 정리 완료
 운영 도메인: https://dev-gpt.memilmuk82.com
-pytest: 55 passed
+pytest: 84 passed
 Playwright E2E: 1 passed
 Docker Compose + Gunicorn + Nginx + HTTPS 운영 확인
-오늘 예약 화면 구현 완료
-보조관리자 권한 구현 완료
+오늘 예약 화면, 월간 예약 캘린더, 미작성 로그 알림 구현 완료
+보조관리자 권한, 월간 운영 보고서, 감사 로그, DB 백업/CSV 내보내기 구현 완료
 /terms, /privacy Markdown 법적 고지 페이지 구현 완료
 ```
 
