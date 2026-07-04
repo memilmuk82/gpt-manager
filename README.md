@@ -18,6 +18,21 @@ REVIEW_ADMIN_PASSWORD=ReviewAdmin!2026
 
 이 계정은 Google OAuth 계정이 아닙니다. 로그인 화면의 Google 로그인 버튼이 아니라 이메일과 비밀번호 입력 폼에 위 이메일과 임시 비밀번호를 직접 입력해야 로그인됩니다. 운영 전에는 `ENABLE_REVIEW_ADMIN=false`로 두거나 관리자 화면에서 해당 계정을 비활성화하세요. 실제 운영 비밀번호로 재사용하지 않습니다.
 
+## 🧪 시연용 더미데이터 계정
+
+`RC 운영 CRUD 검증 1782896313` 더미데이터를 주입하면 아래 로컬 계정으로 각 메뉴를 확인할 수 있습니다. 모든 계정의 시연용 비밀번호는 `DemoUser!2026`입니다.
+
+| 역할 | 이메일 | 확인 용도 |
+| --- | --- | --- |
+| 관리자 | `rc.admin.1782896313@senedu.kr` | 관리자 대시보드, 사용자 관리, 보고서, 감사 로그, CSV/백업 |
+| 보조관리자 | `rc.assistant.1782896313@senedu.kr` | 보조관리자 권한과 인증번호 담당자 표시 |
+| 일반 사용자 | `rc.teacher.kim.1782896313@senedu.kr` | 내 예약, 오늘 예약, 완료/취소/예정, 미작성 로그 알림 |
+| 일반 사용자 | `rc.teacher.lee.1782896313@senedu.kr` | 완료 예약, 사용 로그, 프롬프트 점검 기록 |
+| 일반 사용자 | `rc.teacher.park.1782896313@senedu.kr` | 오늘 예약, 취소 예약, 캘린더 표시 |
+| 정지 사용자 | `rc.suspended.1782896313@senedu.kr` | 정지 계정 로그인 차단 확인 |
+
+이 계정과 데이터는 시연·리뷰용입니다. 운영 전에는 DB 백업을 복원하거나 `uv run python scripts/seed_demo_data.py --clear-only`로 같은 태그의 더미데이터를 제거한 뒤 운영 계정만 유지하세요.
+
 ## 🧭 프로젝트 소개
 
 이 프로젝트는 종로산업정보학교 AI컴퓨터과 교육과정에서 사용하는 실제 프로젝트입니다. 단순한 예제 코드가 아니라 학교 현장에서 공용 생성형 AI 계정을 사용할 때 생기는 예약, 승인, 충돌, 기록, 관리 문제를 해결하기 위해 제작되었습니다.
@@ -396,7 +411,39 @@ docker compose up -d --build
 
 ## 🧪 시연 데이터 준비
 
-기본 실행 환경에서는 앱 시작 시 `학교 공용 GPT Pro 5X 계정` 리소스가 자동으로 준비됩니다. 테스트 DB, 수동 초기화 DB, 또는 리소스가 보이지 않는 환경에서는 예약 시연 전에 최소 1개의 리소스를 아래 명령으로 준비합니다.
+기본 실행 환경에서는 앱 시작 시 `학교 공용 GPT Pro 5X 계정` 리소스가 자동으로 준비됩니다. 전체 메뉴를 실제 운영 화면처럼 확인하려면 아래 명령으로 `RC 운영 CRUD 검증 1782896313` 더미데이터를 주입합니다. 이 스크립트는 같은 태그의 기존 더미데이터를 정리한 뒤 다시 생성하므로 반복 실행할 수 있습니다.
+
+```bash
+uv run python scripts/seed_demo_data.py
+```
+
+특정 날짜를 오늘 예약/캘린더 기준일로 고정하려면 다음처럼 실행합니다.
+
+```bash
+uv run python scripts/seed_demo_data.py --date 2026-07-04
+```
+
+생성되는 데이터 범위:
+
+```text
+시연용 사용자 6명
+AI 리소스 4개
+작업유형 4개
+오늘/과거/미래/취소/완료 예약 12건
+사용 로그 4건
+프롬프트 점검 기록 4건
+Gemini API Key 더미 암호화 저장 3건
+감사 로그 4건
+운영 공지 배너 활성화
+```
+
+더미데이터만 제거하려면 다음 명령을 사용합니다.
+
+```bash
+uv run python scripts/seed_demo_data.py --clear-only
+```
+
+테스트 DB, 수동 초기화 DB, 또는 리소스가 보이지 않는 환경에서 최소 1개의 리소스만 빠르게 준비하려면 아래 명령을 사용할 수 있습니다.
 
 로컬 실행 환경:
 
@@ -424,7 +471,7 @@ docker compose exec web python -c "from app import create_app; from app.extensio
 5. /reservations/today 또는 /reservations/calendar 에서 날짜별·월별 전체 예약 확인
 6. 예약 완료 후 홈의 미작성 로그 알림, /logs/new?reservation_id=..., 또는 /logs 에서 사용 로그 작성
 7. /settings/api-key 에서 Gemini API Key 등록
-8. /prompts 에서 템플릿을 선택해 프롬프트 점검 실행
+8. /prompt-reviews 에서 템플릿을 선택해 프롬프트 점검 실행
 9. /guide 에서 사용 안내 확인
 10. Footer에서 이용약관과 개인정보처리방침 확인
 ```

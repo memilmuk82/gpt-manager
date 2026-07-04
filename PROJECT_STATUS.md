@@ -37,6 +37,7 @@ Codex/ChatGPT 개발 보조 활용 사실 문서화
 README 개발 배경과 기술 선택 이유 중복 정리
 운영 편의 기능 및 관리자 기능 문서화
 Apple HIG + Material 3 Expressive 방향의 UI 시스템 개선 기록 반영
+RC 운영 CRUD 검증 1782896313 시연 더미데이터 seed 스크립트 추가 및 DB 주입 완료
 ```
 
 ## 🧱 3. 확정된 방향

@@ -757,3 +757,33 @@ Markdown 로컬 링크 검증: PASS, 오류 0
 과거 테스트 수치: DEVELOPMENT_LOG와 날짜별 TEST_REPORT 기록에는 이력 보존
 ```
 
+## 🧪 2026-07-04 - RC 운영 CRUD 검증 더미데이터 추가
+
+### 배경
+
+리뷰와 시연 과정에서 빈 화면이 아니라 실제 운영되는 서비스처럼 각 메뉴를 확인할 수 있도록 `RC 운영 CRUD 검증 1782896313` 태그의 더미데이터를 추가했다.
+
+### 변경
+
+```text
+scripts/seed_demo_data.py 추가
+시연용 사용자 6명 생성
+AI 리소스 4개와 작업유형 4개 생성
+오늘/과거/미래/취소/완료 예약 12건 생성
+사용 로그 4건과 프롬프트 점검 기록 4건 생성
+Gemini API Key 더미 암호화 저장 3건 생성
+관리자 감사 로그 4건 생성
+운영 공지 배너 활성화
+README에 더미 계정과 seed 실행 방법 문서화
+프롬프트 점검 실제 라우트 /prompt-reviews 문서 보정
+```
+
+### 검증
+
+```text
+python3 -m py_compile scripts/seed_demo_data.py: PASS
+uv run python scripts/seed_demo_data.py --date 2026-07-04: PASS
+반복 실행 후 중복 증가 없음
+주요 메뉴 smoke test: /dashboard, /reservations, /reservations/today, /reservations/calendar, /logs, /prompt-reviews, /settings/api-key, /admin, /admin/users 모두 200
+```
+

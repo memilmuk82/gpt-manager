@@ -337,10 +337,10 @@ GET  /logs/<id>
 ### Prompt Reviews
 
 ```text
-GET  /prompts
-GET  /prompts/new
-POST /prompts
-GET  /prompts/<id>
+GET  /prompt-reviews
+GET  /prompt-reviews/new
+POST /prompt-reviews
+GET  /prompt-reviews/<id>
 ```
 
 ### Settings

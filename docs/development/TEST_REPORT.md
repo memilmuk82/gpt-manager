@@ -716,3 +716,53 @@ MANIFEST 누락 문서 반영
 SYSTEM_DESIGN의 CSRF 보호 상태와 테스트 수치 최신화
 ```
 
+## 🧪 2026-07-04 RC 운영 CRUD 검증 더미데이터 검증
+
+```text
+범위: 시연용 사용자, 리소스, 작업유형, 예약, 사용 로그, 프롬프트 점검, API Key, 감사 로그 seed
+
+문법 검사:
+명령: python3 -m py_compile scripts/seed_demo_data.py
+결과: PASS
+
+Seed 실행:
+명령: uv run python scripts/seed_demo_data.py --date 2026-07-04
+결과: PASS
+
+반복 실행 검증:
+결과: PASS, 같은 태그의 더미데이터를 정리한 뒤 재생성
+```
+
+생성 데이터 집계:
+
+```text
+시연 스크립트 사용자: 6명
+기존 1782896313 계정 포함 사용자: 7명
+AI 리소스: 4개
+작업유형: 4개
+오늘 예약 표시 대상: 5건
+김도연 사용자 내 예약: 5건
+김도연 사용자 완료 예약 중 미작성 로그: 1건
+사용 로그: 4건
+프롬프트 점검 기록: 4건
+감사 로그: 4건
+운영 공지 배너: true
+```
+
+주요 메뉴 smoke test:
+
+```text
+rc.teacher.kim.1782896313@senedu.kr / DemoUser!2026
+/dashboard: 200
+/reservations: 200
+/reservations/today?date=2026-07-04: 200
+/reservations/calendar?month=2026-07: 200
+/logs: 200
+/prompt-reviews: 200
+/settings/api-key: 200
+
+rc.admin.1782896313@senedu.kr / DemoUser!2026
+/admin: 200
+/admin/users: 200
+```
+
