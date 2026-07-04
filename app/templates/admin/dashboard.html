@@ -33,6 +33,7 @@
       {{ admin_card(section, 'exports', '⇩', 'CSV 내보내기', '사용자, 예약, 사용 로그 원자료를 CSV로 다운로드합니다.', '내보내기 열기') }}
       {{ admin_card(section, 'backups', '▣', 'DB 백업', '운영 SQLite DB 백업 파일을 생성하고 다운로드합니다.', '백업 열기') }}
       {{ admin_card(section, 'audit', '⌕', '감사 로그', '관리자 주요 변경 이력을 확인합니다.', '감사 로그 불러오기') }}
+      {{ admin_card(section, 'api-keys', '◈', 'AI Key 상태', 'Provider별 등록 여부와 최근 사용일만 확인합니다.', '상태 불러오기') }}
       {{ admin_card(section, 'tests', '♧', '전체 테스트 실행', '관리자 화면에서 서버의 전체 테스트를 실행합니다.', '테스트 실행') }}
     </div>
 
@@ -279,7 +280,7 @@
     {% if section == 'reports' %}
       <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div><h2 class="text-xl font-extrabold text-slate-950">▤ 월간 운영 보고서</h2><p class="mt-2 text-sm text-slate-600">선택한 월의 예약, 사용 로그, 프롬프트 점검 현황을 Markdown 보고서로 생성합니다.</p></div>
+          <div><h2 class="text-xl font-extrabold text-slate-950">▤ 월간 운영 보고서</h2><p class="mt-2 text-sm text-slate-600">선택한 월의 예약, 사용 로그, 프롬프트 정리 현황을 Markdown 보고서로 생성합니다.</p></div>
           <a class="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-bold text-slate-700" href="{{ url_for('admin.monthly_report_download', month=report.month) }}">Markdown 다운로드</a>
         </div>
         <form class="mt-5 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:flex-row sm:items-end" method="get" action="{{ url_for('admin.dashboard') }}">
@@ -287,7 +288,7 @@
           <label class="text-sm font-bold text-slate-700">월 선택<input class="mt-2 h-11 rounded-xl border border-slate-300 px-3" name="month" type="month" value="{{ report.month }}"></label>
           <button class="h-11 rounded-xl bg-slate-950 px-5 text-sm font-extrabold text-white" type="submit">보고서 생성</button>
         </form>
-        <div class="mt-5 grid gap-3 md:grid-cols-4"><div class="rounded-xl border border-slate-200 bg-slate-50 p-4"><p class="text-sm text-slate-500">전체 예약</p><p class="mt-2 text-2xl font-extrabold">{{ report.stats.total_reservations }}</p></div><div class="rounded-xl border border-slate-200 bg-slate-50 p-4"><p class="text-sm text-slate-500">사용 로그</p><p class="mt-2 text-2xl font-extrabold">{{ report.usage_logs|length }}</p></div><div class="rounded-xl border border-slate-200 bg-slate-50 p-4"><p class="text-sm text-slate-500">프롬프트 점검</p><p class="mt-2 text-2xl font-extrabold">{{ report.prompt_reviews }}</p></div><div class="rounded-xl border border-slate-200 bg-slate-50 p-4"><p class="text-sm text-slate-500">실제 사용</p><p class="mt-2 text-2xl font-extrabold">{{ minutes(report.stats.actual_minutes) }}</p></div></div>
+        <div class="mt-5 grid gap-3 md:grid-cols-4"><div class="rounded-xl border border-slate-200 bg-slate-50 p-4"><p class="text-sm text-slate-500">전체 예약</p><p class="mt-2 text-2xl font-extrabold">{{ report.stats.total_reservations }}</p></div><div class="rounded-xl border border-slate-200 bg-slate-50 p-4"><p class="text-sm text-slate-500">사용 로그</p><p class="mt-2 text-2xl font-extrabold">{{ report.usage_logs|length }}</p></div><div class="rounded-xl border border-slate-200 bg-slate-50 p-4"><p class="text-sm text-slate-500">프롬프트 정리</p><p class="mt-2 text-2xl font-extrabold">{{ report.prompt_reviews }}</p></div><div class="rounded-xl border border-slate-200 bg-slate-50 p-4"><p class="text-sm text-slate-500">실제 사용</p><p class="mt-2 text-2xl font-extrabold">{{ minutes(report.stats.actual_minutes) }}</p></div></div>
         <pre class="mt-5 max-h-[42rem] overflow-auto whitespace-pre-wrap rounded-xl bg-slate-950 p-4 text-sm leading-6 text-slate-100">{{ report.markdown }}</pre>
       </section>
     {% endif %}
@@ -300,6 +301,26 @@
           <a class="rounded-2xl border border-slate-200 bg-slate-50 p-5 font-extrabold text-slate-950" href="{{ url_for('admin.export_users_csv') }}">사용자 CSV</a>
           <a class="rounded-2xl border border-slate-200 bg-slate-50 p-5 font-extrabold text-slate-950" href="{{ url_for('admin.export_reservations_csv') }}">예약 CSV</a>
           <a class="rounded-2xl border border-slate-200 bg-slate-50 p-5 font-extrabold text-slate-950" href="{{ url_for('admin.export_usage_logs_csv') }}">사용 로그 CSV</a>
+        </div>
+      </section>
+    {% endif %}
+
+
+    {% if section == 'api-keys' %}
+      <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 class="text-xl font-extrabold text-slate-950">◈ 사용자 AI Key 상태</h2>
+        <p class="mt-2 text-sm leading-6 text-slate-600">관리자는 사용자의 API Key 원문을 볼 수 없습니다. 등록 여부, Provider, 마지막 4자리, 등록일, 최근 사용일만 표시됩니다. 서버 root 권한을 가진 운영자는 이론적으로 복호화 가능하나, 일반 웹 관리자와 다른 사용자는 원문에 접근할 수 없습니다.</p>
+        <div class="mt-5 overflow-x-auto rounded-2xl border border-slate-200">
+          <table class="min-w-full divide-y divide-slate-200 text-sm">
+            <thead class="bg-slate-50 text-left text-slate-600"><tr><th class="px-4 py-3">사용자</th><th class="px-4 py-3">Provider</th><th class="px-4 py-3">상태</th><th class="px-4 py-3">마지막 4자리</th><th class="px-4 py-3">등록일</th><th class="px-4 py-3">최근 사용일</th></tr></thead>
+            <tbody class="divide-y divide-slate-100">
+              {% for key in api_key_statuses %}
+                <tr><td class="px-4 py-3 font-bold text-slate-950">{{ key.user.name }}<br><span class="text-xs font-normal text-slate-500">{{ key.user.email }}</span></td><td class="px-4 py-3 text-slate-700">{{ key.provider }}</td><td class="px-4 py-3"><span class="rounded-full {% if key.is_active %}bg-emerald-50 text-emerald-700{% else %}bg-amber-50 text-amber-700{% endif %} px-3 py-1 text-xs font-bold">{{ '활성' if key.is_active else '비활성' }}</span></td><td class="px-4 py-3 text-slate-700">•••• {{ key.key_last4 }}</td><td class="px-4 py-3 text-slate-600">{{ key.created_at.strftime('%Y-%m-%d %H:%M') }}</td><td class="px-4 py-3 text-slate-600">{{ key.last_used_at.strftime('%Y-%m-%d %H:%M') if key.last_used_at else '-' }}</td></tr>
+              {% else %}
+                <tr><td class="px-4 py-8 text-center text-slate-500" colspan="6">등록된 사용자 API Key가 없습니다.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
       </section>
     {% endif %}

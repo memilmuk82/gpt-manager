@@ -26,6 +26,7 @@ from app.models import (
     ReservationStatus,
     UsageLog,
     User,
+    UserApiKey,
     WorkType,
 )
 
@@ -452,6 +453,7 @@ def _admin_context(section: str = "overview", test_result: dict | None = None) -
         "role_labels": ROLE_LABELS,
         "edit_user": edit_user,
         "admin_stats": _usage_statistics(all_users, reservations),
+        "api_key_statuses": UserApiKey.query.order_by(UserApiKey.provider.asc(), UserApiKey.created_at.desc()).all(),
         "test_result": test_result,
     }
 
@@ -569,7 +571,7 @@ def _build_monthly_report_markdown(month: str, stats: dict, usage_logs: list[Usa
         f"- 예약 기준 사용 시간: {stats['reserved_minutes']}분",
         f"- 완료 기준 실제 사용 시간: {stats['actual_minutes']}분",
         f"- 사용 로그: {len(usage_logs)}건",
-        f"- 프롬프트 점검: {prompt_reviews}건",
+        f"- 프롬프트 정리: {prompt_reviews}건",
         "",
         "## 작업 유형별 사용",
         "",

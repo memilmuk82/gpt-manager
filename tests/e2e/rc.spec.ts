@@ -63,7 +63,7 @@ test('release candidate core user workflow persists data across refreshes', asyn
   await expect(page.getByText('완료', { exact: true })).toBeVisible();
 
   await page.goto('/settings/api-key');
-  await expect(page.getByRole('heading', { name: 'Gemini API Key' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'AI Provider 설정' })).toBeVisible();
   await page.locator('#api_key').fill('gemini-e2e-key-1111');
   await page.getByRole('button', { name: '암호화 저장' }).click();
   await expect(page.getByText('저장됨: •••• •••• •••• 1111')).toBeVisible();
@@ -75,7 +75,7 @@ test('release candidate core user workflow persists data across refreshes', asyn
   await expect(page.getByText('저장됨: •••• •••• •••• 2222')).toBeVisible();
 
   await page.getByRole('button', { name: '삭제' }).click();
-  await expect(page.getByText('저장된 Gemini API Key가 없습니다.')).toBeVisible();
+  await expect(page.getByRole('link', { name: /Google Gemini 미등록/ })).toBeVisible();
   await page.reload();
-  await expect(page.getByText('저장된 Gemini API Key가 없습니다.')).toBeVisible();
+  await expect(page.getByRole('link', { name: /Google Gemini 미등록/ })).toBeVisible();
 });

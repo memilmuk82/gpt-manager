@@ -36,7 +36,7 @@ def test_privacy_page_renders_markdown_document(client):
     assert response.status_code == 200
     assert "개인정보처리방침" in body
     assert "Google OAuth" in body
-    assert "Gemini API" in body
+    assert "OpenAI, Google Gemini, Anthropic Claude API" in body
     assert "비밀번호 해시" in body
     assert "이진선" in body
 

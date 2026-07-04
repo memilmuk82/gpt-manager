@@ -152,6 +152,26 @@ FAIL: 0
 재테스트 결과: 36 passed
 ```
 
+전체 회귀:
+```bash
+uv run pytest
+```
+
+결과:
+```text
+88 passed
+```
+
+E2E:
+```bash
+npm run test:e2e
+```
+
+결과:
+```text
+1 passed
+```
+
 
 ## Phase 6 테스트 결과
 
@@ -766,3 +786,17 @@ rc.admin.1782896313@senedu.kr / DemoUser!2026
 /admin/users: 200
 ```
 
+
+## 2026-07-04 BYOK LLM Provider 확장 검증
+
+범위: 사용자별 OpenAI/Gemini/Anthropic Provider 설정, API Key 암호화 저장/삭제/마스킹, 모델 fallback, 프롬프트 정리 adapter mock, 요청 제한, 관리자 API Key 상태 표시
+
+명령:
+```bash
+uv run pytest tests/test_api_keys.py tests/test_prompt_reviews.py tests/test_admin.py
+```
+
+결과:
+```text
+36 passed
+```

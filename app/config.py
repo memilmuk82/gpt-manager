@@ -31,6 +31,7 @@ class Config:
     WTF_CSRF_ENABLED = os.getenv("WTF_CSRF_ENABLED", "true").lower() == "true"
 
     APP_ENCRYPTION_KEY = os.getenv("APP_ENCRYPTION_KEY", "")
+    LLM_KEY_ENCRYPTION_SECRET = os.getenv("LLM_KEY_ENCRYPTION_SECRET", "dev-change-this-llm-key-secret")
     GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "")
     GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "")
     GOOGLE_REDIRECT_URI = os.getenv(
@@ -51,4 +52,6 @@ class Config:
     GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite")
     GEMINI_MAX_INPUT_CHARS = int(os.getenv("GEMINI_MAX_INPUT_CHARS", "3000"))
     GEMINI_MAX_OUTPUT_TOKENS = int(os.getenv("GEMINI_MAX_OUTPUT_TOKENS", "1200"))
-    MAX_DAILY_AI_CALLS_PER_USER = int(os.getenv("MAX_DAILY_AI_CALLS_PER_USER", "50"))
+    MAX_DAILY_AI_CALLS_PER_USER = int(os.getenv("MAX_DAILY_AI_CALLS_PER_USER", "20"))
+    MAX_MONTHLY_AI_CALLS_PER_USER = int(os.getenv("MAX_MONTHLY_AI_CALLS_PER_USER", "500"))
+    AI_REQUEST_COOLDOWN_SECONDS = int(os.getenv("AI_REQUEST_COOLDOWN_SECONDS", "5"))

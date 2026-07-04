@@ -194,6 +194,9 @@ class UserApiKey(db.Model):
     provider = db.Column(db.String(80), nullable=False, default="gemini", index=True)
     encrypted_api_key = db.Column(db.Text, nullable=False)
     key_last4 = db.Column(db.String(4), nullable=False)
+    selected_model = db.Column(db.String(120), nullable=False, default="")
+    is_active = db.Column(db.Boolean, nullable=False, default=True)
+    last_used_at = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
     updated_at = db.Column(
         db.DateTime,
@@ -208,6 +211,7 @@ class UserApiKey(db.Model):
 class PromptReview(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False, index=True)
+    provider = db.Column(db.String(80), nullable=False, default="gemini", index=True)
     source_prompt = db.Column(db.Text, nullable=False)
     review_goal = db.Column(db.String(255), nullable=False)
     assembled_prompt = db.Column(db.Text, nullable=False)

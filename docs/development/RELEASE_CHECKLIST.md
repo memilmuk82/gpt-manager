@@ -25,8 +25,8 @@ Docker Compose rebuild: PASS
 [x] /healthz 응답 확인
 [x] 로컬 로그인 확인
 [x] Google OAuth Redirect URI 운영 도메인 기준 설정 확인
-[x] Gemini API Key 등록/삭제 확인
-[x] 프롬프트 점검 테스트 mock 통과
+[x] BYOK Provider별 API Key 등록/삭제 확인
+[x] 프롬프트 정리 adapter mock 테스트 통과
 [x] 예약 생성/취소/완료 확인
 [x] 오늘 예약 화면 확인
 [x] 월간 예약 캘린더 확인
@@ -35,8 +35,8 @@ Docker Compose rebuild: PASS
 [x] 관리자 대시보드 확인
 [x] 관리자 설정/안내문구/주요 화면 문구/신청 항목/사용자/통계/월간 보고서/감사 로그 확인
 [x] DB 백업과 CSV 내보내기 확인
-[x] 프롬프트 점검 메뉴와 화면 최신 UI 확인
-[x] 개인 Gemini API Key 설정 화면과 사용자 badge 링크 확인
+[x] 프롬프트 정리 메뉴와 화면 최신 UI 확인
+[x] 개인 AI Provider 설정 화면과 사용자 badge 링크 확인
 [x] 보조관리자 관리자 화면 접근 확인
 [x] pytest 통과
 [x] Playwright E2E 통과
@@ -69,8 +69,8 @@ Docker Compose rebuild: PASS
 5. 예약 충돌 테스트
 6. 오늘 예약과 월간 예약 캘린더 확인
 7. 예약 완료 후 사용 로그 작성
-8. Gemini API Key 등록
-9. 프롬프트 점검 실행 및 Markdown 다운로드 확인
+8. AI Provider/API Key 설정
+9. 프롬프트 정리 실행 및 Markdown 다운로드 확인
 10. Footer에서 이용약관과 개인정보처리방침 페이지 이동 확인
 11. 로그아웃
 12. 관리자 또는 보조관리자 계정 로그인
@@ -84,5 +84,5 @@ Docker Compose rebuild: PASS
 ## 🗣️ 5. 제출 설명 핵심 문장
 
 ```text
-이 프로젝트는 공용 생성형 AI 계정 사용을 직접 통제하는 앱이 아니라, 공용 AI 사용 예약·기록·프롬프트 개선을 지원하는 학교 업무 관리 앱입니다. Gemini API는 자유 채팅이 아니라 프롬프트 점검 기능에 제한적으로 사용해 비용과 보안 위험을 줄였습니다.
+이 프로젝트는 공용 생성형 AI 계정 사용을 직접 통제하는 앱이 아니라, 공용 AI 사용 예약·기록·프롬프트 개선을 지원하는 학교 업무 관리 앱입니다. AI API는 자유 채팅이 아니라 BYOK 프롬프트 정리 기능에 제한적으로 사용해 비용과 보안 위험을 줄였습니다. 관리자는 공용 API Key를 제공하지 않습니다.
 ```

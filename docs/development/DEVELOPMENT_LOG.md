@@ -787,3 +787,16 @@ uv run python scripts/seed_demo_data.py --date 2026-07-04: PASS
 주요 메뉴 smoke test: /dashboard, /reservations, /reservations/today, /reservations/calendar, /logs, /prompt-reviews, /settings/api-key, /admin, /admin/users 모두 200
 ```
 
+
+## 2026-07-04 - BYOK LLM Provider 기반 프롬프트 정리 확장
+
+```text
+사용자별 OpenAI, Google Gemini, Anthropic Claude Provider 설정 추가
+API Key 기본 비저장, 선택 시 LLM_KEY_ENCRYPTION_SECRET 기반 암호화 저장 구현
+Provider별 모델 선택, 모델 목록 새로고침 fallback, 연결 테스트 구현
+OpenRouter는 구현 범위에서 제외
+프롬프트 점검 흐름을 구조화된 프롬프트 정리 기능으로 확장
+일일/월간/5초 연속 요청 제한 적용
+관리자 화면에 API Key 원문 없는 등록 상태 메타데이터만 표시
+README, SYSTEM_DESIGN, PRD, PROJECT_STATUS, PROJECT_INSTRUCTIONS, 보안/법적 문서 반영
+```

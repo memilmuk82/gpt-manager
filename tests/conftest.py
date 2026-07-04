@@ -13,6 +13,7 @@ class TestConfig:
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = "Lax"
     SESSION_COOKIE_SECURE = False
+    LLM_KEY_ENCRYPTION_SECRET = "test-llm-secret"
     GEMINI_MODEL = "gemini-3.1-flash-lite"
     GEMINI_MAX_INPUT_CHARS = 3000
     GEMINI_MAX_OUTPUT_TOKENS = 1200

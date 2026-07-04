@@ -1,99 +1,42 @@
-import json
-import urllib.error
-import urllib.request
-
-
-class GeminiReviewError(RuntimeError):
-    pass
-
-
 def build_review_prompt(source_prompt: str, review_goal: str) -> str:
-    return f"""다음 프롬프트를 교사용 AI 활용 관점에서 점검하세요.
+    return f"""사용자가 중언부언하거나 불완전하게 작성한 요청을 생성형 AI가 이해하기 쉬운 구조화된 프롬프트로 정리하세요.
 
 점검 목표: {review_goal}
 
 원본 프롬프트:
 {source_prompt}
 
-아래 형식으로 한국어로 답하세요.
-1. 핵심 문제
-2. 개선 방향
-3. 개선된 프롬프트
-4. 수업/업무 적용 시 주의점
+반드시 한국어로 답하고, 사용자의 원래 의도를 임의로 생성·변경·삭제하지 마세요. 불확실한 내용은 추정 또는 확인 필요로 표시하세요.
+
+출력 형식:
+판정: 채택 / 수정 후 채택 / 보류 / 폐기
+
+1. 정리된 요청
+- 사용자의 원래 의도를 명확한 작업 지시문으로 재구성
+
+2. 핵심 목표
+- 이 요청으로 달성해야 할 결과
+
+3. 제약 조건
+- 임의 생성 금지
+- 임의 변경 금지
+- 임의 삭제 금지
+- 근거 없는 내용은 추정 또는 확인 필요로 표시
+
+4. 검토 기준
+- 논리적 타당성
+- 현실성
+- 실행 가능성
+- 유지보수성
+- 실패 가능성
+- 학교 현장 적용 가능성
+- 학생 수준 적합성
+
+5. 최종 프롬프트
+- 생성형 AI나 Codex에 바로 붙여넣을 수 있는 완성형 프롬프트
+
+6. 주의할 점
+- 할루시네이션 가능성
+- 추가 확인이 필요한 정보
+- 버려야 할 방향
 """.strip()
-
-
-def call_gemini_review(
-    *,
-    api_key: str,
-    model: str,
-    prompt: str,
-    max_output_tokens: int,
-    timeout: int = 20,
-) -> str:
-    payload = {
-        "model": model,
-        "input": prompt,
-        "generation_config": {"max_output_tokens": max_output_tokens},
-    }
-    request = urllib.request.Request(
-        "https://generativelanguage.googleapis.com/v1beta/interactions",
-        data=json.dumps(payload).encode("utf-8"),
-        headers={
-            "Content-Type": "application/json",
-            "x-goog-api-key": api_key,
-        },
-        method="POST",
-    )
-
-    try:
-        with urllib.request.urlopen(request, timeout=timeout) as response:
-            response_payload = json.loads(response.read().decode("utf-8"))
-    except urllib.error.HTTPError as exc:
-        detail = exc.read().decode("utf-8", errors="replace")
-        raise GeminiReviewError(f"Gemini API 요청이 실패했습니다. ({exc.code}) {detail}") from exc
-    except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as exc:
-        raise GeminiReviewError("Gemini API 응답을 처리하지 못했습니다.") from exc
-
-    output_text = _extract_output_text(response_payload)
-    if not output_text:
-        raise GeminiReviewError("Gemini API 응답에 점검 결과가 없습니다.")
-    return output_text
-
-
-def _extract_output_text(payload: dict) -> str:
-    direct_output = payload.get("output_text") or payload.get("outputText")
-    if isinstance(direct_output, str):
-        return direct_output.strip()
-
-    output = payload.get("output")
-    if isinstance(output, str):
-        return output.strip()
-
-    for candidate in payload.get("candidates", []):
-        parts = candidate.get("content", {}).get("parts", [])
-        text = "".join(part.get("text", "") for part in parts if isinstance(part, dict))
-        if text.strip():
-            return text.strip()
-
-    for step in payload.get("steps", []):
-        text = _extract_step_text(step)
-        if text:
-            return text
-
-    return ""
-
-
-def _extract_step_text(step: dict) -> str:
-    chunks: list[str] = []
-    for key in ("output", "outputs", "content", "contents"):
-        value = step.get(key)
-        if isinstance(value, str):
-            chunks.append(value)
-        elif isinstance(value, list):
-            for item in value:
-                if isinstance(item, str):
-                    chunks.append(item)
-                elif isinstance(item, dict) and isinstance(item.get("text"), str):
-                    chunks.append(item["text"])
-    return "".join(chunks).strip()

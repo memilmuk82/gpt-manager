@@ -22,6 +22,7 @@
 - `docs/adr/0001-use-flask-sqlite-docker-oci.md`
 - `docs/adr/0002-use-gemini-for-prompt-review.md`
 - `docs/adr/0003-release-freeze.md`
+- `docs/adr/0004-byok-llm-provider-settings.md`
 
 ## 📝 개발·검증 기록
 

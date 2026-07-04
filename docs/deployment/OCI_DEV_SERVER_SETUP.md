@@ -334,10 +334,13 @@ GOOGLE_REDIRECT_URI=https://<your-domain>/auth/google/callback
 ALLOWED_GOOGLE_DOMAIN=
 ADMIN_EMAILS=admin@senedu.kr
 ASSISTANT_ADMIN_EMAILS=
+LLM_KEY_ENCRYPTION_SECRET=change-this-secret
 GEMINI_MODEL=gemini-3.1-flash-lite
 GEMINI_MAX_INPUT_CHARS=3000
 GEMINI_MAX_OUTPUT_TOKENS=1200
-MAX_DAILY_AI_CALLS_PER_USER=50
+MAX_DAILY_AI_CALLS_PER_USER=20
+MAX_MONTHLY_AI_CALLS_PER_USER=500
+AI_REQUEST_COOLDOWN_SECONDS=5
 ```
 
 `APP_ENCRYPTION_KEY`는 Fernet 키 형식으로 생성한다.
@@ -441,4 +444,14 @@ curl http://127.0.0.1:5000/healthz
 curl https://dev-gpt.memilmuk82.com/healthz
 curl https://dev-gpt.memilmuk82.com/terms
 curl https://dev-gpt.memilmuk82.com/privacy
+```
+
+
+## BYOK AI 운영 보안 포트
+
+```text
+외부 공개 가능: 80, 443
+외부 공개 금지: 5432 PostgreSQL, 6379 Redis, 8000 Flask/Gunicorn 내부 포트, 3000/5173 개발 서버 포트
+현재 compose.yaml은 웹 서비스를 127.0.0.1:5000에만 바인딩하며 DB 포트를 외부에 공개하지 않는다. 운영에서는 Nginx가 80/443만 외부 공개한다.
+Docker logs와 에러 메시지에 사용자 API Key 원문을 출력하지 않는다.
 ```

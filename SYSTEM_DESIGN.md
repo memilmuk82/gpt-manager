@@ -78,10 +78,13 @@ ADMIN_EMAILS=<comma-separated-admin-emails>
 ASSISTANT_ADMIN_EMAILS=<comma-separated-assistant-admin-emails>
 REVIEW_ADMIN_EMAIL=review.admin@senedu.kr
 REVIEW_ADMIN_PASSWORD=<review-admin-password>
+LLM_KEY_ENCRYPTION_SECRET=change-this-secret
 GEMINI_MODEL=gemini-3.1-flash-lite
 GEMINI_MAX_INPUT_CHARS=3000
 GEMINI_MAX_OUTPUT_TOKENS=1200
-MAX_DAILY_AI_CALLS_PER_USER=50
+MAX_DAILY_AI_CALLS_PER_USER=20
+MAX_MONTHLY_AI_CALLS_PER_USER=500
+AI_REQUEST_COOLDOWN_SECONDS=5
 ```
 
 ## 4. 데이터 모델
@@ -255,8 +258,8 @@ user:
 - 본인 예약 생성/조회/취소/완료
 - 오늘 예약 전체 현황 조회
 - 본인 사용 로그 작성/조회
-- 본인 Gemini API Key 설정
-- 본인 프롬프트 점검 기록 조회
+- 본인 AI Provider/API Key 설정
+- 본인 프롬프트 정리 기록 조회
 
 assistant_admin:
 - user 권한
@@ -381,29 +384,36 @@ reservations/today.html: 날짜별 전체 예약 현황
 오늘 예약
 내 예약
 사용 기록
-프롬프트 점검
+프롬프트 정리
 사용 안내
 설정
 관리자(admin/assistant_admin만)
 ```
 
-## 8. Gemini 호출 구조
+## 8. BYOK LLM 호출 구조
 
 ```text
-prompts route
+settings route / prompts route
   ↓
-prompt_review_service
+app/services/llm/registry.py
   ↓
-Gemini REST API
+provider adapter
+  ├─ openai_adapter.py
+  ├─ gemini_adapter.py
+  └─ anthropic_adapter.py
 ```
 
 원칙:
 
 ```text
-Gemini API Key는 사용자별 암호화 저장값을 복호화해 사용한다.
-모델명은 GEMINI_MODEL 환경변수로 관리한다.
-입력 길이와 출력 토큰 상한을 환경변수로 제한한다.
-테스트에서는 Gemini 호출을 mock 처리한다.
+관리자는 공용 API Key를 제공하지 않는다.
+지원 Provider는 OpenAI, Google Gemini, Anthropic Claude 3개로 제한한다.
+OpenRouter는 현재 구현하지 않는다.
+API Key는 기본적으로 서버 DB에 저장하지 않고, 사용자가 선택한 경우에만 LLM_KEY_ENCRYPTION_SECRET 기반 암호화 저장값을 복호화해 사용한다.
+화면과 관리자 페이지에는 마지막 4자리만 표시하며 원문을 재전송하지 않는다.
+모델명은 Provider별 추천 목록과 models endpoint 새로고침 결과를 사용한다.
+입력 길이, 출력 토큰, 일일/월간/연속 요청 제한을 적용한다.
+테스트에서는 provider adapter 호출을 mock 처리한다.
 ```
 
 ## 9. 보안 설계
@@ -411,9 +421,9 @@ Gemini API Key는 사용자별 암호화 저장값을 복호화해 사용한다.
 ```text
 Jinja autoescape 사용
 사용자 입력 safe 처리 금지
-Gemini API Key 평문 저장 금지
+LLM API Key 평문 저장 금지
 비밀번호 평문 저장 금지
-SECRET_KEY와 APP_ENCRYPTION_KEY는 환경변수 사용
+SECRET_KEY, APP_ENCRYPTION_KEY, LLM_KEY_ENCRYPTION_SECRET은 환경변수 사용
 SESSION_COOKIE_HTTPONLY=True
 운영 HTTPS에서는 SESSION_COOKIE_SECURE=true 권장
 상태 변경 요청은 POST로 제한
@@ -442,7 +452,7 @@ Google OAuth mock
 오늘 예약 날짜 필터
 사용 로그 소유권
 API Key 암호화
-프롬프트 점검 mock
+프롬프트 정리 mock
 법적 고지 Footer와 /terms, /privacy
 Markdown raw HTML/script 이스케이프
 healthz/config/model

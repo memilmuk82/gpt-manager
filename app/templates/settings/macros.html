@@ -1,7 +1,7 @@
 {% macro masked_api_key(user_api_key) -%}
   {%- if user_api_key -%}
-    저장됨: •••• •••• •••• {{ user_api_key.key_last4 }}
+    저장됨: •••• •••• •••• {{ user_api_key.key_last4 }}{% if not user_api_key.is_active %} · 비활성{% endif %}
   {%- else -%}
-    저장된 Gemini API Key가 없습니다.
+    저장된 API Key가 없습니다.
   {%- endif -%}
 {%- endmacro %}

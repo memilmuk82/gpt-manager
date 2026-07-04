@@ -33,7 +33,7 @@
           <div class="flex flex-wrap items-center gap-2 text-sm">
             {% if current_user.is_authenticated %}
               {% if current_user.is_approved %}
-                <a class="inline-flex h-10 items-center gap-2 rounded-full bg-slate-100 px-4 font-semibold text-slate-600 transition hover:bg-slate-200 hover:text-slate-950" href="{{ url_for('settings.api_key') }}" title="Gemini API Key 등록">♙ {{ current_user.name }} / {% if current_user.can_access_admin %}시스템{% else %}사용자{% endif %}</a>
+                <a class="inline-flex h-10 items-center gap-2 rounded-full bg-slate-100 px-4 font-semibold text-slate-600 transition hover:bg-slate-200 hover:text-slate-950" href="{{ url_for('settings.api_key') }}" title="AI Provider 설정">♙ {{ current_user.name }} / {% if current_user.can_access_admin %}시스템{% else %}사용자{% endif %}</a>
               {% else %}
                 <span class="inline-flex h-10 items-center gap-2 rounded-full bg-slate-100 px-4 font-semibold text-slate-600">♙ 미등록 사용자 / 사용자</span>
               {% endif %}
@@ -55,7 +55,7 @@
               {{ nav_link('reservations.today', '오늘 예약', url_for('reservations.today'), None, '▣') }}
               {{ nav_link('reservations.calendar', '예약 캘린더', url_for('reservations.calendar'), None, '▦') }}
               {{ nav_link('reservations.index', '내 예약', url_for('reservations.index'), None, '♙') }}
-              {{ nav_link('prompts.index', '프롬프트 점검', url_for('prompts.index'), 'prompts.', '✓') }}
+              {{ nav_link('prompts.index', '프롬프트 정리', url_for('prompts.index'), 'prompts.', '✓') }}
               {{ nav_link('main.guide', '사용 안내', url_for('main.guide'), None, 'ⓘ') }}
               {% if current_user.can_access_admin %}
                 {{ nav_link('admin.dashboard', '관리자', url_for('admin.dashboard'), 'admin.', '⚙') }}

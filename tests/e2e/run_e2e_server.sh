@@ -4,6 +4,7 @@ set -euo pipefail
 export DATABASE_URL="sqlite:////tmp/gpt-manager-e2e.db"
 export SECRET_KEY="e2e-secret-key"
 export APP_ENCRYPTION_KEY=""
+export LLM_KEY_ENCRYPTION_SECRET="e2e-llm-secret"
 export ALLOWED_GOOGLE_DOMAIN=""
 export ADMIN_EMAILS="admin@senedu.kr"
 export FLASK_ENV="testing"

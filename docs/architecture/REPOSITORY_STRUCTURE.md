@@ -89,7 +89,7 @@ gpt-manager/
 
 ```text
 route는 요청/응답과 인증 흐름을 담당한다.
-예약 충돌, OAuth, 암호화, 프롬프트 점검 조립은 services에 둔다.
+예약 충돌, OAuth, 암호화, 프롬프트 정리 조립은 services에 둔다.
 DB 모델은 app/models/__init__.py에 모아 둔다. 현재 User, Reservation, AppSetting, GuideItem 등 운영 모델을 포함한다.
 Jinja 템플릿은 기능별 하위 디렉터리로 분리한다.
 공통 안내 UI는 templates/partials에 둔다.

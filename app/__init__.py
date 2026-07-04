@@ -160,6 +160,20 @@ def _ensure_sqlite_schema_compatibility(app: Flask) -> None:
         if "consent_version" not in reservation_columns:
             migrations.append("ALTER TABLE reservation ADD COLUMN consent_version VARCHAR(80) NOT NULL DEFAULT ''")
 
+    if "user_api_key" in table_names:
+        key_columns = {column["name"] for column in inspector.get_columns("user_api_key")}
+        if "selected_model" not in key_columns:
+            migrations.append("ALTER TABLE user_api_key ADD COLUMN selected_model VARCHAR(120) NOT NULL DEFAULT ''")
+        if "is_active" not in key_columns:
+            migrations.append("ALTER TABLE user_api_key ADD COLUMN is_active BOOLEAN NOT NULL DEFAULT 1")
+        if "last_used_at" not in key_columns:
+            migrations.append("ALTER TABLE user_api_key ADD COLUMN last_used_at DATETIME")
+
+    if "prompt_review" in table_names:
+        prompt_columns = {column["name"] for column in inspector.get_columns("prompt_review")}
+        if "provider" not in prompt_columns:
+            migrations.append("ALTER TABLE prompt_review ADD COLUMN provider VARCHAR(80) NOT NULL DEFAULT 'gemini'")
+
     for statement in migrations:
         db.session.execute(text(statement))
     if migrations:
