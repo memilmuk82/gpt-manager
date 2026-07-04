@@ -57,7 +57,7 @@ npm run test:e2e: PASS, 1 passed
 ```text
 제출용 최종 시연 리허설
 필요 시 스크린샷/영상 캡처
-이용약관/개인정보처리방침 법률 검토
+이용약관/개인정보처리방침 기관 최종 검토
 운영 DB 백업/복원 운영 환경 리허설
 운영 전 ENABLE_REVIEW_ADMIN=false 확인
 ```

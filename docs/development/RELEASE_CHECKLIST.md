@@ -55,7 +55,7 @@ Docker Compose rebuild: PASS
 [ ] 운영 SECRET_KEY와 APP_ENCRYPTION_KEY가 고정값인지 확인
 [ ] Google OAuth Redirect URI가 운영 도메인과 일치하는지 확인
 [ ] 운영 DB 백업 파일 생성 및 복원 절차 리허설
-[ ] 이용약관/개인정보처리방침 법률 검토
+[ ] 이용약관/개인정보처리방침 기관 최종 검토
 [ ] 필요한 경우 주요 화면 스크린샷 또는 시연 영상 캡처
 ```
 
