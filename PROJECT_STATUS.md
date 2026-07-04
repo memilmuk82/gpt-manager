@@ -1,5 +1,10 @@
 # Project Status - 생성형 AI 계정 공동 사용 지원 시스템
 
+## 관련 문서
+
+[README](README.md) · [교육과정](docs/EDUCATION.md) · [시스템 설계](SYSTEM_DESIGN.md) · [개발 로그](docs/development/DEVELOPMENT_LOG.md)
+
+
 ## 1. 프로젝트 개요
 
 ```text

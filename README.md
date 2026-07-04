@@ -1,5 +1,206 @@
 # 생성형 AI 계정 공동 사용 지원 시스템
 
+## 프로젝트 소개
+
+이 프로젝트는 종로산업정보학교 AI컴퓨터과 교육과정에서 사용하는 실제 프로젝트입니다. 단순한 예제 코드가 아니라 학교 현장에서 공용 생성형 AI 계정을 사용할 때 생기는 예약, 승인, 충돌, 기록, 관리 문제를 해결하기 위해 제작되었습니다.
+
+주요 구현 범위는 다음과 같습니다.
+
+```text
+공용 생성형 AI 계정 예약
+사용자 승인과 권한 관리
+예약 충돌 방지
+사용 로그 관리
+Gemini 기반 프롬프트 점검
+관리자 대시보드
+CSV 내보내기와 SQLite 백업 등 운영 편의 기능
+Docker Compose 기반 배포
+```
+
+이 저장소는 교육용 예제이면서 동시에 실제 운영 가능한 수준을 목표로 합니다. 학생들은 이 프로젝트를 통해 Flask 기반 웹 애플리케이션이 어떤 구조로 만들어지고, 학교 업무 문제를 코드로 어떻게 해결하는지 확인할 수 있습니다.
+
+## 처음 보는 분이라면
+
+프로젝트 전체를 빠르게 이해하려면 아래 순서로 읽는 것을 권장합니다.
+
+```text
+1. README.md: 프로젝트 목적, 실행 방법, 문서 포털
+2. docs/EDUCATION.md: 교육 철학과 기술 선정 이유
+3. PROJECT_STATUS.md: 현재 구현 상태와 검증 결과
+4. SYSTEM_DESIGN.md: 데이터 모델, 라우트, 서비스 구조
+5. docs/architecture/REPOSITORY_STRUCTURE.md: 디렉터리 구조
+6. docs/development/DEVELOPMENT_LOG.md: 개발 과정과 변경 이력
+7. docs/deployment/OCI_DEV_SERVER_SETUP.md: 배포와 서버 운영
+8. app/, tests/: 실제 코드와 테스트
+```
+
+## 프로젝트 문서 안내
+
+README는 프로젝트의 입구 역할을 합니다. 세부 결정, 개발 로그, 배포 절차, 법적 문서는 아래 문서에서 확인합니다.
+
+| 문서 | 언제 읽는가 | 담고 있는 내용 |
+| --- | --- | --- |
+| [docs/EDUCATION.md](docs/EDUCATION.md) | 교육과정과 기술 선정 이유를 이해할 때 | 교육 목표, 교육 철학, 생성형 AI 활용 원칙, 월별 교육 흐름 |
+| [PROJECT_STATUS.md](PROJECT_STATUS.md) | 현재 구현 상태를 확인할 때 | 완료 기능, 권한 정책, 검증 결과, 남은 작업 |
+| [SYSTEM_DESIGN.md](SYSTEM_DESIGN.md) | 코드 구조를 이해하기 전 | 전체 구조, 기술 스택, 데이터 모델, 라우트 설계 |
+| [docs/architecture/REPOSITORY_STRUCTURE.md](docs/architecture/REPOSITORY_STRUCTURE.md) | 파일 위치를 찾을 때 | 저장소 디렉터리 구조와 구조화 원칙 |
+| [PROJECT_INSTRUCTIONS.md](PROJECT_INSTRUCTIONS.md) | Codex 또는 협업 개발 규칙을 확인할 때 | 개발 원칙, 금지 사항, 작업 전 보고 기준 |
+| [CODEX_START_HERE.md](CODEX_START_HERE.md) | Codex 작업을 시작할 때 | Codex가 먼저 읽을 문서 순서와 작업 금지 사항 |
+| [MANIFEST.md](MANIFEST.md) | 문서 패킷 구성을 확인할 때 | 프로젝트 주요 문서 목록과 패킷 구성 |
+| [TASK.md](TASK.md) | 현재 작업 메모를 볼 때 | 최근 작업 상태와 남은 작업 메모 |
+| [PRD.md](PRD.md) | 요구사항과 사용자 범위를 볼 때 | 배경, 목적, 핵심 사용자, 기능 요구사항 |
+| [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) | 일정과 단계별 목표를 볼 때 | 마감 기준, 개발 전략, 날짜별 계획 |
+| [docs/development/DEVELOPMENT_LOG.md](docs/development/DEVELOPMENT_LOG.md) | 구현 과정을 추적할 때 | 단계별 구현 내용, 결정 이유, 검증 기록 |
+| [docs/development/TEST_REPORT.md](docs/development/TEST_REPORT.md) | 테스트 이력을 볼 때 | 테스트 원칙, 단계별 테스트 결과 |
+| [docs/development/RELEASE_CHECKLIST.md](docs/development/RELEASE_CHECKLIST.md) | 배포/제출 전 점검할 때 | RC 기준, 완료 조건, 최종 테스트 시나리오 |
+| [docs/guides/CODEX_PHASE_1_PROMPT.md](docs/guides/CODEX_PHASE_1_PROMPT.md) | 초기 Codex 프롬프트를 참고할 때 | Phase 1 작업 지시문 기록 |
+| [docs/deployment/OCI_DEV_SERVER_SETUP.md](docs/deployment/OCI_DEV_SERVER_SETUP.md) | 서버 구축과 배포를 진행할 때 | OCI, Docker, Nginx, HTTPS 구성 절차 |
+| [docs/deployment/GOOGLE_OAUTH_REDIRECT_URI.md](docs/deployment/GOOGLE_OAUTH_REDIRECT_URI.md) | Google OAuth를 설정할 때 | Redirect URI, 승인 정책, 점검 방법 |
+| [docs/decisions/TECH_STACK_DECISIONS.md](docs/decisions/TECH_STACK_DECISIONS.md) | 기술 선택 배경을 볼 때 | Flask, SQLite, Tailwind, Docker, OCI 선택 이유 |
+| [docs/decisions/SECURITY_DECISIONS.md](docs/decisions/SECURITY_DECISIONS.md) | 보안 제외 범위와 원칙을 볼 때 | 공용 계정 정보 미저장, 개인정보 입력 제한, API Key 암호화 |
+| [docs/adr/0001-use-flask-sqlite-docker-oci.md](docs/adr/0001-use-flask-sqlite-docker-oci.md) | 주요 아키텍처 결정을 볼 때 | Flask + SQLite + Docker Compose + OCI 결정 |
+| [docs/adr/0002-use-gemini-for-prompt-review.md](docs/adr/0002-use-gemini-for-prompt-review.md) | Gemini 사용 범위를 볼 때 | 자유 채팅이 아닌 프롬프트 점검기로 제한한 이유 |
+| [docs/adr/0003-release-freeze.md](docs/adr/0003-release-freeze.md) | 릴리스 동결 기준을 볼 때 | RC와 Release Freeze 원칙 |
+| [docs/legal/TERMS.md](docs/legal/TERMS.md) | 이용 조건을 확인할 때 | 이용약관 원문 |
+| [docs/legal/PRIVACY_POLICY.md](docs/legal/PRIVACY_POLICY.md) | 개인정보 처리 기준을 확인할 때 | 개인정보처리방침 원문 |
+| [docs/legal/LEGAL_REVIEW_CHECKLIST.md](docs/legal/LEGAL_REVIEW_CHECKLIST.md) | 운영 전 법률 검토를 준비할 때 | 약관/개인정보처리방침 검토 항목 |
+
+개발 변경 기록 문서:
+
+| 문서 | 역할 |
+| --- | --- |
+| [docs/development/2026-07-03_ADMIN_RESERVATION_UI_UPDATE.md](docs/development/2026-07-03_ADMIN_RESERVATION_UI_UPDATE.md) | 관리자, 예약, 안내 UI와 수업 맥락 반영 기록 |
+| [docs/development/2026-07-03_SECURITY_OPERATION_HARDENING.md](docs/development/2026-07-03_SECURITY_OPERATION_HARDENING.md) | 운영 보안과 사용 흐름 보완 기록 |
+| [docs/development/2026-07-03_REMAINING_FEATURES_COMPLETION.md](docs/development/2026-07-03_REMAINING_FEATURES_COMPLETION.md) | 잔여 기능 보완 기록 |
+| [docs/development/2026-07-04_FULL_OPERATIONAL_FEATURES.md](docs/development/2026-07-04_FULL_OPERATIONAL_FEATURES.md) | 전체 운영 편의 기능 보완 기록 |
+| [docs/development/2026-07-04_UI_SYSTEM_REFRESH.md](docs/development/2026-07-04_UI_SYSTEM_REFRESH.md) | UI 디자인 시스템 개선 기록 |
+
+운영 방식은 README에서 출발해 `docs/EDUCATION.md`, `SYSTEM_DESIGN.md`, 배포 문서, 실제 코드 순서로 연결되도록 구성했습니다.
+
+## 종로산업정보학교 AI컴퓨터과 교육과정
+
+이 프로젝트는 종로산업정보학교 AI컴퓨터과의 1년 교육 흐름과 연결되어 있습니다. 학생들이 Python 문법에서 시작해 웹 개발, 데이터베이스, ORM, Docker, Cloud, Infrastructure, 개인 프로젝트까지 자연스럽게 이어가도록 설계된 과정입니다.
+
+상세한 교육 철학, 기술 선정 이유, 생성형 AI 활용 원칙은 [docs/EDUCATION.md](docs/EDUCATION.md)를 참고하세요.
+
+| 시기 | 학습 내용 | 다음 단계로 이어지는 이유 |
+| --- | --- | --- |
+| 3월 | WSL2 Ubuntu, Python 기초, Flask, Jinja2, HTML, Tailwind CSS, GitHub | 개발 환경과 웹 요청/응답의 기본 흐름을 직접 경험합니다. |
+| 4월 | Flask CRUD, 리스트 기반 데이터 처리, HTTP 요청/응답 | 화면과 서버가 데이터를 주고받는 구조를 익힙니다. |
+| 5월 | Flask CRUD, 딕셔너리, 리스트 안의 딕셔너리 | 여러 데이터를 구조화해 다루는 방식을 배웁니다. |
+| 6월 | ID 기반 CRUD, SQLite, 데이터베이스 기초 | 파일/메모리 데이터에서 실제 DB 저장 구조로 넘어갑니다. |
+| 7월 | SQLAlchemy ORM, Flask + ORM 구조 | Python 코드와 DB 테이블을 연결하는 방식을 익힙니다. |
+| 8월 | SQLAlchemy ORM, PostgreSQL, 개인 프로젝트 기획, Kanban Board | 개인 프로젝트를 계획하고 운영 가능한 DB로 확장합니다. |
+| 9월 | PostgreSQL, Docker, GitHub CLI, 개인 프로젝트 진행 | 개발 환경과 실행 환경을 분리하고 배포 준비를 시작합니다. |
+| 10월 | Oracle Cloud Infrastructure, Linux 서버, Nginx, Infrastructure 구축 | 만든 서비스를 실제 서버에서 운영하는 과정을 경험합니다. |
+| 11~12월 | FastAPI CRUD, 개인 프로젝트 완성 | Flask로 익힌 구조를 다른 백엔드 방식으로 확장해 봅니다. |
+
+## 교육 과정 운영 원칙
+
+가장 중요한 원칙은 다음과 같습니다.
+
+```text
+학생이 이해하지 못하는 코드나 기술을 사용하지 않는다.
+```
+
+본 교육과정은 생성형 AI를 적극 활용하지만, 기초 문법과 웹 개발 흐름을 이해하기 전까지는 AI가 코드를 대신 작성하는 방식으로 수업을 진행하지 않습니다. 학생이 직접 코드를 작성하며 웹 애플리케이션의 동작 원리를 이해하는 것을 우선합니다.
+
+개인 프로젝트 단계인 8월 이후부터는 생성형 AI를 개발 파트너로 활용합니다. 이때 AI는 개발자를 대체하는 도구가 아니라 생산성을 높이는 협업 도구로 사용합니다.
+
+```text
+요구사항 작성
+코드 리뷰
+디버깅
+리팩토링
+테스트
+문서 작성
+```
+
+프론트엔드는 HTML, CSS, Vanilla JavaScript, Tailwind CSS로 제한합니다. React, Vue, Svelte, Angular 같은 SPA 프레임워크는 좋은 도구이지만, JavaScript와 비동기 처리, 모듈 시스템, 번들러, 컴포넌트 구조, TypeScript에 대한 이해가 충분해진 뒤 학습하는 편이 교육 효과가 높다고 판단했습니다.
+
+백엔드는 Flask를 중심으로 학습합니다. Flask는 HTTP 요청, 라우팅, 템플릿, CRUD, DB, ORM, 인증, 배포 흐름을 비교적 적은 코드로 이해하기에 적합합니다. Django, Django REST Framework, FastAPI도 우수한 프레임워크이지만, 교육 기간과 학생 수준, 프로젝트 규모를 고려해 이 과정에서는 Flask를 중심으로 운영합니다.
+
+## 기술 선택 이유
+
+각 기술은 최신성만으로 선택하지 않았습니다. 학생이 원리를 설명할 수 있고, 실제 프로젝트로 확장할 수 있는지를 기준으로 선택했습니다. 상세 설명은 [docs/EDUCATION.md](docs/EDUCATION.md)와 [docs/decisions/TECH_STACK_DECISIONS.md](docs/decisions/TECH_STACK_DECISIONS.md)에 정리되어 있습니다.
+
+| 기술 | 선택 이유 | 교육적 의미 | 실제 프로젝트에서의 역할 |
+| --- | --- | --- | --- |
+| Python | 문법이 비교적 명확하고 Flask, SQLAlchemy와 자연스럽게 연결됨 | 웹 백엔드와 데이터 처리를 한 언어로 학습 | 서버 로직과 테스트 작성 |
+| Flask | 구조가 단순해 HTTP, 라우팅, 템플릿, CRUD 흐름을 직접 볼 수 있음 | 웹 애플리케이션의 기본 동작 원리 학습 | 메인 웹 프레임워크 |
+| SQLite | 설치 부담이 낮고 파일 기반으로 DB 개념을 빠르게 확인 가능 | 테이블, 컬럼, 쿼리, 영속성 이해 | 로컬/단일 서버 운영 DB |
+| SQLAlchemy | Python 객체와 DB 테이블의 관계를 명확히 보여줌 | ORM과 모델 설계 학습 | User, Reservation, UsageLog 등 모델 관리 |
+| PostgreSQL | 실제 서비스에서 널리 쓰이는 관계형 DB | SQLite 이후 운영형 DB로 확장 | 2학기 개인 프로젝트 확장 대상 |
+| WSL2 Ubuntu | Windows 환경에서 Linux 개발 흐름을 경험 가능 | 명령어, 파일 경로, 서버 환경 이해 | 기본 개발 환경 |
+| Docker | 실행 환경을 이미지로 고정 가능 | 개발/운영 환경 차이 이해 | 앱 컨테이너 실행 |
+| Docker Compose | 웹앱 실행 구성을 명령 하나로 관리 가능 | 서비스 단위 실행 구조 학습 | 로컬/서버 배포 실행 |
+| Oracle Cloud Infrastructure | 실제 Linux 서버 배포를 경험 가능 | Cloud, 네트워크, 보안 규칙 이해 | 운영 또는 시연 서버 |
+| Nginx | 정적/프록시/HTTPS 구성을 학습하기 적합 | Reverse proxy와 TLS 이해 | Gunicorn 앞단 프록시 |
+| GitHub | 코드 이력과 협업 흐름을 관리 | 버전 관리와 리뷰 문화 학습 | 저장소, 이슈, 기록 관리 |
+| GitHub CLI | 터미널 기반 GitHub 작업 경험 | 개발 도구 자동화 이해 | 원격 저장소 작업 보조 |
+
+## 이 프로젝트에서 학생들이 경험하는 것
+
+이 프로젝트는 기능을 따라 만드는 예제가 아니라, 실제 개발 흐름을 한 번에 연결해 보는 기준 프로젝트입니다.
+
+```text
+요구사항 분석
+화면 설계
+라우팅
+CRUD 구현
+DB 설계
+ORM 모델링
+인증
+권한 관리
+테스트
+Docker 실행
+Cloud 배포
+운영 및 유지보수
+```
+
+학생들은 이 흐름을 보며 2학기 개인 프로젝트에서 자신의 주제를 같은 방식으로 구조화할 수 있습니다. 목표는 복잡한 기술을 많이 쓰는 것이 아니라, 자신이 만든 서비스를 처음부터 끝까지 설명할 수 있는 수준에 도달하는 것입니다.
+
+## 프로젝트 구조
+
+```text
+app/                         Flask 애플리케이션 패키지
+  admin/                     관리자 대시보드, 사용자 관리, CSV/백업 라우트
+  auth/                      로컬 로그인, 회원가입, Google OAuth 인증
+  logs/                      사용 로그 작성/조회 기능
+  models/                    SQLAlchemy 모델 정의
+  prompts/                   Gemini 기반 프롬프트 점검 기능
+  reservations/              예약 생성, 충돌 확인, 캘린더, 상태 변경
+  routes/                    홈, 대시보드, 안내, 법적 페이지, health check
+  services/                  암호화, OAuth, 프롬프트 점검, 예약 검증 등 도메인 서비스
+  settings/                  사용자 Gemini API Key 설정
+  static/                    공통 CSS 등 정적 파일
+  templates/                 Jinja2 화면 템플릿
+instance/                    SQLite DB 등 인스턴스별 파일
+tests/                       pytest 테스트와 Playwright E2E 테스트
+docs/                        교육, 아키텍처, 배포, 법적 문서, 개발 기록
+scripts/                     SQLite 백업/복원 스크립트
+compose.yaml                 Docker Compose 실행 정의
+Dockerfile                   Gunicorn 기반 컨테이너 이미지 정의
+run.py                       Flask 앱 실행 진입점
+```
+
+세부 구조 원칙은 [docs/architecture/REPOSITORY_STRUCTURE.md](docs/architecture/REPOSITORY_STRUCTURE.md)를 참고하세요.
+
+## 주요 화면
+
+현재 저장소에는 아래 스크린샷 파일이 포함되어 있지 않습니다. 스크린샷을 추가할 경우 다음 경로를 기준으로 넣으면 README에서 연결하기 좋습니다.
+
+| 예상 파일 | 화면 목적 | 사용자 행동 | 구현 기술 요소 | 교육적으로 학습하는 내용 |
+| --- | --- | --- | --- | --- |
+| `docs/images/home-guest.png` | 비로그인 시작 화면 | 로그인 또는 등록 요청 선택 | Jinja2, Tailwind CSS, 공통 레이아웃 | 서비스 진입 화면 구성 |
+| `docs/images/home-user.png` | 로그인 사용자 홈 | 현재 사용, 다음 예약, KPI 확인 | Flask route, SQLAlchemy query, Jinja2 | 서버 데이터의 화면 렌더링 |
+| `docs/images/reservation-list.png` | 내 예약 목록 | 예약 검색, 완료/취소, 사용 로그 이동 | CRUD, 상태 필터, POST form, CSRF | 상태 기반 UI와 권한 처리 |
+| `docs/images/reservation-create.png` | 예약 생성 | 리소스/시간/목적 입력, 충돌 확인 | Form, validation, conflict API | 입력 검증과 예약 충돌 모델링 |
+| `docs/images/admin-dashboard.png` | 관리자 대시보드 | 설정, 사용자, 통계, 백업 섹션 이동 | 관리자 권한, Jinja macro, table | 운영 화면 설계와 권한 분리 |
+| `docs/images/admin-users.png` | 사용자 관리 | 사용자 수정, 활성/비활성, CSV 등록 | SQLAlchemy, form 처리, CSV parsing | 관리자 CRUD와 일괄 처리 |
+| `docs/images/usage-log.png` | 사용 로그 | 사용 결과와 프롬프트 기록 | 관계형 모델, 검색/필터 | 운영 기록의 필요성 |
+| `docs/images/settings-guide.png` | API Key/사용 안내 | Gemini API Key 저장, 안내 확인 | Fernet 암호화, Markdown/텍스트 렌더링 | 민감정보 처리와 안전 안내 |
+
 ## 리뷰용 테스트 계정
 
 리뷰용 관리자 계정은 기본으로 자동 생성되지 않습니다. 제출 시연이나 외부 리뷰에 임시 관리자 계정이 필요할 때만 `.env`에 아래 값을 명시합니다.
@@ -205,7 +406,7 @@ docker compose up -d --build
 
 ## 7. 시연 데이터 준비
 
-fresh DB에서는 예약에 사용할 생성형 AI 계정 리소스가 자동 생성되지 않습니다. 예약 시연 전에 최소 1개의 리소스를 준비합니다.
+기본 실행 환경에서는 앱 시작 시 `학교 공용 GPT Pro 5X 계정` 리소스가 자동으로 준비됩니다. 테스트 DB, 수동 초기화 DB, 또는 리소스가 보이지 않는 환경에서는 예약 시연 전에 최소 1개의 리소스를 아래 명령으로 준비합니다.
 
 로컬 실행 환경:
 
@@ -219,7 +420,7 @@ Docker Compose 실행 환경:
 docker compose exec web python -c "from app import create_app; from app.extensions import db; from app.models import AiResource; app=create_app(); ctx=app.app_context(); ctx.push(); AiResource.query.filter_by(name='학교 공용 생성형 AI 계정 A').first() or db.session.add(AiResource(name='학교 공용 생성형 AI 계정 A', provider='OpenAI', description='Shared AI resource')); db.session.commit(); ctx.pop()"
 ```
 
-생성 후 `/reservations/new`에서 리소스가 보이면 예약 생성 시연을 진행할 수 있습니다.
+실행 후 `/reservations/new`에서 리소스가 보이면 예약 생성 시연을 진행할 수 있습니다.
 
 ## 8. 기본 사용 흐름
 
@@ -326,13 +527,26 @@ Gemini API Key 프론트엔드 노출 금지
 
 ## 12. 주요 문서
 
+README는 프로젝트 포털 문서이고, 세부 내용은 아래 문서로 분리되어 있습니다.
+
 ```text
-PROJECT_STATUS.md: 현재 상태와 완료 항목
+PROJECT_STATUS.md: 현재 상태, 완료 항목, 검증 결과
+SYSTEM_DESIGN.md: 현재 시스템 구조와 데이터/라우트 설계
+PROJECT_INSTRUCTIONS.md: 프로젝트 개발 원칙과 Codex 작업 규칙
+PRD.md: 제품 요구사항과 사용자 범위
+DEVELOPMENT_PLAN.md: 개발 일정과 단계별 목표
+docs/EDUCATION.md: 교육 철학, 기술 선정 이유, 월별 교육과정
+docs/architecture/REPOSITORY_STRUCTURE.md: 저장소 구조와 구조화 원칙
 docs/development/DEVELOPMENT_LOG.md: 단계별 개발 로그
 docs/development/TEST_REPORT.md: 테스트 결과 기록
+docs/development/RELEASE_CHECKLIST.md: 배포/제출 전 점검 목록
 docs/deployment/OCI_DEV_SERVER_SETUP.md: OCI 서버 준비와 Docker Compose/Nginx 실행
 docs/deployment/GOOGLE_OAUTH_REDIRECT_URI.md: Google OAuth Redirect URI 설정 절차
+docs/decisions/TECH_STACK_DECISIONS.md: 기술 스택 선택 이유
+docs/decisions/SECURITY_DECISIONS.md: 보안 원칙과 제외 범위
 docs/legal/TERMS.md: 이용약관 원문
 docs/legal/PRIVACY_POLICY.md: 개인정보처리방침 원문
-SYSTEM_DESIGN.md: 현재 시스템 구조와 데이터/라우트 설계
+docs/legal/LEGAL_REVIEW_CHECKLIST.md: 법률 검토 체크리스트
 ```
+
+기록성 문서와 결정 문서는 삭제하지 않고 역할을 분리합니다. 최신 사용 방법은 README를 기준으로 확인하고, 변경 이력은 `docs/development/` 문서에서 확인합니다.

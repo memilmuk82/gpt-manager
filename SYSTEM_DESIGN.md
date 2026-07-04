@@ -1,5 +1,10 @@
 # System Design - 생성형 AI 계정 공동 사용 지원 시스템
 
+## 관련 문서
+
+[README](README.md) · [교육과정](docs/EDUCATION.md) · [저장소 구조](docs/architecture/REPOSITORY_STRUCTURE.md) · [현재 상태](PROJECT_STATUS.md)
+
+
 ## 1. 전체 구조
 
 ```text

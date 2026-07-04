@@ -1,5 +1,10 @@
 # Test Report
 
+## 관련 문서
+
+[README](../../README.md) · [현재 상태](../../PROJECT_STATUS.md) · [릴리스 체크리스트](RELEASE_CHECKLIST.md)
+
+
 ## 테스트 원칙
 
 ```text

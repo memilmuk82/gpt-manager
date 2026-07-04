@@ -1,5 +1,10 @@
 # Repository Structure
 
+## 관련 문서
+
+[README](../../README.md) · [교육과정](../EDUCATION.md) · [시스템 설계](../../SYSTEM_DESIGN.md)
+
+
 ## 현재 구조
 
 ```text

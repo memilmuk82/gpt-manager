@@ -1,5 +1,10 @@
 # 생성형 AI 계정 공동 사용 지원 시스템 - Project Instructions
 
+## 관련 문서
+
+[README](README.md) · [현재 상태](PROJECT_STATUS.md) · [개발 로그](docs/development/DEVELOPMENT_LOG.md)
+
+
 ## 1. 문서 목적
 
 이 문서는 `gpt-share-manager-vnext` 프로젝트의 개발 원칙을 정의한다.

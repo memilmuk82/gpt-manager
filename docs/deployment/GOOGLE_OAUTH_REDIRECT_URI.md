@@ -1,5 +1,10 @@
 # Google OAuth Redirect URI 설정
 
+## 관련 문서
+
+[README](../../README.md) · [OCI 서버 설정](OCI_DEV_SERVER_SETUP.md) · [보안 결정](../decisions/SECURITY_DECISIONS.md)
+
+
 이 프로젝트의 Google OAuth callback route는 고정입니다.
 
 ```text

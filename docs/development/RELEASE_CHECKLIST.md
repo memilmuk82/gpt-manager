@@ -1,5 +1,10 @@
 # Release Checklist
 
+## 관련 문서
+
+[README](../../README.md) · [현재 상태](../../PROJECT_STATUS.md) · [테스트 리포트](TEST_REPORT.md)
+
+
 ## 1. RC 기준
 
 ```text

@@ -1,5 +1,10 @@
 # OCI Dev Server 설정 절차
 
+## 관련 문서
+
+[README](../../README.md) · [현재 상태](../../PROJECT_STATUS.md) · [Google OAuth 설정](GOOGLE_OAUTH_REDIRECT_URI.md)
+
+
 작성 목적: Codex와 연결해 사용할 **항상 켜져 있는 OCI 개발 서버**를 빠르게 구축하기 위함.
 
 현재 목표는 완벽한 운영 서버가 아니라, **SSH 접속 + Docker Compose + Git + Codex Remote 연결**이 가능한 최소 개발 환경을 만드는 것이다.
@@ -299,7 +304,7 @@ services:
 
 ### 시연용 AI 리소스 준비
 
-fresh DB에서는 예약에 사용할 AI 리소스가 자동 생성되지 않는다. 앱 실행 후 아래 명령으로 최소 1개의 리소스를 추가한다.
+현재 앱은 기본 실행 시 `학교 공용 GPT Pro 5X 계정` 리소스를 seed한다. 단, 수동 초기화 DB나 테스트용 DB에서 리소스가 보이지 않으면 아래 명령으로 최소 1개의 리소스를 추가한다.
 
 ```bash
 docker compose exec web python -c "from app import create_app; from app.extensions import db; from app.models import AiResource; app=create_app(); ctx=app.app_context(); ctx.push(); AiResource.query.filter_by(name='학교 공용 생성형 AI 계정 A').first() or db.session.add(AiResource(name='학교 공용 생성형 AI 계정 A', provider='OpenAI', description='Shared AI resource')); db.session.commit(); ctx.pop()"

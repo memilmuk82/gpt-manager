@@ -1,5 +1,10 @@
 # PRD - 생성형 AI 계정 공동 사용 지원 시스템
 
+## 관련 문서
+
+[README](README.md) · [현재 상태](PROJECT_STATUS.md) · [시스템 설계](SYSTEM_DESIGN.md)
+
+
 ## 1. 프로젝트명
 
 ```text

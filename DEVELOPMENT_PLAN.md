@@ -1,5 +1,10 @@
 # Development Plan - 생성형 AI 계정 공동 사용 지원 시스템
 
+## 관련 문서
+
+[README](README.md) · [현재 상태](PROJECT_STATUS.md) · [개발 로그](docs/development/DEVELOPMENT_LOG.md)
+
+
 ## 1. 마감 기준
 
 ```text

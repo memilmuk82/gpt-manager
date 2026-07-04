@@ -1,5 +1,10 @@
 # Security Decisions
 
+## 관련 문서
+
+[README](../../README.md) · [현재 상태](../../PROJECT_STATUS.md) · [법률 검토](../legal/LEGAL_REVIEW_CHECKLIST.md)
+
+
 ## 1. GPT 계정 정보 저장 금지
 
 결정:
