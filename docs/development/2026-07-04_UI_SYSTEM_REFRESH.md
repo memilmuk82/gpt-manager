@@ -76,3 +76,13 @@ Docker Compose rebuild
 /healthz 확인
 데스크톱/모바일 주요 화면 렌더링 확인
 ```
+
+## 6. 관리자 화면 추가 보완
+
+```text
+관리자 대시보드 카드에 현재 섹션 active 상태 추가
+관리자 전용 admin-shell scope 추가
+관리자 카드 밀도 조정 및 hover/depth 일관화
+관리자 테이블 최소 폭, 행 높이, sticky header, focus-within 상태 보정
+관리자 폼/fieldset 배경과 입력 밀도 조정
+```

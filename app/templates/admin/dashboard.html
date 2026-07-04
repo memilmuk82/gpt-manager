@@ -6,33 +6,34 @@
   {% set hours = (value // 60) %}{% set mins = (value % 60) %}{% if hours %}{{ hours }}시간{% if mins %} {{ mins }}분{% endif %}{% else %}{{ mins }}분{% endif %}
 {%- endmacro %}
 
-{% macro admin_card(target, icon, title, description, button) -%}
-  <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-    <h2 class="flex items-center gap-2 text-lg font-extrabold text-slate-950"><span>{{ icon }}</span>{{ title }}</h2>
+{% macro admin_card(current_section, target, icon, title, description, button) -%}
+  {% set is_current = current_section == target or (current_section == 'overview' and target == 'settings') %}
+  <section class="gm-admin-card gm-card-hover rounded-2xl border border-slate-200 bg-white p-5 shadow-sm {% if is_current %}gm-admin-card-active{% endif %}">
+    <h2 class="flex items-center gap-2 text-lg font-extrabold text-slate-950"><span class="gm-admin-card-icon" aria-hidden="true">{{ icon }}</span>{{ title }}</h2>
     <p class="mt-3 min-h-12 text-sm leading-6 text-slate-600">{{ description }}</p>
-    <a class="mt-4 inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-slate-950 px-4 text-sm font-extrabold text-white hover:bg-slate-800" href="{{ url_for('admin.dashboard', section=target) }}">⌕ {{ button }}</a>
+    <a class="mt-4 inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-slate-950 px-4 text-sm font-extrabold text-white hover:bg-slate-800" href="{{ url_for('admin.dashboard', section=target) }}" {% if is_current %}aria-current="page"{% endif %}>⌕ {{ button }}</a>
   </section>
 {%- endmacro %}
 
 {% block content %}
-  <section class="space-y-6">
+  <section class="admin-shell space-y-6">
     <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
       <h1 class="flex items-center gap-2 text-2xl font-extrabold text-slate-950">⚙ 관리자</h1>
-      <p class="mt-3 text-base leading-7 text-slate-600">관리자 화면입니다. 신청 항목, 안내 문구, 사용자, 등록 요청, 통계 조회, 전체 테스트 실행을 지원합니다.</p>
+      <p class="mt-3 text-base leading-7 text-slate-600">신청 항목, 안내 문구, 사용자, 등록 요청, 통계, 백업, 테스트를 관리합니다.</p>
     </div>
 
     <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-      {{ admin_card('settings', '⚙', '설정 관리', '앱 제목, 안내 문구, 사용 시간 기준을 수정합니다.', '설정 불러오기') }}
-      {{ admin_card('guides', 'ⓘ', '안내 문구 관리', '사용 안내 화면과 GPT 접속 및 인증번호 안내 문구를 수정합니다.', '안내 문구 불러오기') }}
-      {{ admin_card('resources', '+', '신청 항목 관리', '사용신청의 AI 리소스와 작업유형 선택지를 관리합니다.', '신청 항목 불러오기') }}
-      {{ admin_card('users', '♙', '사용자 관리', '사용자 목록을 확인하고 권한, 부서, 내선, 사용 여부를 관리합니다.', '사용자 불러오기') }}
-      {{ admin_card('requests', '♙', '등록 요청 관리', '미등록 사용자의 등록 요청을 승인하거나 반려합니다.', '등록 요청 불러오기') }}
-      {{ admin_card('stats', '▥', '통계 조회', '사용자별, 작업 유형별 사용 통계를 조회합니다.', '통계 불러오기') }}
-      {{ admin_card('reports', '▤', '월간 운영 보고서', '예약과 사용 로그를 월별 보고서 초안으로 정리합니다.', '보고서 불러오기') }}
-      {{ admin_card('exports', '⇩', 'CSV 내보내기', '사용자, 예약, 사용 로그 원자료를 CSV로 다운로드합니다.', '내보내기 열기') }}
-      {{ admin_card('backups', '▣', 'DB 백업', '운영 SQLite DB 백업 파일을 생성하고 다운로드합니다.', '백업 열기') }}
-      {{ admin_card('audit', '⌕', '감사 로그', '관리자 주요 변경 이력을 확인합니다.', '감사 로그 불러오기') }}
-      {{ admin_card('tests', '♧', '전체 테스트 실행', '관리자 화면에서 서버의 전체 테스트를 실행합니다.', '테스트 실행') }}
+      {{ admin_card(section, 'settings', '⚙', '설정 관리', '앱 제목, 안내 문구, 사용 시간 기준을 수정합니다.', '설정 불러오기') }}
+      {{ admin_card(section, 'guides', 'ⓘ', '안내 문구 관리', '사용 안내 화면과 GPT 접속 및 인증번호 안내 문구를 수정합니다.', '안내 문구 불러오기') }}
+      {{ admin_card(section, 'resources', '+', '신청 항목 관리', '사용신청의 AI 리소스와 작업유형 선택지를 관리합니다.', '신청 항목 불러오기') }}
+      {{ admin_card(section, 'users', '♙', '사용자 관리', '사용자 목록을 확인하고 권한, 부서, 내선, 사용 여부를 관리합니다.', '사용자 불러오기') }}
+      {{ admin_card(section, 'requests', '♙', '등록 요청 관리', '미등록 사용자의 등록 요청을 승인하거나 반려합니다.', '등록 요청 불러오기') }}
+      {{ admin_card(section, 'stats', '▥', '통계 조회', '사용자별, 작업 유형별 사용 통계를 조회합니다.', '통계 불러오기') }}
+      {{ admin_card(section, 'reports', '▤', '월간 운영 보고서', '예약과 사용 로그를 월별 보고서 초안으로 정리합니다.', '보고서 불러오기') }}
+      {{ admin_card(section, 'exports', '⇩', 'CSV 내보내기', '사용자, 예약, 사용 로그 원자료를 CSV로 다운로드합니다.', '내보내기 열기') }}
+      {{ admin_card(section, 'backups', '▣', 'DB 백업', '운영 SQLite DB 백업 파일을 생성하고 다운로드합니다.', '백업 열기') }}
+      {{ admin_card(section, 'audit', '⌕', '감사 로그', '관리자 주요 변경 이력을 확인합니다.', '감사 로그 불러오기') }}
+      {{ admin_card(section, 'tests', '♧', '전체 테스트 실행', '관리자 화면에서 서버의 전체 테스트를 실행합니다.', '테스트 실행') }}
     </div>
 
     {% if section in ['overview', 'settings'] %}
