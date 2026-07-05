@@ -13,6 +13,7 @@ from pathlib import Path
 
 from flask import Response, abort, current_app, flash, redirect, render_template, request, send_from_directory, url_for
 from flask_login import current_user, login_required
+from sqlalchemy import or_
 
 from app.admin import admin_bp
 from app.extensions import db
@@ -30,6 +31,8 @@ from app.models import (
     UserApiKey,
     WorkType,
 )
+
+MAX_BACKUP_FILES = 20
 
 ROLE_LABELS = {
     "user": "일반 사용자",
@@ -128,8 +131,20 @@ def monthly_report_download():
 @admin_bp.get("/exports/users.csv")
 @admin_required
 def export_users_csv():
+    filters = _export_filter_values()
+    query = User.query
+    if filters["q"]:
+        like = f"%{filters['q']}%"
+        query = query.filter(or_(User.name.ilike(like), User.email.ilike(like), User.department.ilike(like)))
+    if filters["user_id"]:
+        query = query.filter(User.id == filters["user_id"])
+    if filters["start_at"]:
+        query = query.filter(User.created_at >= filters["start_at"])
+    if filters["end_at"]:
+        query = query.filter(User.created_at <= filters["end_at"])
+
     rows = [["id", "email", "name", "department", "extension", "role", "approval_status", "is_active", "is_auth_manager", "created_at"]]
-    for user in User.query.order_by(User.id.asc()).all():
+    for user in query.order_by(User.id.asc()).all():
         rows.append([user.id, user.email, user.name, user.department, user.extension, user.role, user.approval_status, user.is_active, user.is_auth_manager, user.created_at.isoformat()])
     return _csv_response("users.csv", rows)
 
@@ -137,8 +152,26 @@ def export_users_csv():
 @admin_bp.get("/exports/reservations.csv")
 @admin_required
 def export_reservations_csv():
+    filters = _export_filter_values()
+    query = Reservation.query.join(User).join(AiResource)
+    if filters["q"]:
+        like = f"%{filters['q']}%"
+        query = query.filter(or_(Reservation.purpose.ilike(like), Reservation.work_type.ilike(like), Reservation.description.ilike(like), User.name.ilike(like), User.email.ilike(like)))
+    if filters["user_id"]:
+        query = query.filter(Reservation.user_id == filters["user_id"])
+    if filters["resource_id"]:
+        query = query.filter(Reservation.resource_id == filters["resource_id"])
+    if filters["work_type"]:
+        query = query.filter(Reservation.work_type == filters["work_type"])
+    if filters["status"] in {ReservationStatus.RESERVED, ReservationStatus.COMPLETED, ReservationStatus.CANCELLED}:
+        query = query.filter(Reservation.status == filters["status"])
+    if filters["start_at"]:
+        query = query.filter(Reservation.start_at >= filters["start_at"])
+    if filters["end_at"]:
+        query = query.filter(Reservation.start_at <= filters["end_at"])
+
     rows = [["id", "user_email", "resource", "start_at", "end_at", "work_type", "purpose", "status", "consent_version"]]
-    for reservation in Reservation.query.order_by(Reservation.start_at.desc()).all():
+    for reservation in query.order_by(Reservation.start_at.desc()).all():
         rows.append([reservation.id, reservation.user.email, reservation.resource.name, reservation.start_at.isoformat(), reservation.end_at.isoformat(), reservation.work_type, reservation.purpose, reservation.status, reservation.consent_version])
     return _csv_response("reservations.csv", rows)
 
@@ -146,8 +179,24 @@ def export_reservations_csv():
 @admin_bp.get("/exports/usage-logs.csv")
 @admin_required
 def export_usage_logs_csv():
+    filters = _export_filter_values()
+    query = UsageLog.query.join(User).outerjoin(AiResource)
+    if filters["q"]:
+        like = f"%{filters['q']}%"
+        query = query.filter(or_(UsageLog.summary.ilike(like), UsageLog.work_type.ilike(like), User.name.ilike(like), User.email.ilike(like)))
+    if filters["user_id"]:
+        query = query.filter(UsageLog.user_id == filters["user_id"])
+    if filters["resource_id"]:
+        query = query.filter(UsageLog.resource_id == filters["resource_id"])
+    if filters["work_type"]:
+        query = query.filter(UsageLog.work_type == filters["work_type"])
+    if filters["start_at"]:
+        query = query.filter(UsageLog.created_at >= filters["start_at"])
+    if filters["end_at"]:
+        query = query.filter(UsageLog.created_at <= filters["end_at"])
+
     rows = [["id", "user_email", "reservation_id", "resource", "work_type", "summary", "created_at"]]
-    for log in UsageLog.query.order_by(UsageLog.created_at.desc()).all():
+    for log in query.order_by(UsageLog.created_at.desc()).all():
         rows.append([log.id, log.user.email, log.reservation_id or "", log.resource.name if log.resource else "", log.work_type, log.summary, log.created_at.isoformat()])
     return _csv_response("usage-logs.csv", rows)
 
@@ -163,9 +212,15 @@ def create_backup():
     backup_dir.mkdir(parents=True, exist_ok=True)
     backup_path = backup_dir / f"app-{datetime.now().strftime('%Y%m%d-%H%M%S')}.db"
     shutil.copy2(db_path, backup_path)
-    _record_audit("backups.create", "sqlite", backup_path.name, "SQLite DB 백업을 생성했습니다.")
+    removed_count = _prune_old_backups(MAX_BACKUP_FILES)
+    summary = "SQLite DB 백업을 생성했습니다."
+    if removed_count:
+        summary += f" 오래된 백업 {removed_count}개를 정리했습니다."
+    _record_audit("backups.create", "sqlite", backup_path.name, summary)
     db.session.commit()
     flash(f"백업을 생성했습니다: {backup_path.name}", "success")
+    if removed_count:
+        flash(f"최근 {MAX_BACKUP_FILES}개를 남기고 오래된 백업 {removed_count}개를 정리했습니다.", "warning")
     return redirect(url_for("admin.dashboard", section="backups"))
 
 
@@ -508,6 +563,9 @@ def _admin_context(section: str = "overview", test_result: dict | None = None) -
         "report": _monthly_report_context(),
         "audit_logs": AuditLog.query.order_by(AuditLog.created_at.desc()).limit(100).all(),
         "backups": _available_backups(),
+        "backup_keep_count": MAX_BACKUP_FILES,
+        "export_filters": _export_filter_values(),
+        "all_users": all_users,
         "guide_settings": _guide_settings(),
         "guides": GuideItem.query.order_by(GuideItem.sort_order.asc()).all(),
         "resources": AiResource.query.order_by(AiResource.name.asc()).all(),
@@ -549,9 +607,48 @@ def _available_backups() -> list[dict]:
     if not backup_dir.exists():
         return []
     backups = []
-    for path in sorted(backup_dir.glob("app-*.db"), key=lambda item: item.stat().st_mtime, reverse=True)[:20]:
-        backups.append({"name": path.name, "size_kb": max(1, path.stat().st_size // 1024)})
+    for path in sorted(backup_dir.glob("app-*.db"), key=lambda item: item.stat().st_mtime, reverse=True)[:MAX_BACKUP_FILES]:
+        stat = path.stat()
+        backups.append({
+            "name": path.name,
+            "size_kb": max(1, stat.st_size // 1024),
+            "created_at": datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M"),
+        })
     return backups
+
+
+def _prune_old_backups(keep_count: int = MAX_BACKUP_FILES) -> int:
+    backup_dir = _backup_dir()
+    if not backup_dir.exists():
+        return 0
+    backup_paths = sorted(backup_dir.glob("app-*.db"), key=lambda item: item.stat().st_mtime, reverse=True)
+    removed_count = 0
+    for path in backup_paths[keep_count:]:
+        path.unlink(missing_ok=True)
+        removed_count += 1
+    return removed_count
+
+
+def _export_filter_values() -> dict:
+    return {
+        "q": request.args.get("q", "").strip(),
+        "start_date": request.args.get("start_date", "").strip(),
+        "end_date": request.args.get("end_date", "").strip(),
+        "start_at": _date_filter_bound(request.args.get("start_date", ""), end_of_day=False),
+        "end_at": _date_filter_bound(request.args.get("end_date", ""), end_of_day=True),
+        "user_id": request.args.get("user_id", type=int),
+        "resource_id": request.args.get("resource_id", type=int),
+        "work_type": request.args.get("work_type", "").strip(),
+        "status": request.args.get("status", "").strip(),
+    }
+
+
+def _date_filter_bound(raw_value: str, *, end_of_day: bool) -> datetime | None:
+    try:
+        value = date.fromisoformat((raw_value or "").strip())
+    except ValueError:
+        return None
+    return datetime.combine(value, time.max if end_of_day else time.min)
 
 
 def _filtered_users(users: list[User]) -> list[User]:

@@ -11,15 +11,14 @@
   </head>
   <body class="min-h-screen bg-slate-100 text-slate-950 antialiased">
     <a class="skip-link" href="#main-content">본문으로 이동</a>
-    {% macro nav_link(endpoint, label, href, active_prefix=None, icon='') -%}
+    {% macro nav_link(endpoint, label, href, active_prefix=None) -%}
       {% set active = request.endpoint == endpoint or (active_prefix and request.endpoint and request.endpoint.startswith(active_prefix)) %}
       <a
-        class="inline-flex h-10 items-center gap-2 rounded-xl px-4 text-sm font-bold transition {% if active %}bg-slate-950 text-white shadow-sm{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-950{% endif %}"
+        class="inline-flex h-10 items-center rounded-xl px-4 text-sm font-bold transition {% if active %}bg-slate-950 text-white shadow-sm{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-950{% endif %}"
         href="{{ href }}"
         {% if active %}aria-current="page"{% endif %}
       >
-        <span aria-hidden="true">{{ icon }}</span>
-        <span>{{ label }}</span>
+        {{ label }}
       </a>
     {%- endmacro %}
 
@@ -33,12 +32,12 @@
           <div class="flex flex-wrap items-center gap-2 text-sm">
             {% if current_user.is_authenticated %}
               {% if current_user.is_approved %}
-                <a class="inline-flex h-10 items-center gap-2 rounded-full bg-slate-100 px-4 font-semibold text-slate-600 transition hover:bg-slate-200 hover:text-slate-950" href="{{ url_for('settings.api_key') }}" title="AI Provider 설정">♙ {{ current_user.name }} / {% if current_user.can_access_admin %}시스템{% else %}사용자{% endif %}</a>
+                <a class="inline-flex h-10 items-center gap-2 rounded-full bg-slate-100 px-4 font-semibold text-slate-600 transition hover:bg-slate-200 hover:text-slate-950" href="{{ url_for('settings.api_key') }}" title="AI Provider 설정">{{ current_user.name }} / {% if current_user.can_access_admin %}시스템{% else %}사용자{% endif %}</a>
               {% else %}
-                <span class="inline-flex h-10 items-center gap-2 rounded-full bg-slate-100 px-4 font-semibold text-slate-600">♙ 미등록 사용자 / 사용자</span>
+                <span class="inline-flex h-10 items-center gap-2 rounded-full bg-slate-100 px-4 font-semibold text-slate-600">미등록 사용자 / 사용자</span>
               {% endif %}
               <form method="post" action="{{ url_for('auth.logout') }}">
-                <button class="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50" type="submit">▣ 사용 종료</button>
+                <button class="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-50" type="submit">사용 종료</button>
               </form>
             {% else %}
               <a class="inline-flex h-10 items-center rounded-xl bg-slate-950 px-4 text-sm font-bold text-white hover:bg-slate-800" href="{{ url_for('auth.login') }}">로그인</a>
@@ -47,26 +46,47 @@
           </div>
         </div>
 
-        <nav class="mt-5 flex flex-wrap items-center gap-2 text-sm" aria-label="주요 메뉴">
-          {% if current_user.is_authenticated %}
-            {% if current_user.is_approved %}
-              {{ nav_link('main.dashboard', '홈', url_for('main.dashboard'), None, '⌂') }}
-              {{ nav_link('reservations.new', '사용 신청', url_for('reservations.new'), None, '+') }}
-              {{ nav_link('reservations.today', '오늘 예약', url_for('reservations.today'), None, '▣') }}
-              {{ nav_link('reservations.calendar', '예약 캘린더', url_for('reservations.calendar'), None, '▦') }}
-              {{ nav_link('reservations.index', '내 예약', url_for('reservations.index'), None, '♙') }}
-              {{ nav_link('prompts.index', '프롬프트 정리', url_for('prompts.index'), 'prompts.', '✓') }}
-              {{ nav_link('main.guide', '사용 안내', url_for('main.guide'), None, 'ⓘ') }}
+        {% if current_user.is_authenticated %}
+          {% if current_user.is_approved %}
+            <nav class="mt-5 hidden flex-wrap items-center gap-2 text-sm md:flex" aria-label="주요 메뉴">
+              {{ nav_link('main.dashboard', '홈', url_for('main.dashboard')) }}
+              {{ nav_link('reservations.new', '사용 신청', url_for('reservations.new')) }}
+              {{ nav_link('reservations.today', '오늘 예약', url_for('reservations.today')) }}
+              {{ nav_link('reservations.calendar', '예약 캘린더', url_for('reservations.calendar')) }}
+              {{ nav_link('reservations.index', '내 예약', url_for('reservations.index')) }}
+              {{ nav_link('prompts.index', '프롬프트 정리', url_for('prompts.index'), 'prompts.') }}
+              {{ nav_link('main.guide', '사용 안내', url_for('main.guide')) }}
               {% if current_user.can_access_admin %}
-                {{ nav_link('admin.dashboard', '관리자', url_for('admin.dashboard'), 'admin.', '⚙') }}
+                {{ nav_link('admin.dashboard', '관리자', url_for('admin.dashboard'), 'admin.') }}
               {% endif %}
-            {% else %}
-              {{ nav_link('main.index', '홈', url_for('main.index'), None, '⌂') }}
-              {{ nav_link('auth.pending', '등록 요청', url_for('auth.pending'), None, '♙') }}
-              {{ nav_link('main.guide', '사용 안내', url_for('main.guide'), None, 'ⓘ') }}
-            {% endif %}
+            </nav>
+            <nav class="mt-5 md:hidden" aria-label="모바일 주요 메뉴">
+              <div class="flex flex-wrap items-center gap-2">
+                {{ nav_link('main.dashboard', '홈', url_for('main.dashboard')) }}
+                {{ nav_link('reservations.new', '사용 신청', url_for('reservations.new')) }}
+                {{ nav_link('reservations.today', '오늘 예약', url_for('reservations.today')) }}
+                <details class="relative">
+                  <summary class="inline-flex h-10 cursor-pointer list-none items-center rounded-xl bg-slate-100 px-4 text-sm font-bold text-slate-700 transition hover:bg-slate-200 hover:text-slate-950">더보기</summary>
+                  <div class="absolute right-0 z-50 mt-2 grid min-w-44 gap-2 rounded-2xl border border-slate-200 bg-white p-2 shadow-lg">
+                    {{ nav_link('reservations.calendar', '예약 캘린더', url_for('reservations.calendar')) }}
+                    {{ nav_link('reservations.index', '내 예약', url_for('reservations.index')) }}
+                    {{ nav_link('prompts.index', '프롬프트 정리', url_for('prompts.index'), 'prompts.') }}
+                    {{ nav_link('main.guide', '사용 안내', url_for('main.guide')) }}
+                    {% if current_user.can_access_admin %}
+                      {{ nav_link('admin.dashboard', '관리자', url_for('admin.dashboard'), 'admin.') }}
+                    {% endif %}
+                  </div>
+                </details>
+              </div>
+            </nav>
+          {% else %}
+            <nav class="mt-5 flex flex-wrap items-center gap-2 text-sm" aria-label="주요 메뉴">
+              {{ nav_link('main.index', '홈', url_for('main.index')) }}
+              {{ nav_link('auth.pending', '등록 요청', url_for('auth.pending')) }}
+              {{ nav_link('main.guide', '사용 안내', url_for('main.guide')) }}
+            </nav>
           {% endif %}
-        </nav>
+        {% endif %}
       </div>
     </header>
 

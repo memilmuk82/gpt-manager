@@ -1,3 +1,4 @@
+import os
 from app.extensions import db
 from datetime import datetime
 
@@ -378,3 +379,73 @@ def test_admin_can_create_sqlite_backup(client, app, tmp_path):
     assert "app-" in body
     with app.app_context():
         assert AuditLog.query.filter_by(action="backups.create").count() == 1
+
+
+def test_admin_csv_exports_apply_filters(client, app):
+    with app.app_context():
+        create_user(email="admin@senedu.kr", name="Admin", role="admin")
+        user = create_user(email="teacher@senedu.kr", name="Teacher")
+        other = create_user(email="other@senedu.kr", name="Other")
+        resource = AiResource(name="GPT Pro", provider="OpenAI")
+        other_resource = AiResource(name="Claude", provider="Anthropic")
+        db.session.add_all([resource, other_resource])
+        db.session.flush()
+        matching = Reservation(
+            user_id=user.id,
+            resource_id=resource.id,
+            start_at=datetime(2026, 7, 2, 9, 0),
+            end_at=datetime(2026, 7, 2, 10, 0),
+            purpose="필터 대상 예약",
+            work_type="수업",
+            status=ReservationStatus.COMPLETED,
+        )
+        excluded = Reservation(
+            user_id=other.id,
+            resource_id=other_resource.id,
+            start_at=datetime(2026, 8, 2, 9, 0),
+            end_at=datetime(2026, 8, 2, 10, 0),
+            purpose="제외 예약",
+            work_type="행정",
+            status=ReservationStatus.RESERVED,
+        )
+        db.session.add_all([matching, excluded])
+        db.session.flush()
+        db.session.add_all([
+            UsageLog(user_id=user.id, reservation_id=matching.id, resource_id=resource.id, work_type="수업", summary="필터 대상 로그", created_at=datetime(2026, 7, 2, 11, 0)),
+            UsageLog(user_id=other.id, reservation_id=excluded.id, resource_id=other_resource.id, work_type="행정", summary="제외 로그", created_at=datetime(2026, 8, 2, 11, 0)),
+        ])
+        db.session.commit()
+        user_id = user.id
+        resource_id = resource.id
+
+    login(client, email="admin@senedu.kr")
+    query = f"start_date=2026-07-01&end_date=2026-07-31&user_id={user_id}&resource_id={resource_id}&work_type=수업&status=completed&q=필터"
+    reservations = client.get(f"/admin/exports/reservations.csv?{query}").get_data(as_text=True)
+    logs = client.get(f"/admin/exports/usage-logs.csv?{query}").get_data(as_text=True)
+    users = client.get(f"/admin/exports/users.csv?user_id={user_id}").get_data(as_text=True)
+
+    assert "필터 대상 예약" in reservations
+    assert "제외 예약" not in reservations
+    assert "필터 대상 로그" in logs
+    assert "제외 로그" not in logs
+    assert "teacher@senedu.kr" in users
+    assert "other@senedu.kr" not in users
+
+
+def test_backup_retention_keeps_latest_twenty(monkeypatch, tmp_path):
+    from app.admin import routes
+
+    monkeypatch.setattr(routes, "_backup_dir", lambda: tmp_path)
+    for index in range(22):
+        path = tmp_path / f"app-20260705-{index:02d}.db"
+        path.write_bytes(b"backup")
+        os.utime(path, (index, index))
+
+    removed = routes._prune_old_backups(20)
+    remaining = sorted(path.name for path in tmp_path.glob("app-*.db"))
+
+    assert removed == 2
+    assert len(remaining) == 20
+    assert "app-20260705-00.db" not in remaining
+    assert "app-20260705-01.db" not in remaining
+    assert "app-20260705-21.db" in remaining

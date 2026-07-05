@@ -58,7 +58,8 @@
             <option value="180">3시간</option>
             <option value="custom">직접 입력</option>
           </select>
-          <input class="mt-2 hidden w-full rounded-xl border border-slate-300 px-4 py-3 text-base" id="custom_duration" type="number" min="10" max="720" step="5" placeholder="분 단위 입력">
+          <input class="mt-2 hidden w-full rounded-xl border border-slate-300 px-4 py-3 text-base" id="custom_duration" type="number" min="10" max="{{ max_duration|int }}" step="5" placeholder="분 단위 입력">
+          <p class="mt-2 text-sm text-slate-500">최대 {{ max_duration|int }}분까지 신청할 수 있습니다.</p>
         </div>
       </div>
 
@@ -76,9 +77,9 @@
       <div id="conflict-message" class="hidden rounded-2xl border p-5 text-base font-extrabold"></div>
 
       <div class="flex flex-wrap gap-3">
-        <button class="inline-flex h-12 items-center gap-2 rounded-xl border border-slate-300 bg-white px-5 text-base font-extrabold text-slate-700 hover:bg-slate-50" type="button" id="conflict-button">⌕ 충돌 확인</button>
-        <button class="inline-flex h-12 items-center gap-2 rounded-xl bg-slate-950 px-5 text-base font-extrabold text-white hover:bg-slate-800" type="submit">▣ 예약 등록</button>
-        <button class="inline-flex h-12 items-center gap-2 rounded-xl bg-slate-950 px-5 text-base font-extrabold text-white hover:bg-slate-800" type="button" id="start-now-button">▷ 지금 사용 시작</button>
+        <button class="inline-flex h-12 items-center gap-2 rounded-xl border border-slate-300 bg-white px-5 text-base font-extrabold text-slate-700 hover:bg-slate-50" type="button" id="conflict-button">충돌 확인</button>
+        <button class="inline-flex h-12 items-center gap-2 rounded-xl bg-slate-950 px-5 text-base font-extrabold text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60" type="submit" id="submit-button">예약 등록</button>
+        <button class="inline-flex h-12 items-center gap-2 rounded-xl bg-slate-950 px-5 text-base font-extrabold text-white hover:bg-slate-800" type="button" id="start-now-button">지금 사용 시작</button>
       </div>
     </form>
   </section>
@@ -86,21 +87,71 @@
   <script>
     (function () {
       const defaultDuration = {{ default_duration|int }};
+      const maxDuration = {{ max_duration|int }};
       const start = document.getElementById('start_at');
       const end = document.getElementById('end_at');
       const duration = document.getElementById('duration_minutes');
       const customDuration = document.getElementById('custom_duration');
       const form = document.getElementById('reservation-form');
       const message = document.getElementById('conflict-message');
+      const submitButton = document.getElementById('submit-button');
+      const resource = document.getElementById('resource_id');
       const pad = (value) => String(value).padStart(2, '0');
       const toLocalInput = (date) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-      const selectedMinutes = () => duration.value === 'custom' ? Number(customDuration.value || defaultDuration) : Number(duration.value || defaultDuration);
+      let conflictTimer = null;
+      let conflictAbort = null;
+
+      const selectedMinutes = () => {
+        const rawMinutes = duration.value === 'custom' ? Number(customDuration.value || defaultDuration) : Number(duration.value || defaultDuration);
+        return Math.min(Math.max(rawMinutes || defaultDuration, 10), maxDuration);
+      };
+
+      const setConflictState = (state, text) => {
+        const classes = {
+          idle: 'hidden rounded-2xl border p-5 text-base font-extrabold',
+          checking: 'rounded-2xl border p-5 text-base font-extrabold border-slate-200 bg-slate-50 text-slate-700',
+          ok: 'rounded-2xl border p-5 text-base font-extrabold border-emerald-200 bg-emerald-50 text-emerald-800',
+          error: 'rounded-2xl border p-5 text-base font-extrabold border-red-200 bg-red-50 text-red-800',
+          pending: 'rounded-2xl border p-5 text-base font-extrabold border-amber-200 bg-amber-50 text-amber-900'
+        };
+        message.className = classes[state];
+        message.textContent = text || '';
+        submitButton.disabled = state === 'checking' || state === 'error';
+      };
+
+      const checkConflict = async () => {
+        if (!resource.value || !start.value || !end.value) {
+          setConflictState('pending', 'AI 리소스와 시간을 선택하면 충돌 여부를 확인합니다.');
+          return;
+        }
+        if (conflictAbort) conflictAbort.abort();
+        conflictAbort = new AbortController();
+        const params = new URLSearchParams({ resource_id: resource.value, start_at: start.value, end_at: end.value });
+        setConflictState('checking', '충돌 여부를 확인하는 중입니다.');
+        try {
+          const response = await fetch(`{{ url_for('reservations.conflicts') }}?${params.toString()}`, { signal: conflictAbort.signal });
+          const data = await response.json();
+          const ok = response.ok && !data.has_conflict;
+          setConflictState(ok ? 'ok' : 'error', `${ok ? '예약 가능합니다.' : '예약할 수 없습니다.'} ${data.message}`);
+        } catch (error) {
+          if (error.name === 'AbortError') return;
+          setConflictState('error', '충돌 확인 중 오류가 발생했습니다.');
+        }
+      };
+
+      const scheduleConflictCheck = () => {
+        window.clearTimeout(conflictTimer);
+        conflictTimer = window.setTimeout(checkConflict, 350);
+      };
+
       const updateEnd = () => {
         if (!start.value) return;
         const base = new Date(start.value);
         base.setMinutes(base.getMinutes() + selectedMinutes());
         end.value = toLocalInput(base);
+        scheduleConflictCheck();
       };
+
       const updateDurationFromEnd = () => {
         if (!start.value || !end.value) return;
         const diff = Math.round((new Date(end.value) - new Date(start.value)) / 60000);
@@ -110,22 +161,27 @@
           customDuration.classList.add('hidden');
         } else if (diff > 0) {
           duration.value = 'custom';
-          customDuration.value = diff;
+          customDuration.value = Math.min(diff, maxDuration);
           customDuration.classList.remove('hidden');
         }
+        scheduleConflictCheck();
       };
+
       const setNow = () => {
         const now = new Date();
         now.setSeconds(0, 0);
         start.value = toLocalInput(now);
         updateEnd();
       };
+
       const setDurationDefault = () => {
         const preset = Array.from(duration.options).find((option) => Number(option.value) === defaultDuration);
         if (preset) duration.value = preset.value;
       };
+
       setDurationDefault();
       if (!start.value) setNow();
+      resource.addEventListener('change', scheduleConflictCheck);
       start.addEventListener('change', updateEnd);
       end.addEventListener('change', updateDurationFromEnd);
       duration.addEventListener('change', function () {
@@ -133,22 +189,7 @@
         updateEnd();
       });
       customDuration.addEventListener('input', updateEnd);
-      document.getElementById('conflict-button').addEventListener('click', async function () {
-        const resourceId = document.getElementById('resource_id').value;
-        const params = new URLSearchParams({ resource_id: resourceId, start_at: start.value, end_at: end.value });
-        message.className = 'rounded-2xl border p-5 text-base font-extrabold border-slate-200 bg-slate-50 text-slate-700';
-        message.textContent = '충돌 여부를 확인하는 중입니다.';
-        try {
-          const response = await fetch(`{{ url_for('reservations.conflicts') }}?${params.toString()}`);
-          const data = await response.json();
-          const ok = response.ok && !data.has_conflict;
-          message.className = `rounded-2xl border p-5 text-base font-extrabold ${ok ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-red-200 bg-red-50 text-red-800'}`;
-          message.textContent = `${ok ? '✓' : '!'} ${data.message}`;
-        } catch (error) {
-          message.className = 'rounded-2xl border border-red-200 bg-red-50 p-5 text-base font-extrabold text-red-800';
-          message.textContent = '충돌 확인 중 오류가 발생했습니다.';
-        }
-      });
+      document.getElementById('conflict-button').addEventListener('click', checkConflict);
       document.getElementById('start-now-button').addEventListener('click', function () {
         setNow();
         if (form.reportValidity()) form.submit();

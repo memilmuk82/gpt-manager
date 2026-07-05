@@ -114,6 +114,7 @@ README는 프로젝트의 입구 역할을 합니다. 현재 상태는 PROJECT_S
 | [docs/development/2026-07-03_REMAINING_FEATURES_COMPLETION.md](docs/development/2026-07-03_REMAINING_FEATURES_COMPLETION.md) | 잔여 기능 보완 기록 |
 | [docs/development/2026-07-04_FULL_OPERATIONAL_FEATURES.md](docs/development/2026-07-04_FULL_OPERATIONAL_FEATURES.md) | 전체 운영 편의 기능 보완 기록 |
 | [docs/development/2026-07-04_UI_SYSTEM_REFRESH.md](docs/development/2026-07-04_UI_SYSTEM_REFRESH.md) | UI 디자인 시스템 개선 기록 |
+| [docs/development/2026-07-05_UX_OPERATIONAL_FINISHING.md](docs/development/2026-07-05_UX_OPERATIONAL_FINISHING.md) | 예약 UX, 모바일 내비게이션, CSV 필터, 백업 보관 정책 마감 보완 기록 |
 
 운영 방식은 README에서 출발해 `PROJECT_STATUS.md`, `SYSTEM_DESIGN.md`, `docs/EDUCATION.md`, 배포 문서, 실제 코드 순서로 연결되도록 구성했습니다. 초기 요구사항과 일정 문서는 기록으로 보존하되 현재 상태 판단에는 PROJECT_STATUS를 우선합니다.
 
@@ -238,9 +239,9 @@ run.py                       Flask 앱 실행 진입점
 ## ✅ 현재 상태
 
 ```text
-상태: 전체 운영 편의 기능 보완 및 문서 포털 정리 완료
-최근 검증일: 2026-07-04
-테스트: uv run pytest, 88 passed
+상태: UX/운영 마감 보완 및 문서 구조 최신화 완료
+최근 검증일: 2026-07-05
+테스트: uv run pytest, 91 passed
 E2E: npm run test:e2e, 1 passed
 운영 도메인: https://dev-gpt.memilmuk82.com
 배포: OCI Ubuntu + Docker Compose + Gunicorn + Nginx + HTTPS
@@ -275,7 +276,7 @@ CSRF 토큰 기반 POST 요청 보호
 인증번호 담당자는 최대 2명까지 지정됩니다.
 공용 생성형 AI 계정 예약 생성/조회/취소/완료
 오늘 예약 전체 현황 조회
-예약 충돌 검증 및 충돌 확인 버튼
+예약 충돌 검증, 자동 충돌 확인, 충돌 시 예약 버튼 비활성화
 완료 예약의 사용 로그 작성 유도 및 예약 자동 선택
 내 예약 검색/상태 필터
 사용 로그 작성/조회
@@ -297,8 +298,8 @@ BYOK 기반 AI 프롬프트 정리 결과 저장/조회
 사용자별 일일 20회, 월간 500회, 5초 이내 연속 요청 차단 기본 제한 적용
 프롬프트 정리 화면은 상단 메뉴와 홈 빠른 이동에서 접근할 수 있습니다.
 관리자 설정 관리, 안내문구 관리, AI 리소스/작업유형 관리, 사용자 통계, 월간 운영 보고서, 감사 로그, 전체 테스트 실행 및 테스트 파일별 검증 설명 표시
-관리자 DB 백업 생성 및 다운로드
-관리자 사용자/예약/사용 로그 CSV 내보내기
+관리자 DB 백업 생성/다운로드 및 최근 20개 보관
+관리자 사용자/예약/사용 로그 CSV 조건별 내보내기
 관리자 사용자 목록 검색/권한/상태 필터
 관리자가 수정할 수 있는 사용 안내 화면
 GPT 접속 안내 제목, 사용 신청 안내 문구, 사용 안내 소개 문구를 Settings로 관리
@@ -529,7 +530,7 @@ uv run pytest
 현재 테스트 결과:
 
 ```text
-88 passed
+91 passed
 ```
 
 현재 테스트 범위:
@@ -549,7 +550,7 @@ CSRF 토큰 검증
 예약 목록 검색/상태 필터
 월간 예약 캘린더
 대시보드 KPI와 최근 30일 미작성 로그 알림
-관리자 DB 백업 및 CSV 내보내기
+관리자 DB 백업 보관 정책 및 CSV 조건별 내보내기
 BYOK Provider별 API Key 암호화 저장/교체/삭제/마스킹 확인
 프롬프트 정리 LLM adapter 호출 mock, 일일/월간/연속 요청 제한, 템플릿, 저장/조회, 검색, Markdown 다운로드
 관리자 대시보드, AI 리소스/작업유형 관리, 사용자 승인/정지, 월간 보고서, 감사 로그, 사용자 필터

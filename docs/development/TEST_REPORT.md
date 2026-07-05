@@ -849,3 +849,40 @@ pytest 원문 로그 유지: PASS
 Anthropic 기본 fallback: claude-sonnet-4-6, claude-haiku-4-5, claude-opus-4-8
 Anthropic API 조회 결과에 claude-opus-4-7 포함 시 선택 가능 목록 유지: PASS
 ```
+
+
+## 2026-07-05 UX/운영 마감 보완 검증
+
+범위: 예약 자동 충돌 확인, max_duration_minutes 화면 반영, 모바일 더보기 내비게이션, 관리자 CSV 조건 필터, SQLite 백업 최근 20개 보관 정책
+
+명령:
+
+```bash
+python3 -m py_compile app/admin/routes.py app/reservations/routes.py
+uv run pytest tests/test_reservations.py tests/test_admin.py
+uv run pytest
+npm run test:e2e
+git diff --check
+docker compose up -d --build
+curl http://127.0.0.1:5000/healthz
+```
+
+결과:
+
+```text
+py_compile: PASS
+관련 pytest: PASS, 30 passed
+전체 pytest: PASS, 91 passed
+Playwright E2E: PASS, 1 passed
+git diff --check: PASS
+Docker Compose rebuild: PASS, gpt-manager-web-1 Up
+/healthz: PASS, {"status":"ok"}
+```
+
+추가 테스트 범위:
+
+```text
+예약 화면에 max_duration_minutes가 input max와 안내 문구로 표시됨
+관리자 CSV 내보내기 조건이 사용자/예약/사용 로그 CSV에 적용됨
+SQLite 백업 정리 로직이 최신 20개만 남김
+```

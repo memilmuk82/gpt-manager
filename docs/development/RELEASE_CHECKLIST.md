@@ -7,10 +7,10 @@
 ## ✅ 1. 현재 릴리스 기준
 
 ```text
-상태: 운영 편의 기능 보완 및 문서화 완료
-기준일: 2026-07-04
+상태: UX/운영 마감 보완 및 문서화 완료
+기준일: 2026-07-05
 운영 도메인: https://dev-gpt.memilmuk82.com
-pytest: 88 passed
+pytest: 91 passed
 Playwright E2E: 1 passed
 Docker Compose rebuild: PASS
 ```
@@ -27,7 +27,7 @@ Docker Compose rebuild: PASS
 [x] Google OAuth Redirect URI 운영 도메인 기준 설정 확인
 [x] BYOK Provider별 API Key 등록/삭제 확인
 [x] 프롬프트 정리 adapter mock 테스트 통과
-[x] 예약 생성/취소/완료 확인
+[x] 예약 생성/취소/완료와 자동 충돌 확인 확인
 [x] 오늘 예약 화면 확인
 [x] 월간 예약 캘린더 확인
 [x] 완료 예약의 미작성 로그 알림 확인
@@ -35,7 +35,7 @@ Docker Compose rebuild: PASS
 [x] 관리자 대시보드 확인
 [x] 관리자 테스트 실행 결과의 파일별 검증 설명 표시 확인
 [x] 관리자 설정/안내문구/주요 화면 문구/신청 항목/사용자/통계/월간 보고서/감사 로그 확인
-[x] DB 백업과 CSV 내보내기 확인
+[x] DB 백업 최근 20개 보관과 CSV 조건별 내보내기 확인
 [x] 프롬프트 정리 메뉴와 화면 최신 UI 확인
 [x] 개인 AI Provider 설정 화면과 사용자 badge 링크 확인
 [x] 보조관리자 관리자 화면 접근 확인
@@ -67,7 +67,7 @@ Docker Compose rebuild: PASS
 2. 리뷰용 테스트 계정 또는 Google OAuth로 로그인
 3. 홈 화면 KPI와 미작성 로그 알림 확인
 4. 사용 신청으로 예약 생성
-5. 예약 충돌 테스트
+5. 예약 자동 충돌 확인과 충돌 시 예약 버튼 비활성화 확인
 6. 오늘 예약과 월간 예약 캘린더 확인
 7. 예약 완료 후 사용 로그 작성
 8. AI Provider/API Key 설정
@@ -76,7 +76,7 @@ Docker Compose rebuild: PASS
 11. 로그아웃
 12. 관리자 또는 보조관리자 계정 로그인
 13. 관리자 설정/안내문구/주요 화면 문구/신청 항목/사용자/통계/월간 보고서/감사 로그 확인
-14. 사용자/예약/로그 CSV 내보내기와 DB 백업 확인
+14. 사용자/예약/로그 CSV 조건별 내보내기와 DB 백업 보관 정책 확인
 15. uv run pytest 실행
 16. npm run test:e2e 실행
 17. docker compose up -d --build 후 /healthz 확인
