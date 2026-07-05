@@ -64,8 +64,19 @@ gpt-manager/
 │  │  └─ admin/
 │  └─ static/
 ├─ tests/
-│  ├─ e2e/
-│  └─ test_legal_pages.py
+│  ├─ conftest.py
+│  ├─ test_admin.py
+│  ├─ test_api_keys.py
+│  ├─ test_app.py
+│  ├─ test_auth.py
+│  ├─ test_config.py
+│  ├─ test_google_oauth.py
+│  ├─ test_health.py
+│  ├─ test_prompt_reviews.py
+│  ├─ test_reservations.py
+│  ├─ test_usage_logs.py
+│  ├─ test_user_model.py
+│  └─ e2e/
 ├─ docs/
 │  ├─ development/
 │  │  └─ 2026-07-03_ADMIN_RESERVATION_UI_UPDATE.md
@@ -95,7 +106,7 @@ Jinja 템플릿은 기능별 하위 디렉터리로 분리한다.
 공통 안내 UI는 templates/partials에 둔다.
 관리자 설정/안내문구 기본값은 app/defaults.py에 둔다.
 이용약관/개인정보처리방침 원문은 docs/legal Markdown 파일로 관리한다.
-법적 Markdown 렌더링은 services/legal_markdown_service.py에서 제한 문법과 escape 처리로 수행한다.
+법적 Markdown 렌더링은 services/legal_markdown_service.py에서 제한 문법과 escape 처리로 수행한다. 단, 약관과 개인정보처리방침의 내용 타당성은 테스트 코드가 아니라 수동 검토와 기관 검토로 확인한다.
 SQLite DB는 ./instance/app.db에 저장하고 Docker Compose에서 ./instance를 /app/instance로 마운트한다.
 ```
 

@@ -965,6 +965,24 @@ uv run pytest tests/test_config.py tests/test_reservations.py
 ```text
 py_compile: PASS
 관련 pytest: PASS, 17 passed
-전체 pytest: PASS, 97 passed
+전체 pytest: PASS, 92 passed
 Playwright E2E: PASS, 2 passed
+```
+
+## 2026-07-06 법적 문서 단위 테스트 제거 후 검증
+
+범위: `tests/test_legal_pages.py` 삭제, 관리자 테스트 카탈로그 정리, 현재 문서의 pytest 기준 92 passed 반영. 약관과 개인정보처리방침의 내용 타당성은 테스트 자동화 대상이 아니라 수동 검토와 기관 검토 대상으로 둔다.
+
+명령:
+
+```bash
+uv run pytest
+npm run test:e2e
+```
+
+결과:
+
+```text
+uv run pytest: PASS, 92 passed
+npm run test:e2e: PASS, 2 passed
 ```

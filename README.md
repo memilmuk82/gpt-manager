@@ -244,8 +244,8 @@ run.py                       Flask 앱 실행 진입점
 
 ```text
 상태: UI 디자인 시스템, 개인 프로필, 관리자 테스트 힌트 반영 완료
-최근 검증일: 2026-07-05
-테스트: uv run pytest, 97 passed
+최근 검증일: 2026-07-06
+테스트: uv run pytest, 92 passed
 E2E: npm run test:e2e, 2 passed
 운영 도메인: https://dev-gpt.memilmuk82.com
 배포: OCI Ubuntu + Docker Compose + Gunicorn + Nginx + HTTPS
@@ -536,7 +536,7 @@ uv run pytest
 현재 테스트 결과:
 
 ```text
-97 passed
+92 passed
 ```
 
 현재 테스트 범위:

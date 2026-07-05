@@ -69,10 +69,6 @@ TEST_FILE_DESCRIPTIONS = {
         "target": "헬스 체크",
         "checks": "healthz 엔드포인트 응답 코드와 JSON 상태값",
     },
-    "tests/test_legal_pages.py": {
-        "target": "약관과 개인정보처리방침",
-        "checks": "푸터 링크, 운영자 정보, 약관/개인정보 문서 렌더링, 승인 대기 사용자 접근, Markdown 반영, 스크립트 escape",
-    },
     "tests/test_prompt_reviews.py": {
         "target": "프롬프트 정리 기능",
         "checks": "로그인과 API Key 요구, 현재 화면 문구, 저장된 키와 일회성 키 사용, 입력 길이 제한, 일일 한도와 연속 요청 제한, 사용자별 접근 제어, 프롬프트 조립, Markdown 다운로드, 검색, 템플릿과 Provider 표시",

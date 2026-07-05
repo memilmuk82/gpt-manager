@@ -969,3 +969,22 @@ uv run pytest tests/test_config.py tests/test_reservations.py: PASS, 17 passed
 uv run pytest: PASS, 97 passed
 npm run test:e2e: PASS, 2 passed
 ```
+
+## 2026-07-06 - 법적 문서 단위 테스트 제거 및 문서 정합성 정리
+
+### 변경 내용
+
+```text
+tests/test_legal_pages.py 삭제
+약관과 개인정보처리방침 내용 검증은 테스트 코드가 아니라 수동 검토와 기관 검토 대상으로 정리
+관리자 테스트 카탈로그에서 삭제된 테스트 파일 항목 제거
+저장소 구조 문서의 tests 목록을 실제 파일 구조에 맞게 갱신
+현재 상태 문서의 pytest 기준을 92 passed로 갱신
+```
+
+### 검증
+
+```text
+uv run pytest: PASS, 92 passed
+npm run test:e2e: PASS, 2 passed
+```
