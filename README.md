@@ -222,18 +222,18 @@ run.py                       Flask 앱 실행 진입점
 
 ## 🖼️ 주요 화면
 
-현재 저장소에는 아래 스크린샷 파일이 포함되어 있지 않습니다. 스크린샷을 추가할 경우 다음 경로를 기준으로 넣으면 README에서 연결하기 좋습니다.
+아래 이미지는 현재 운영 흐름을 기준으로 캡처한 주요 화면입니다. README에서는 한눈에 훑어볼 수 있도록 각 이미지를 320px 폭으로 표시합니다.
 
-| 예상 파일 | 화면 목적 | 사용자 행동 | 구현 기술 요소 | 교육적으로 학습하는 내용 |
+| 화면 | 화면 목적 | 사용자 행동 | 구현 기술 요소 | 교육적으로 학습하는 내용 |
 | --- | --- | --- | --- | --- |
-| `docs/images/home-guest.png` | 비로그인 시작 화면 | 로그인 또는 등록 요청 선택 | Jinja2, Tailwind CSS, 공통 레이아웃 | 서비스 진입 화면 구성 |
-| `docs/images/home-user.png` | 로그인 사용자 홈 | 현재 사용, 다음 예약, KPI 확인 | Flask route, SQLAlchemy query, Jinja2 | 서버 데이터의 화면 렌더링 |
-| `docs/images/reservation-list.png` | 내 예약 목록 | 예약 검색, 완료/취소, 사용 로그 이동 | CRUD, 상태 필터, POST form, CSRF | 상태 기반 UI와 권한 처리 |
-| `docs/images/reservation-create.png` | 예약 생성 | 리소스/시간/목적 입력, 충돌 확인 | Form, validation, conflict API | 입력 검증과 예약 충돌 모델링 |
-| `docs/images/admin-dashboard.png` | 관리자 대시보드 | 설정, 사용자, 통계, 백업 섹션 이동 | 관리자 권한, Jinja macro, table | 운영 화면 설계와 권한 분리 |
-| `docs/images/admin-users.png` | 사용자 관리 | 사용자 수정, 활성/비활성, CSV 등록 | SQLAlchemy, form 처리, CSV parsing | 관리자 CRUD와 일괄 처리 |
-| `docs/images/usage-log.png` | 사용 로그 | 사용 결과와 프롬프트 기록 | 관계형 모델, 검색/필터 | 운영 기록의 필요성 |
-| `docs/images/settings-guide.png` | API Key/사용 안내 | AI Provider/API Key 저장, 안내 확인 | Fernet 암호화, Markdown/텍스트 렌더링 | 민감정보 처리와 안전 안내 |
+| <img src="docs/images/home-guest.png" alt="비로그인 시작 화면" width="320"><br>`docs/images/home-guest.png` | 비로그인 시작 화면 | 로그인 또는 등록 요청 선택 | Jinja2, Tailwind CSS, 공통 레이아웃 | 서비스 진입 화면 구성 |
+| <img src="docs/images/home-user.png" alt="로그인 사용자 홈" width="320"><br>`docs/images/home-user.png` | 로그인 사용자 홈 | 현재 사용, 다음 예약, KPI 확인 | Flask route, SQLAlchemy query, Jinja2 | 서버 데이터의 화면 렌더링 |
+| <img src="docs/images/reservation-list.png" alt="내 예약 목록" width="320"><br>`docs/images/reservation-list.png` | 내 예약 목록 | 예약 검색, 완료/취소, 사용 로그 이동 | CRUD, 상태 필터, POST form, CSRF | 상태 기반 UI와 권한 처리 |
+| <img src="docs/images/reservation-create.png" alt="예약 생성" width="320"><br>`docs/images/reservation-create.png` | 예약 생성 | 리소스/시간/목적 입력, 충돌 확인 | Form, validation, conflict API | 입력 검증과 예약 충돌 모델링 |
+| <img src="docs/images/admin-dashboard.png" alt="관리자 대시보드" width="320"><br>`docs/images/admin-dashboard.png` | 관리자 대시보드 | 설정, 사용자, 통계, 백업 섹션 이동 | 관리자 권한, Jinja macro, table | 운영 화면 설계와 권한 분리 |
+| <img src="docs/images/admin-users.png" alt="사용자 관리" width="320"><br>`docs/images/admin-users.png` | 사용자 관리 | 사용자 수정, 활성/비활성, CSV 등록 | SQLAlchemy, form 처리, CSV parsing | 관리자 CRUD와 일괄 처리 |
+| <img src="docs/images/usage-log.png" alt="사용 로그" width="320"><br>`docs/images/usage-log.png` | 사용 로그 | 사용 결과와 프롬프트 기록 | 관계형 모델, 검색/필터 | 운영 기록의 필요성 |
+| <img src="docs/images/settings-guide.png" alt="API Key 및 사용 안내" width="320"><br>`docs/images/settings-guide.png` | API Key/사용 안내 | AI Provider/API Key 저장, 안내 확인 | Fernet 암호화, Markdown/텍스트 렌더링 | 민감정보 처리와 안전 안내 |
 
 ## ✅ 현재 상태
 
