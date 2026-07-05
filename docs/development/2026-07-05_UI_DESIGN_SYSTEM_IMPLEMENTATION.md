@@ -52,14 +52,22 @@
 
 - 관리자 section launcher에 icon slot과 active state를 정리
 - Test Result badge는 `PASS`, `FAIL`, `SKIP`, `NOT RUN` 텍스트와 semantic badge를 사용
+- pytest 실패 시 실패 테스트명/원인 요약과 해결 힌트를 카드와 파일별 표에 표시
 - pytest 상세 output은 dark terminal canvas 대신 light log panel로 표시
+
+### Profile
+
+- `/profile` 읽기 전용 개인 프로필 화면 추가
+- 헤더 사용자 badge는 승인 사용자 기준 `/profile`로 연결
+- 계정 정보, 승인/권한 상태, 이번 달 활동 수치, API Key 상태, 최근 예약/로그/프롬프트 정리 목록 표시
+- API Key 원문은 표시하지 않고 Provider, 마지막 4자리, 선택 모델, 활성 상태만 표시
 
 ## 검증
 
 ```text
 git diff --check: PASS
-uv run pytest: PASS, 91 passed
-npm run test:e2e: PASS, 1 passed
+uv run pytest: PASS, 95 passed
+npm run test:e2e: PASS, 2 passed
 Playwright desktop/mobile overflow check: PASS
 ```
 
@@ -71,6 +79,8 @@ Login
 Dashboard
 Reservations
 Prompt 입력
+Profile
+Admin Users/Test/API Key sections
 
 Desktop 1366x900: 수평 overflow 없음
 Mobile 390x844: 수평 overflow 없음
@@ -78,6 +88,6 @@ Mobile 390x844: 수평 overflow 없음
 
 ## 남은 리스크
 
-- 관리자 전체 section의 모든 조합은 pytest 렌더링과 CSS 규칙으로 보호하지만, 전 section 시각 screenshot 검증은 별도 수행하지 않았다.
+- 관리자 Users/Test/API Key section은 Playwright overflow 검증에 포함했지만, 관리자 전체 section의 모든 조합에 대한 시각 screenshot 검증은 별도 수행하지 않았다.
 - `settings/api_key.html`, `guide.html`, legal 문서는 기존 UI와 공통 CSS 보정으로 유지했으며 대규모 markup 변경은 하지 않았다.
 - multi-provider 비교, streaming, backend timeline은 의도적으로 제외했다.

@@ -4,6 +4,7 @@
 
 ```text
 UI 디자인 시스템 실제 적용 완료
+개인 프로필 화면과 관리자 테스트 실패 힌트 적용 완료
 프로젝트 Markdown 문서 구조와 최신 검증 기준 반영 중
 ```
 
@@ -13,8 +14,8 @@ UI 디자인 시스템 실제 적용 완료
 기준 브랜치: master
 운영 도메인: https://dev-gpt.memilmuk82.com
 최근 검증 기준: 2026-07-05
-uv run pytest: 91 passed
-npm run test:e2e: 1 passed
+uv run pytest: 95 passed
+npm run test:e2e: 2 passed
 Docker Compose 재빌드: PASS, gpt-manager-web-1 Up, /healthz 200
 ```
 
@@ -40,6 +41,8 @@ EDUCATION.md: 교육 철학과 기술 선정 이유
 관리자 SQLite 백업은 최근 20개 보관 정책 적용
 관리자/상단 화면의 장식 기호를 줄여 업무 도구 톤으로 정리
 Landing/Auth/Dashboard/Reservations/Logs/Prompts/Admin Test Result에 light operational SaaS UI 적용
+/profile 개인 프로필 화면 추가 및 헤더 사용자 badge 링크 변경
+관리자 Test Result 실패 원인 요약/해결 힌트 추가
 docs/ui 3개 문서와 README, PROJECT_STATUS, SYSTEM_DESIGN, RELEASE_CHECKLIST, TEST_REPORT, DEVELOPMENT_LOG 최신화
 ```
 
@@ -47,10 +50,10 @@ docs/ui 3개 문서와 README, PROJECT_STATUS, SYSTEM_DESIGN, RELEASE_CHECKLIST,
 
 ```text
 python3 -m py_compile app/admin/routes.py app/reservations/routes.py: PASS
-uv run pytest: PASS, 91 passed
-npm run test:e2e: PASS, 1 passed
+uv run pytest: PASS, 95 passed
+npm run test:e2e: PASS, 2 passed
 git diff --check: PASS
-Playwright desktop/mobile overflow check: PASS
+Playwright Profile/Admin/mobile overflow check: PASS
 ```
 
 ## 📎 다음 운영 TODO

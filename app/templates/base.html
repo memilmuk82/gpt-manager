@@ -32,7 +32,7 @@
           <div class="flex flex-wrap items-center gap-2 text-sm">
             {% if current_user.is_authenticated %}
               {% if current_user.is_approved %}
-                <a class="inline-flex min-h-10 items-center gap-2 rounded-xl border border-slate-200 bg-slate-100 px-4 font-bold text-slate-600 transition hover:bg-slate-200 hover:text-slate-950" href="{{ url_for('settings.api_key') }}" title="AI Provider 설정">{{ current_user.name }} / {% if current_user.can_access_admin %}시스템{% else %}사용자{% endif %}</a>
+                <a class="inline-flex min-h-10 items-center gap-2 rounded-xl border border-slate-200 bg-slate-100 px-4 font-bold text-slate-600 transition hover:bg-slate-200 hover:text-slate-950" href="{{ url_for('main.profile') }}" title="내 프로필">{{ current_user.name }} / {% if current_user.can_access_admin %}시스템{% else %}사용자{% endif %}</a>
               {% else %}
                 <span class="inline-flex min-h-10 items-center gap-2 rounded-xl border border-slate-200 bg-slate-100 px-4 font-bold text-slate-600">미등록 사용자 / 사용자</span>
               {% endif %}

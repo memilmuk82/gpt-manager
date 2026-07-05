@@ -7,11 +7,11 @@
 ## ✅ 1. 현재 릴리스 기준
 
 ```text
-상태: UI 디자인 시스템 실제 적용 및 문서화 완료
+상태: UI 디자인 시스템, 개인 프로필, 관리자 테스트 힌트 반영 완료
 기준일: 2026-07-05
 운영 도메인: https://dev-gpt.memilmuk82.com
-pytest: 91 passed
-Playwright E2E: 1 passed
+pytest: 95 passed
+Playwright E2E: 2 passed
 Docker Compose rebuild: PASS
 ```
 
@@ -33,11 +33,11 @@ Docker Compose rebuild: PASS
 [x] 완료 예약의 미작성 로그 알림 확인
 [x] 사용 로그 작성/검색/필터 확인
 [x] 관리자 대시보드 확인
-[x] 관리자 테스트 실행 결과의 파일별 검증 설명 표시 확인
+[x] 관리자 테스트 실행 결과의 파일별 검증 설명, 실패 원인 요약, 해결 힌트 표시 확인
 [x] 관리자 설정/안내문구/주요 화면 문구/신청 항목/사용자/통계/월간 보고서/감사 로그 확인
 [x] DB 백업 최근 20개 보관과 CSV 조건별 내보내기 확인
 [x] 프롬프트 정리 메뉴와 화면 최신 UI 확인
-[x] 개인 AI Provider 설정 화면과 사용자 badge 링크 확인
+[x] 개인 Profile 화면, AI Provider 설정 CTA, 사용자 badge 링크 확인
 [x] 보조관리자 관리자 화면 접근 확인
 [x] pytest 통과
 [x] Playwright E2E 통과
@@ -48,7 +48,7 @@ Docker Compose rebuild: PASS
 [x] /terms, /privacy HTTPS 200 확인
 [x] Markdown 법적 문서 raw HTML escape 테스트 확인
 [x] light operational SaaS UI 적용 확인
-[x] 주요 화면 desktop/mobile 수평 overflow 없음 확인
+[x] 주요 화면과 Profile/Admin sections desktop/mobile 수평 overflow 없음 확인
 [x] UI 문서와 실제 구현 정합성 확인
 ```
 

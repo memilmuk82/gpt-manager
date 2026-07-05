@@ -516,25 +516,31 @@ def run_tests():
         )
         output = completed.stdout + "\n" + completed.stderr
         summary = _pytest_summary(output)
+        test_files = _pytest_file_results(output)
         result = {
             "returncode": completed.returncode,
             "summary": summary,
             "total_tests": _pytest_total_tests(summary),
             "duration": _pytest_duration(summary),
             "output": output[-12000:],
-            "test_files": _pytest_file_results(output),
+            "test_files": test_files,
+            "failure_summary": _pytest_failure_summary(output, test_files, completed.returncode),
+            "resolution_hint": _pytest_resolution_hint(output, test_files, completed.returncode),
         }
         _record_audit("tests.run", "pytest", str(completed.returncode), result["summary"])
         db.session.commit()
         flash("전체 테스트 실행이 완료되었습니다.", "success" if completed.returncode == 0 else "error")
     except Exception as exc:  # pragma: no cover - 운영 환경 보호용
+        test_files = _pytest_file_results("")
         result = {
             "returncode": 1,
             "summary": str(exc),
             "total_tests": None,
             "duration": None,
             "output": str(exc),
-            "test_files": _pytest_file_results(""),
+            "test_files": test_files,
+            "failure_summary": f"테스트 실행 예외: {exc}",
+            "resolution_hint": "서버의 Python/uv 실행 환경, 권한, 작업 디렉터리, pytest 설치 상태를 먼저 확인하세요.",
         }
         flash("테스트 실행 중 오류가 발생했습니다.", "error")
     return render_template("admin/dashboard.html", **_admin_context(section="tests", test_result=result))
@@ -857,11 +863,14 @@ def _test_file_catalog() -> list[dict]:
     catalog = []
     for test_path in paths:
         description = TEST_FILE_DESCRIPTIONS.get(test_path, {})
+        target = description.get("target", "설명 미등록")
+        checks = description.get("checks", "설명 미등록")
         catalog.append(
             {
                 "file": test_path,
-                "target": description.get("target", "설명 미등록"),
-                "checks": description.get("checks", "설명 미등록"),
+                "target": target,
+                "checks": checks,
+                "hint": description.get("hint", _default_test_hint(test_path, target, checks)),
             }
         )
     return catalog
@@ -870,10 +879,115 @@ def _test_file_catalog() -> list[dict]:
 def _pytest_file_results(output: str) -> list[dict]:
     rows = _test_file_catalog()
     statuses = {row["file"]: "NOT RUN" for row in rows}
+    failed_items = _pytest_failed_items(output)
+    failed_by_file: dict[str, list[dict]] = defaultdict(list)
+    for item in failed_items:
+        failed_by_file[item["file"]].append(item)
     for line in output.splitlines():
         _apply_pytest_line_status(statuses, line.strip())
-    return [{**row, "status": statuses[row["file"]]} for row in rows]
+    for failed_file in failed_by_file:
+        _merge_pytest_status(statuses, failed_file, "FAIL")
+    results = []
+    for row in rows:
+        failures = failed_by_file.get(row["file"], [])
+        results.append({
+            **row,
+            "status": statuses[row["file"]],
+            "failures": failures,
+            "failure_summary": _file_failure_summary(row["file"], statuses[row["file"]], failures),
+        })
+    return results
 
+
+
+def _pytest_failed_items(output: str) -> list[dict]:
+    failures = []
+    seen = set()
+    for line in output.splitlines():
+        failed_match = re.match(r"^FAILED\s+(tests/[^:\s]+\.py)::([^\s]+)(?:\s+-\s+(.*))?", line.strip())
+        error_match = re.match(r"^ERROR\s+(tests/[^:\s]+\.py)(?:::(\S+))?(?:\s+-\s+(.*))?", line.strip())
+        match = failed_match or error_match
+        if not match:
+            continue
+        path, test_name, reason = match.groups()
+        key = (path, test_name or "module")
+        if key in seen:
+            continue
+        seen.add(key)
+        failures.append({
+            "file": path,
+            "test": test_name or "module setup",
+            "reason": (reason or "pytest 상세 로그 확인 필요").strip(),
+        })
+    return failures
+
+
+def _file_failure_summary(path: str, status: str, failures: list[dict]) -> str:
+    if status == "PASS":
+        return "실패 없음"
+    if status == "SKIP":
+        return "건너뜀 또는 조건부 실행"
+    if status == "NOT RUN":
+        return "이번 실행에서 수집되지 않음"
+    if not failures:
+        return f"{path}에서 실패가 감지됐습니다. 상세 로그를 확인하세요."
+    first = failures[0]
+    suffix = f" 외 {len(failures) - 1}건" if len(failures) > 1 else ""
+    return f"{first['test']}: {first['reason']}{suffix}"
+
+
+def _pytest_failure_summary(output: str, test_files: list[dict], returncode: int) -> str:
+    if returncode == 0:
+        return "실패한 테스트가 없습니다."
+    failed_rows = [row for row in test_files if row.get("status") == "FAIL"]
+    if failed_rows:
+        summaries = [row.get("failure_summary", row["file"]) for row in failed_rows[:3]]
+        suffix = f" 외 {len(failed_rows) - 3}개 파일" if len(failed_rows) > 3 else ""
+        return " / ".join(summaries) + suffix
+    error_lines = [line.strip() for line in output.splitlines() if line.strip().startswith("E   ")]
+    if error_lines:
+        return error_lines[0].replace("E   ", "", 1)[:240]
+    return "pytest가 실패했지만 파일별 실패를 자동 요약하지 못했습니다. 상세 로그를 확인하세요."
+
+
+def _pytest_resolution_hint(output: str, test_files: list[dict], returncode: int) -> str:
+    if returncode == 0:
+        return "배포 전 동일 테스트를 한 번 더 실행하고, 주요 화면을 수동으로 확인하세요."
+    lowered = output.lower()
+    if "template" in lowered or "jinja" in lowered or "templatenotfound" in lowered:
+        return "Jinja 템플릿 이름, block 구조, include 경로, 전달 context 변수를 우선 확인하세요."
+    if "builderror" in lowered or "url_for" in lowered:
+        return "변경한 endpoint 이름과 url_for 인자, blueprint prefix가 일치하는지 확인하세요."
+    if "assertionerror" in lowered:
+        return "최근 UI 문구, 버튼 라벨, 상태 badge 텍스트 변경이 테스트 기대값과 맞는지 먼저 확인하세요."
+    if "csrf" in lowered:
+        return "POST form의 CSRF hidden input 또는 base submit hook이 유지되는지 확인하세요."
+    if "sqlalchemy" in lowered or "operationalerror" in lowered or "integrityerror" in lowered:
+        return "모델 필드, fixture 데이터, DB 초기화 순서, unique 제약 조건 충돌 여부를 확인하세요."
+    if "modulenotfounderror" in lowered or "importerror" in lowered:
+        return "새 dependency가 추가됐는지 확인하고, pyproject와 Dockerfile 설치 범위를 점검하세요."
+    failed_rows = [row for row in test_files if row.get("status") == "FAIL"]
+    if failed_rows:
+        return failed_rows[0].get("hint") or "실패 파일의 대상 기능과 관련 route/form 필드를 우선 확인하세요."
+    return "상세 pytest output의 FAILURES 또는 ERRORS 섹션에서 첫 번째 실패부터 확인하세요."
+
+
+def _default_test_hint(path: str, target: str, checks: str) -> str:
+    if "admin" in path:
+        return "관리자 권한, section query string, form action, audit log 기록 여부를 확인하세요."
+    if "api_keys" in path:
+        return "Provider 선택, API Key 암호화/마스킹, 연결 테스트 fallback, 원문 노출 여부를 확인하세요."
+    if "auth" in path or "oauth" in path:
+        return "로그인 상태, 승인/정지 정책, redirect URL, OAuth fixture 값을 확인하세요."
+    if "prompt" in path:
+        return "Provider/model 선택, API Key 요구, rate limit, prompt 조립, 화면 문구 변경 여부를 확인하세요."
+    if "reservation" in path:
+        return "예약 시간 계산, resource_id, 충돌 조건, 상태 badge와 form 필드를 확인하세요."
+    if "usage_logs" in path:
+        return "예약 소유권, resource 선택, 로그 필터, 상세 접근 권한을 확인하세요."
+    if "legal" in path:
+        return "Footer 링크, Markdown 렌더링, raw HTML escape, 승인 대기 접근 정책을 확인하세요."
+    return f"{target} 영역의 최근 route, template, fixture 변경을 확인하세요."
 
 def _apply_pytest_line_status(statuses: dict[str, str], line: str) -> None:
     if not line:

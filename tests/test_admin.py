@@ -211,6 +211,38 @@ def test_admin_pytest_command_uses_current_python_when_pytest_module_exists(monk
     assert routes._pytest_command() == [routes.sys.executable, "-m", "pytest"]
 
 
+def test_admin_pytest_failure_summary_extracts_failed_test_and_hint():
+    from app.admin import routes
+
+    output = """============================= FAILURES =============================
+____ test_prompt_review_menu_and_pages_match_current_design ____
+E   AssertionError: expected text
+FAILED tests/test_prompt_reviews.py::test_prompt_review_menu_and_pages_match_current_design - AssertionError: expected text
+=========================== short test summary info ===========================
+FAILED tests/test_prompt_reviews.py::test_prompt_review_menu_and_pages_match_current_design - AssertionError: expected text
+======================== 1 failed, 90 passed in 17.87s ========================
+"""
+
+    files = routes._pytest_file_results(output)
+    prompt_row = next(row for row in files if row["file"] == "tests/test_prompt_reviews.py")
+
+    assert prompt_row["status"] == "FAIL"
+    assert "test_prompt_review_menu" in prompt_row["failure_summary"]
+    assert "Provider/model" in prompt_row["hint"]
+    assert "AssertionError" in routes._pytest_failure_summary(output, files, 1)
+    assert "UI 문구" in routes._pytest_resolution_hint(output, files, 1)
+
+
+def test_admin_pytest_failure_summary_pass_state():
+    from app.admin import routes
+
+    output = "============================= 91 passed in 17.90s ============================="
+    files = routes._pytest_file_results(output)
+
+    assert routes._pytest_failure_summary(output, files, 0) == "실패한 테스트가 없습니다."
+    assert "배포 전" in routes._pytest_resolution_hint(output, files, 0)
+
+
 def test_admin_configurable_page_copy_is_rendered(client, app):
     with app.app_context():
         create_user(email="admin@senedu.kr", name="Admin", role="admin")

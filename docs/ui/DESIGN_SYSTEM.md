@@ -330,6 +330,7 @@ OpenCode, Obsidian, Mistral:
 ### Empty State
 
 - 빈 예약, 빈 로그, 빈 테스트 결과는 원인과 다음 행동을 같이 보여준다.
+- Profile의 빈 최근 활동/API Key 상태도 다음 행동 CTA와 함께 표시한다.
 - 장식 일러스트보다 작은 아이콘/상태 badge/CTA를 우선한다.
 
 ### Loading Skeleton
@@ -410,13 +411,14 @@ OpenCode, Obsidian, Mistral:
 | --- | --- | --- |
 | `gm-page-header` | 화면 제목, 설명, 주요 CTA 묶음 | Landing 제외 주요 업무 화면 |
 | `gm-hero` | Landing hero | `index.html` |
-| `gm-surface` | 기본 panel/card surface | Dashboard, Auth, Prompt, Admin |
-| `gm-inset` | 카드 내부의 작은 정보 panel | Pending, Result, Reservation form |
+| `gm-surface` | 기본 panel/card surface | Dashboard, Auth, Prompt, Admin, Profile |
+| `gm-inset` | 카드 내부의 작은 정보 panel | Pending, Result, Reservation form, Profile account |
 | `gm-button-primary`, `gm-button-secondary` | 44px 기준 주요/보조 액션 | 전역 |
 | `gm-badge-*` | 텍스트 포함 상태 표시 | 예약, 키 상태, 테스트 결과 |
 | `gm-table-wrap`, `gm-table` | GitHub식 table density와 mobile overflow | 예약/로그/프롬프트 기록, Admin table |
 | `gm-alert-*` | flash, 보안 경고, 충돌 확인 결과 | Base, Reservation, Prompt |
 | `gm-code-panel`, `gm-log-output` | Prompt/결과/pytest 로그 표시 | Prompt Result, Log Detail, Admin Test |
+| `gm-status-strip` | 테스트/상태 요약 카드 묶음 | Admin Test Result |
 
 적용된 제한 사항:
 

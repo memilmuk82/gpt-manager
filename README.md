@@ -243,10 +243,10 @@ run.py                       Flask 앱 실행 진입점
 ## ✅ 현재 상태
 
 ```text
-상태: UX/운영 마감 보완 및 문서 구조 최신화 완료
+상태: UI 디자인 시스템, 개인 프로필, 관리자 테스트 힌트 반영 완료
 최근 검증일: 2026-07-05
-테스트: uv run pytest, 91 passed
-E2E: npm run test:e2e, 1 passed
+테스트: uv run pytest, 95 passed
+E2E: npm run test:e2e, 2 passed
 운영 도메인: https://dev-gpt.memilmuk82.com
 배포: OCI Ubuntu + Docker Compose + Gunicorn + Nginx + HTTPS
 최근 기능 브랜치: master
@@ -290,6 +290,7 @@ CSRF 토큰 기반 POST 요청 보호
 월간 예약 캘린더 조회
 운영 공지 배너 설정 및 표시
 사용 규칙 동의 버전 예약별 기록
+개인 프로필 화면: 계정/권한/월간 활동/API Key 상태/최근 활동 요약
 사용자별 BYOK AI Provider 설정: OpenAI, Google Gemini, Anthropic Claude
 관리자는 공용 API Key를 제공하지 않으며 OpenRouter는 현재 지원하지 않습니다.
 API Key는 기본적으로 서버 DB에 저장하지 않고, 사용자가 선택한 경우에만 암호화 저장합니다.
@@ -301,7 +302,7 @@ BYOK 기반 AI 프롬프트 정리 결과 저장/조회
 프롬프트 정리 결과 검색
 사용자별 일일 20회, 월간 500회, 5초 이내 연속 요청 차단 기본 제한 적용
 프롬프트 정리 화면은 상단 메뉴와 홈 빠른 이동에서 접근할 수 있습니다.
-관리자 설정 관리, 안내문구 관리, AI 리소스/작업유형 관리, 사용자 통계, 월간 운영 보고서, 감사 로그, 전체 테스트 실행 및 테스트 파일별 검증 설명 표시
+관리자 설정 관리, 안내문구 관리, AI 리소스/작업유형 관리, 사용자 통계, 월간 운영 보고서, 감사 로그, 전체 테스트 실행 및 테스트 파일별 검증 설명/실패 원인/해결 힌트 표시
 관리자 DB 백업 생성/다운로드 및 최근 20개 보관
 관리자 사용자/예약/사용 로그 CSV 조건별 내보내기
 관리자 사용자 목록 검색/권한/상태 필터
@@ -534,7 +535,7 @@ uv run pytest
 현재 테스트 결과:
 
 ```text
-91 passed
+95 passed
 ```
 
 현재 테스트 범위:
@@ -558,11 +559,11 @@ CSRF 토큰 검증
 BYOK Provider별 API Key 암호화 저장/교체/삭제/마스킹 확인
 프롬프트 정리 LLM adapter 호출 mock, 일일/월간/연속 요청 제한, 템플릿, 저장/조회, 검색, Markdown 다운로드
 관리자 대시보드, AI 리소스/작업유형 관리, 사용자 승인/정지, 월간 보고서, 감사 로그, 사용자 필터
-관리자 테스트 실행 결과의 파일별 검증 대상, 주요 내용, PASS/FAIL/SKIP/NOT RUN 표시
+관리자 테스트 실행 결과의 파일별 검증 대상, 주요 내용, PASS/FAIL/SKIP/NOT RUN, 실패 원인 요약, 해결 힌트 표시
 Footer 법적 고지 링크
 /terms, /privacy Markdown 렌더링
 Markdown raw HTML/script 이스케이프
-Playwright 핵심 사용자 흐름
+Playwright 핵심 사용자 흐름과 Profile/Admin/mobile overflow
 ```
 
 ## 🔒 보안 원칙

@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}내 프로필 - {{ setting_value('app_title', config.get('APP_TITLE', 'ChatGPT Pro 5X 공동 사용 지원 시스템')) }}{% endblock %}
+
+{% block content %}
+  <section class="space-y-6">
+    <div class="gm-page-header">
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <p class="gm-eyebrow">Profile</p>
+          <h1 class="gm-page-title mt-2">내 프로필</h1>
+          <p class="gm-body mt-3 max-w-2xl">계정 정보, 권한, 최근 사용 흐름, AI Provider 설정 상태를 확인합니다.</p>
+        </div>
+        <div class="flex flex-col gap-3 sm:flex-row">
+          <a class="gm-button-primary" href="{{ url_for('settings.api_key') }}">AI Provider 설정</a>
+          <a class="gm-button-secondary" href="{{ url_for('reservations.index') }}">내 예약</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="gm-stat-card"><p class="gm-caption font-bold">내 월간 예약</p><strong>{{ profile_stats.month_reservations }}</strong><span class="gm-badge gm-badge-muted mt-3">이번 달</span></div>
+      <div class="gm-stat-card"><p class="gm-caption font-bold">내 월간 로그</p><strong>{{ profile_stats.month_logs }}</strong><span class="gm-badge gm-badge-muted mt-3">기록</span></div>
+      <div class="gm-stat-card"><p class="gm-caption font-bold">프롬프트 정리</p><strong>{{ profile_stats.month_prompt_reviews }}</strong><span class="gm-badge gm-badge-info mt-3">단일 Provider</span></div>
+      <div class="gm-stat-card"><p class="gm-caption font-bold">활성 API Key</p><strong>{{ profile_stats.active_api_keys }}</strong><span class="gm-badge gm-badge-muted mt-3">BYOK</span></div>
+    </div>
+
+    <div class="grid gap-5 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+      <section class="gm-surface p-6">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <p class="gm-eyebrow">Account</p>
+            <h2 class="gm-section-title mt-2">계정 정보</h2>
+          </div>
+          <span class="gm-badge {% if current_user.is_approved and current_user.is_active %}gm-badge-success{% elif current_user.approval_status == 'pending' %}gm-badge-warning{% else %}gm-badge-danger{% endif %}">{{ approval_labels.get(current_user.approval_status, current_user.approval_status) }}</span>
+        </div>
+        <dl class="mt-5 grid gap-3 text-sm sm:grid-cols-2">
+          <div class="gm-inset p-4"><dt class="gm-caption font-bold">이름</dt><dd class="mt-1 font-extrabold text-slate-950">{{ current_user.name }}</dd></div>
+          <div class="gm-inset p-4"><dt class="gm-caption font-bold">이메일</dt><dd class="mt-1 break-all font-extrabold text-slate-950">{{ current_user.email }}</dd></div>
+          <div class="gm-inset p-4"><dt class="gm-caption font-bold">부서</dt><dd class="mt-1 font-extrabold text-slate-950">{{ current_user.department or '미입력' }}</dd></div>
+          <div class="gm-inset p-4"><dt class="gm-caption font-bold">내선번호</dt><dd class="mt-1 font-extrabold text-slate-950">{{ current_user.extension or '미입력' }}</dd></div>
+          <div class="gm-inset p-4"><dt class="gm-caption font-bold">권한</dt><dd class="mt-1 font-extrabold text-slate-950">{{ role_labels.get(current_user.role, current_user.role) }}</dd></div>
+          <div class="gm-inset p-4"><dt class="gm-caption font-bold">로그인 방식</dt><dd class="mt-1 font-extrabold text-slate-950">{{ current_user.auth_provider }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="gm-surface p-6">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <p class="gm-eyebrow">AI Provider</p>
+            <h2 class="gm-section-title mt-2">API Key 상태</h2>
+          </div>
+          <a class="gm-button-secondary gm-button-compact" href="{{ url_for('settings.api_key') }}">설정 열기</a>
+        </div>
+        <div class="mt-5 divide-y divide-slate-200">
+          {% for key in api_keys %}
+            <div class="flex flex-col gap-2 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p class="font-extrabold text-slate-950">{{ key.provider }}</p>
+                <p class="gm-caption mt-1">저장됨: •••• {{ key.key_last4 }}{% if key.selected_model %} · {{ key.selected_model }}{% endif %}</p>
+              </div>
+              <span class="gm-badge {% if key.is_active %}gm-badge-success{% else %}gm-badge-warning{% endif %}">{{ '활성' if key.is_active else '비활성' }}</span>
+            </div>
+          {% else %}
+            <div class="gm-empty-state">등록된 사용자 API Key가 없습니다.</div>
+          {% endfor %}
+        </div>
+      </section>
+    </div>
+
+    <div class="grid gap-5 xl:grid-cols-3">
+      <section class="gm-surface p-6">
+        <div class="flex items-center justify-between gap-3"><h2 class="gm-section-title">최근 예약</h2><a class="text-sm font-bold text-blue-700" href="{{ url_for('reservations.index') }}">전체 보기</a></div>
+        <div class="mt-4 divide-y divide-slate-200">
+          {% for reservation in recent_reservations %}
+            <article class="py-3"><p class="font-extrabold text-slate-950 gm-korean-wrap">{{ reservation.purpose }}</p><p class="gm-caption mt-1">{{ reservation.start_at.strftime('%Y-%m-%d %H:%M') }} · {% if reservation.status == 'completed' %}완료{% elif reservation.status == 'cancelled' %}취소{% else %}예약{% endif %}</p></article>
+          {% else %}
+            <p class="gm-empty-state">최근 예약이 없습니다.</p>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section class="gm-surface p-6">
+        <div class="flex items-center justify-between gap-3"><h2 class="gm-section-title">최근 사용 로그</h2><a class="text-sm font-bold text-blue-700" href="{{ url_for('logs.index') }}">전체 보기</a></div>
+        <div class="mt-4 divide-y divide-slate-200">
+          {% for log in recent_logs %}
+            <article class="py-3"><a class="font-extrabold text-slate-950 gm-korean-wrap" href="{{ url_for('logs.show', log_id=log.id) }}">{{ log.summary }}</a><p class="gm-caption mt-1">{{ log.created_at.strftime('%Y-%m-%d %H:%M') }} · {{ log.work_type }}</p></article>
+          {% else %}
+            <p class="gm-empty-state">최근 사용 로그가 없습니다.</p>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section class="gm-surface p-6">
+        <div class="flex items-center justify-between gap-3"><h2 class="gm-section-title">최근 프롬프트 정리</h2><a class="text-sm font-bold text-blue-700" href="{{ url_for('prompts.index') }}">전체 보기</a></div>
+        <div class="mt-4 divide-y divide-slate-200">
+          {% for review in recent_prompt_reviews %}
+            <article class="py-3"><a class="font-extrabold text-slate-950 gm-korean-wrap" href="{{ url_for('prompts.show', review_id=review.id) }}">{{ review.review_goal }}</a><p class="gm-caption mt-1">{{ review.created_at.strftime('%Y-%m-%d %H:%M') }} · {{ review.provider }} · {{ review.model_name }}</p></article>
+          {% else %}
+            <p class="gm-empty-state">최근 프롬프트 정리 결과가 없습니다.</p>
+          {% endfor %}
+        </div>
+      </section>
+    </div>
+  </section>
+{% endblock %}

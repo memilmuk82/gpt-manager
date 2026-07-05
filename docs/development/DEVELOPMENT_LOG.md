@@ -922,3 +922,31 @@ uv run pytest: PASS, 91 passed
 npm run test:e2e: PASS, 1 passed
 Playwright desktop/mobile overflow check: PASS
 ```
+
+## 2026-07-05 - 프로필 화면, 관리자 테스트 실패 힌트, E2E 범위 확장
+
+### 변경 배경
+
+```text
+추가 작업 후보 중 사이트 성격을 바꾸지 않는 항목만 적용했다.
+개인 계정 요약과 관리자 테스트 실패 분석 보조는 현재 단일 Provider 학교 업무 플랫폼 흐름 안에서 제공 가능하다.
+```
+
+### 변경 내용
+
+```text
+/profile 읽기 전용 개인 프로필 화면 추가
+헤더 사용자 badge를 개인 프로필 링크로 변경하고 기존 AI Provider 설정 URL은 CTA로 유지
+관리자 테스트 결과에 실패 원인 요약과 해결 힌트 카드 추가
+테스트 파일별 표에 실패 요약/해결 힌트 컬럼 추가
+Playwright E2E에 Profile, Guide, Settings, Prompt 입력, Reservations, mobile Dashboard, Admin Users/Test/API Key overflow 검증 추가
+multi-provider 비교, streaming, 자유형 챗봇 등 사이트 성격을 바꾸는 기능은 제외 유지
+```
+
+### 검증
+
+```text
+python3 -m py_compile app/admin/routes.py app/routes/main.py: PASS
+uv run pytest: PASS, 95 passed
+npm run test:e2e: PASS, 2 passed
+```

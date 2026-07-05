@@ -26,7 +26,7 @@ def test_api_key_settings_requires_login(client):
     assert "/auth/login" in response.headers["Location"]
 
 
-def test_approved_user_badge_links_to_personal_api_key_settings(client, app):
+def test_approved_user_badge_links_to_profile_and_settings_remains_available(client, app):
     with app.app_context():
         create_user(name="이진선")
 
@@ -39,7 +39,7 @@ def test_approved_user_badge_links_to_personal_api_key_settings(client, app):
 
     assert dashboard_response.status_code == 200
     assert settings_response.status_code == 200
-    assert 'href="/settings/api-key"' in dashboard_body
+    assert 'href="/profile"' in dashboard_body
     assert "이진선" in dashboard_body
     assert "개인 설정" in settings_body
     assert "AI Provider 설정" in settings_body

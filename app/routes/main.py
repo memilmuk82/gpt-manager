@@ -3,7 +3,7 @@ from datetime import datetime, time, timedelta
 from flask import Blueprint, jsonify, render_template
 from flask_login import current_user, login_required
 
-from app.models import GuideItem, PromptReview, Reservation, ReservationStatus, UsageLog
+from app.models import GuideItem, PromptReview, Reservation, ReservationStatus, UsageLog, UserApiKey
 from app.services import legal_markdown_service
 
 
@@ -81,6 +81,72 @@ def dashboard():
         today_reservations=today_reservations,
         missing_log_reservations=missing_log_reservations[:5],
         dashboard_stats=dashboard_stats,
+    )
+
+
+@main_bp.get("/profile")
+@login_required
+def profile():
+    now = datetime.now()
+    month_start = datetime.combine(now.date().replace(day=1), time.min)
+    recent_reservations = (
+        Reservation.query.filter_by(user_id=current_user.id)
+        .order_by(Reservation.start_at.desc())
+        .limit(5)
+        .all()
+    )
+    recent_logs = (
+        UsageLog.query.filter_by(user_id=current_user.id)
+        .order_by(UsageLog.created_at.desc())
+        .limit(5)
+        .all()
+    )
+    recent_prompt_reviews = (
+        PromptReview.query.filter_by(user_id=current_user.id)
+        .order_by(PromptReview.created_at.desc())
+        .limit(5)
+        .all()
+    )
+    api_keys = (
+        UserApiKey.query.filter_by(user_id=current_user.id)
+        .order_by(UserApiKey.provider.asc())
+        .all()
+    )
+    profile_stats = {
+        "month_reservations": Reservation.query.filter(
+            Reservation.user_id == current_user.id,
+            Reservation.start_at >= month_start,
+            Reservation.status != ReservationStatus.CANCELLED,
+        ).count(),
+        "month_logs": UsageLog.query.filter(
+            UsageLog.user_id == current_user.id,
+            UsageLog.created_at >= month_start,
+        ).count(),
+        "month_prompt_reviews": PromptReview.query.filter(
+            PromptReview.user_id == current_user.id,
+            PromptReview.created_at >= month_start,
+        ).count(),
+        "active_api_keys": sum(1 for key in api_keys if key.is_active),
+    }
+    role_labels = {
+        "admin": "관리자",
+        "assistant_admin": "보조관리자",
+        "user": "일반 사용자",
+    }
+    approval_labels = {
+        "approved": "승인됨",
+        "pending": "승인 대기",
+        "suspended": "정지됨",
+    }
+    return render_template(
+        "profile.html",
+        api_keys=api_keys,
+        approval_labels=approval_labels,
+        profile_stats=profile_stats,
+        recent_logs=recent_logs,
+        recent_prompt_reviews=recent_prompt_reviews,
+        recent_reservations=recent_reservations,
+        role_labels=role_labels,
     )
 
 

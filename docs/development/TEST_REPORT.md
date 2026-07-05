@@ -919,3 +919,32 @@ CSRF meta와 submit hook 유지
 form label visible text 유지
 Prompt Result는 단일 Provider 결과로 표시되며 multi-provider 비교 UI를 새로 만들지 않음
 ```
+
+## 2026-07-05 프로필/관리자 테스트 힌트/E2E 범위 확장 검증
+
+범위: `/profile` 읽기 전용 개인 프로필 화면, 헤더 사용자 badge 링크 변경, 관리자 Test Result 실패 원인 요약/해결 힌트, Playwright desktop/mobile overflow 검증 범위 확장.
+
+명령:
+
+```bash
+python3 -m py_compile app/admin/routes.py app/routes/main.py
+uv run pytest
+npm run test:e2e
+```
+
+결과:
+
+```text
+python3 -m py_compile: PASS
+pytest: PASS, 95 passed
+Playwright E2E: PASS, 2 passed
+```
+
+추가 확인:
+
+```text
+Profile 화면은 계정/권한/월간 활동/API Key 상태/최근 활동을 표시하고 API Key 원문은 노출하지 않음
+관리자 Test Result는 실패 원인 요약과 해결 힌트를 카드 및 파일별 표에 표시
+Playwright는 Profile, Guide, Settings, Prompt 입력, Reservations, mobile Dashboard, Admin Users/Test/API Key section의 수평 overflow를 확인
+multi-provider 비교, streaming, 자유형 챗봇 기능은 추가하지 않음
+```

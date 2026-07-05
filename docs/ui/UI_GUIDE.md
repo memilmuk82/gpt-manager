@@ -465,15 +465,14 @@
 - 실행 시간: 현재 전체 duration만 있음
 - 대상 기능: `target`
 - 결과: status badge
-- 실패 원인: 현재 상세 pytest output에서 확인
-- 해결 힌트: 아직 없음
-- 최근 실행 이력: 아직 없음
+- 실패 원인: pytest `FAILED`/`ERROR` summary line과 첫 오류 line을 요약해 카드와 파일별 표에 표시
+- 해결 힌트: 파일별 기본 힌트와 template/url_for/assertion/CSRF/SQLAlchemy/import 오류 유형별 힌트 표시
+- 최근 실행 이력: DB에 별도 저장하지 않고 현재 실행의 전체 duration만 파일별 표에 함께 표시
 
 향후 개선:
 
 - 각 테스트 카드에 최근 실행 이력 저장
-- 실패 시 stderr/traceback 요약 카드 제공
-- 해결 힌트는 TEST_FILE_DESCRIPTIONS에 `hint` 추가
+- 실패 시 stderr/traceback 전문을 구조화해 첫 실패와 후속 실패를 분리 표시
 - 파일별 duration은 pytest `--durations` 또는 json report 도입 후 표시
 
 ## History
@@ -673,19 +672,25 @@
 
 ## Profile / User
 
-현재 별도 Profile 화면은 없다.
+현재 개인 Profile 화면을 제공한다.
+
+관련 파일:
+
+- `app/routes/main.py`
+- `app/templates/profile.html`
+- `app/templates/base.html`
 
 관련 화면:
 
-- Header 사용자 badge
-- Admin 사용자 관리
-- Pending 사용자 화면
-- Settings API Key 화면
+- Header 사용자 badge: 승인된 사용자는 `/profile`로 이동
+- Profile: 계정 정보, 부서, 내선, 권한, 승인 상태, 이번 달 예약/로그/프롬프트 정리, API Key 상태, 최근 예약/로그/프롬프트 정리 표시
+- Settings API Key 화면: Profile의 CTA로 연결
+- Admin 사용자 관리와 Pending 사용자 화면은 기존 권한/승인 흐름 유지
 
-향후 설계:
+제약:
 
-- 개인 프로필 화면을 추가한다면 계정 정보, 부서, 내선, 권한, 승인 상태, 최근 예약/로그/프롬프트 기록, API Key 상태를 표시한다.
-- 단, 기존 URL과 권한 구조 변경 없이 새 URL 추가 여부를 별도 승인받아야 한다.
+- Profile은 읽기 전용 요약 화면이며 사용자 권한, DB 모델, API Key 원문 노출 정책을 변경하지 않는다.
+- API Key는 provider, 마지막 4자리, 선택 모델, 활성 상태만 표시한다.
 
 ## Guide / 안내
 
@@ -755,8 +760,9 @@
 7. Reservations: `app/templates/reservations/index.html`, `new.html`, `today.html`, `calendar.html`
 8. Logs: `app/templates/logs/index.html`, `new.html`, `show.html`
 9. Prompt 입력/결과/기록: `app/templates/prompts/new.html`, `show.html`, `index.html`
-10. Admin/Test Result: `app/templates/admin/dashboard.html`
-11. 테스트 기대 문구: `tests/test_prompt_reviews.py`
+10. Profile: `app/templates/profile.html`
+11. Admin/Test Result: `app/templates/admin/dashboard.html`
+12. 테스트 기대 문구: `tests/test_prompt_reviews.py`, `tests/test_app.py`, `tests/test_admin.py`
 
 유지한 범위:
 
@@ -769,6 +775,6 @@
 검증 결과:
 
 - `git diff --check`: PASS
-- `uv run pytest`: PASS, 91 passed
-- `npm run test:e2e`: PASS, 1 passed
-- Playwright desktop/mobile overflow 점검: PASS, Landing/Login/Dashboard/Reservations/Prompt 입력에서 수평 overflow 없음
+- `uv run pytest`: PASS, 95 passed
+- `npm run test:e2e`: PASS, 2 passed
+- Playwright desktop/mobile overflow 점검: PASS, Landing/Login/Dashboard/Reservations/Prompt 입력/Profile/Admin sections에서 수평 overflow 없음
