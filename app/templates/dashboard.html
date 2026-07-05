@@ -4,43 +4,57 @@
 
 {% block content %}
   <section class="space-y-6">
-    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><p class="text-sm font-semibold text-slate-500">접속 계정: {{ current_user.email }}</p><h1 class="mt-2 text-2xl font-extrabold text-slate-950">운영 홈</h1></div>
-    <div class="grid gap-3 md:grid-cols-5">
-      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><p class="text-xs font-bold text-slate-500">오늘 예약</p><p class="mt-2 text-2xl font-extrabold">{{ dashboard_stats.today_reservations }}</p></div>
-      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><p class="text-xs font-bold text-slate-500">내 월간 예약</p><p class="mt-2 text-2xl font-extrabold">{{ dashboard_stats.my_month_reservations }}</p></div>
-      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><p class="text-xs font-bold text-slate-500">내 월간 로그</p><p class="mt-2 text-2xl font-extrabold">{{ dashboard_stats.my_month_logs }}</p></div>
-      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><p class="text-xs font-bold text-slate-500">프롬프트 정리</p><p class="mt-2 text-2xl font-extrabold">{{ dashboard_stats.my_month_prompt_reviews }}</p></div>
-      <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4 shadow-sm"><p class="text-xs font-bold text-amber-700">로그 미작성</p><p class="mt-2 text-2xl font-extrabold text-amber-950">{{ dashboard_stats.missing_logs }}</p></div>
+    <div class="gm-surface p-6 sm:p-7">
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <p class="gm-eyebrow">접속 계정: {{ current_user.email }}</p>
+          <h1 class="gm-page-title mt-2 text-3xl">운영 홈</h1>
+          <p class="gm-body mt-3 max-w-2xl">오늘의 예약, 로그 작성 상태, 프롬프트 정리 흐름을 한 화면에서 확인합니다.</p>
+        </div>
+        <div class="flex flex-col gap-3 sm:flex-row">
+          <a class="gm-button-primary" href="{{ url_for('reservations.new') }}">사용 신청</a>
+          <a class="gm-button-secondary" href="{{ url_for('prompts.new') }}">프롬프트 정리</a>
+        </div>
+      </div>
     </div>
+
+    <div class="grid gap-3 md:grid-cols-5">
+      <div class="gm-stat-card"><p class="gm-caption font-bold">오늘 예약</p><strong>{{ dashboard_stats.today_reservations }}</strong></div>
+      <div class="gm-stat-card"><p class="gm-caption font-bold">내 월간 예약</p><strong>{{ dashboard_stats.my_month_reservations }}</strong></div>
+      <div class="gm-stat-card"><p class="gm-caption font-bold">내 월간 로그</p><strong>{{ dashboard_stats.my_month_logs }}</strong></div>
+      <div class="gm-stat-card"><p class="gm-caption font-bold">프롬프트 정리</p><strong>{{ dashboard_stats.my_month_prompt_reviews }}</strong></div>
+      <div class="gm-stat-card border-amber-200 bg-amber-50"><p class="gm-caption font-bold text-amber-700">로그 미작성</p><strong class="text-amber-950">{{ dashboard_stats.missing_logs }}</strong></div>
+    </div>
+
     <div class="grid gap-5 lg:grid-cols-2">
-      <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <p class="text-sm font-bold text-slate-500">✓ 현재 사용중</p>
+      <section class="gm-surface p-6">
+        <span class="gm-badge gm-badge-success">현재 사용중</span>
         {% if current_reservation %}
-          <h2 class="mt-3 text-2xl font-extrabold text-slate-950">{{ current_reservation.purpose }}</h2>
-          <p class="mt-3 text-base text-slate-600">{{ current_reservation.user.name }} / {{ current_reservation.resource.name }}</p>
-          <p class="mt-2 text-sm text-slate-500">종료 예정 {{ current_reservation.end_at.strftime('%Y-%m-%d %H:%M') }}</p>
+          <h2 class="gm-section-title mt-4">{{ current_reservation.purpose }}</h2>
+          <p class="gm-body mt-3">{{ current_reservation.user.name }} / {{ current_reservation.resource.name }}</p>
+          <p class="gm-caption mt-2">종료 예정 {{ current_reservation.end_at.strftime('%Y-%m-%d %H:%M') }}</p>
         {% else %}
-          <h2 class="mt-3 text-2xl font-extrabold text-slate-950">현재 사용중인 사용자가 없습니다</h2>
-          <p class="mt-3 text-base leading-7 text-slate-600">사용 전 오늘 예약 현황을 확인해 주세요.</p>
+          <h2 class="gm-section-title mt-4">현재 사용중인 사용자가 없습니다</h2>
+          <p class="gm-body mt-3">사용 전 오늘 예약 현황을 확인해 주세요.</p>
         {% endif %}
       </section>
 
-      <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <p class="text-sm font-bold text-slate-500">▣ 다음 예약</p>
+      <section class="gm-surface p-6">
+        <span class="gm-badge">다음 예약</span>
         {% if next_reservation %}
-          <h2 class="mt-3 text-2xl font-extrabold text-slate-950">{{ next_reservation.purpose }}</h2>
-          <p class="mt-3 text-base text-slate-600">{{ next_reservation.user.name }} / {{ next_reservation.resource.name }}</p>
-          <p class="mt-2 text-sm text-slate-500">시작 {{ next_reservation.start_at.strftime('%Y-%m-%d %H:%M') }}</p>
+          <h2 class="gm-section-title mt-4">{{ next_reservation.purpose }}</h2>
+          <p class="gm-body mt-3">{{ next_reservation.user.name }} / {{ next_reservation.resource.name }}</p>
+          <p class="gm-caption mt-2">시작 {{ next_reservation.start_at.strftime('%Y-%m-%d %H:%M') }}</p>
         {% else %}
-          <h2 class="mt-3 text-2xl font-extrabold text-slate-950">예정된 다음 예약이 없습니다</h2>
-          <p class="mt-3 text-base leading-7 text-slate-600">필요한 경우 사용 신청을 등록해 주세요.</p>
+          <h2 class="gm-section-title mt-4">예정된 다음 예약이 없습니다</h2>
+          <p class="gm-body mt-3">필요한 경우 사용 신청을 등록해 주세요.</p>
         {% endif %}
       </section>
     </div>
 
     {% if missing_log_reservations %}
       <section class="rounded-2xl border border-amber-200 bg-amber-50 p-6 shadow-sm">
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"><div><h2 class="text-xl font-extrabold text-amber-950">사용 로그 작성 필요</h2><p class="mt-2 text-sm font-semibold text-amber-800">완료 처리된 예약 중 아직 사용 로그가 없는 항목입니다.</p></div><a class="rounded-xl bg-amber-900 px-4 py-2 text-sm font-extrabold text-white" href="{{ url_for('logs.new', reservation_id=missing_log_reservations[0].id) }}">첫 항목 작성</a></div>
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"><div><h2 class="gm-section-title text-amber-950">사용 로그 작성 필요</h2><p class="mt-2 text-sm font-semibold text-amber-800">완료 처리된 예약 중 아직 사용 로그가 없는 항목입니다.</p></div><a class="gm-button-primary bg-amber-900" href="{{ url_for('logs.new', reservation_id=missing_log_reservations[0].id) }}">첫 항목 작성</a></div>
         <div class="mt-4 grid gap-3 md:grid-cols-2">
           {% for reservation in missing_log_reservations %}<a class="rounded-xl border border-amber-200 bg-white p-4 text-sm font-semibold text-amber-950" href="{{ url_for('logs.new', reservation_id=reservation.id) }}"><span class="block font-extrabold">{{ reservation.purpose }}</span><span class="mt-1 block">{{ reservation.end_at.strftime('%Y-%m-%d %H:%M') }} 완료</span></a>{% endfor %}
         </div>
@@ -49,16 +63,24 @@
 
     {% include "partials/_auth_info.html" %}
 
-    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-      <a class="gm-card-hover rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-300 hover:bg-slate-50" href="{{ url_for('reservations.new') }}"><span class="text-lg font-extrabold text-slate-950">+ 사용 신청</span><span class="mt-2 block text-sm text-slate-600">예약 등록 또는 즉시 사용 시작</span></a>
-      <a class="gm-card-hover rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-300 hover:bg-slate-50" href="{{ url_for('reservations.today') }}"><span class="text-lg font-extrabold text-slate-950">▣ 오늘 예약</span><span class="mt-2 block text-sm text-slate-600">오늘 사용 예정 확인</span></a>
-      <a class="gm-card-hover rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-300 hover:bg-slate-50" href="{{ url_for('reservations.calendar') }}"><span class="text-lg font-extrabold text-slate-950">▦ 예약 캘린더</span><span class="mt-2 block text-sm text-slate-600">월별 사용 일정 확인</span></a>
-      <a class="gm-card-hover rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-300 hover:bg-slate-50" href="{{ url_for('prompts.index') }}"><span class="text-lg font-extrabold text-slate-950">✓ 프롬프트 정리</span><span class="mt-2 block text-sm text-slate-600">거친 요청을 구조화</span></a>
-      <a class="gm-card-hover rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-300 hover:bg-slate-50" href="{{ url_for('main.guide') }}"><span class="text-lg font-extrabold text-slate-950">ⓘ 사용 안내</span><span class="mt-2 block text-sm text-slate-600">적합 업무와 주의사항 확인</span></a>
-    </div>
+    <section class="gm-surface p-6">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p class="gm-eyebrow">Quick Actions</p>
+          <h2 class="gm-section-title mt-1">빠른 실행</h2>
+        </div>
+      </div>
+      <div class="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+        <a class="gm-card-hover rounded-2xl border border-slate-200 bg-white p-5 shadow-sm" href="{{ url_for('reservations.new') }}"><span class="text-lg font-extrabold text-slate-950">사용 신청</span><span class="mt-2 block text-sm text-slate-600">예약 등록 또는 즉시 사용 시작</span></a>
+        <a class="gm-card-hover rounded-2xl border border-slate-200 bg-white p-5 shadow-sm" href="{{ url_for('reservations.today') }}"><span class="text-lg font-extrabold text-slate-950">오늘 예약</span><span class="mt-2 block text-sm text-slate-600">오늘 사용 예정 확인</span></a>
+        <a class="gm-card-hover rounded-2xl border border-slate-200 bg-white p-5 shadow-sm" href="{{ url_for('reservations.calendar') }}"><span class="text-lg font-extrabold text-slate-950">예약 캘린더</span><span class="mt-2 block text-sm text-slate-600">월별 사용 일정 확인</span></a>
+        <a class="gm-card-hover rounded-2xl border border-slate-200 bg-white p-5 shadow-sm" href="{{ url_for('prompts.index') }}"><span class="text-lg font-extrabold text-slate-950">프롬프트 정리</span><span class="mt-2 block text-sm text-slate-600">거친 요청을 구조화</span></a>
+        <a class="gm-card-hover rounded-2xl border border-slate-200 bg-white p-5 shadow-sm" href="{{ url_for('main.guide') }}"><span class="text-lg font-extrabold text-slate-950">사용 안내</span><span class="mt-2 block text-sm text-slate-600">적합 업무와 주의사항 확인</span></a>
+      </div>
+    </section>
 
-    <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-      <div class="flex items-center justify-between gap-4"><h2 class="text-xl font-extrabold text-slate-950">▣ 오늘 예약</h2><a class="text-sm font-bold text-blue-700 hover:text-blue-900" href="{{ url_for('reservations.today') }}">전체 보기</a></div>
+    <section class="gm-surface p-6">
+      <div class="flex items-center justify-between gap-4"><h2 class="gm-section-title">오늘 예약</h2><a class="text-sm font-bold text-blue-700 hover:text-blue-900" href="{{ url_for('reservations.today') }}">전체 보기</a></div>
       <div class="mt-5 space-y-3">
         {% for reservation in today_reservations %}
           <article class="rounded-xl border border-slate-200 bg-slate-50 p-4"><h3 class="font-extrabold text-slate-950">{{ reservation.purpose }}</h3><p class="mt-2 text-sm text-slate-600">{{ reservation.user.name }} / {{ reservation.work_type or reservation.resource.name }}</p><p class="mt-1 text-sm text-slate-500">{{ reservation.start_at.strftime('%m-%d %H:%M') }} ~ {{ reservation.end_at.strftime('%m-%d %H:%M') }}</p></article>
