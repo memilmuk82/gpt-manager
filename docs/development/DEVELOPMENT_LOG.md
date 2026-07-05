@@ -891,3 +891,34 @@ git diff --check: PASS
 docker compose up -d --build: PASS, gpt-manager-web-1 Up
 GET http://127.0.0.1:5000/healthz: PASS, {"status":"ok"}
 ```
+
+
+## 2026-07-05 - UI 디자인 시스템 실제 적용 및 문서 정합성 갱신
+
+### 변경 배경
+
+```text
+docs/ui의 UI Guide, Design System, Design Decisions가 실제 코드 적용 단계로 넘어갔다.
+교사용 학교 업무 플랫폼에 맞는 light operational SaaS UI를 실제 템플릿과 CSS에 반영하고, 문서가 구현 이전 표현을 계속 담지 않도록 정리했다.
+```
+
+### 변경 내용
+
+```text
+app/static/styles.css 디자인 토큰, radius, button, badge, table, alert, log panel 규칙 정리
+base.html header/nav/footer/flash/main spacing 정리, role=alert와 CSRF submit hook 유지
+Landing/Auth/Dashboard/Reservations/Logs/Prompts/Admin Test Result 화면 UI 정리
+Prompt Result의 비교 구현 오해 가능 표현을 단일 Provider 검토 메모로 조정
+form label visible text, table overflow, 긴 한국어 줄바꿈, focus-visible 점검
+docs/ui 3개 문서와 개발/검증 문서에 실제 구현 결과 반영
+상세 변경 기록을 docs/development/2026-07-05_UI_DESIGN_SYSTEM_IMPLEMENTATION.md로 분리
+```
+
+### 검증
+
+```text
+git diff --check: PASS
+uv run pytest: PASS, 91 passed
+npm run test:e2e: PASS, 1 passed
+Playwright desktop/mobile overflow check: PASS
+```

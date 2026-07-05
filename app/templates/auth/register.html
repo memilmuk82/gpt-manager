@@ -3,15 +3,33 @@
 {% block title %}등록 요청 - {{ setting_value('app_title', config.get('APP_TITLE', 'ChatGPT Pro 5X 공동 사용 지원 시스템')) }}{% endblock %}
 
 {% block content %}
-  <section class="space-y-6">
-    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"><h1 class="text-2xl font-extrabold text-slate-950">♙ 등록 요청</h1><p class="mt-3 text-base leading-7 text-slate-600">학교 공용 GPT Pro 계정 사용이 필요한 경우 아래 정보를 입력해 관리자에게 등록 요청을 보낼 수 있습니다.</p></div>
-    <form class="space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" method="post" action="{{ url_for('auth.register_post') }}">
-      <label class="block text-sm font-extrabold text-slate-950">이름<input class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 text-base" name="name" required autocomplete="name" placeholder="예: 홍길동"></label>
-      <label class="block text-sm font-extrabold text-slate-950">부서<input class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 text-base" name="department" placeholder="예: 정보과"></label>
-      <label class="block text-sm font-extrabold text-slate-950">내선번호<input class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 text-base" name="extension" placeholder="예: 1234"><span class="mt-2 block text-sm font-normal text-slate-500">휴대폰 번호는 입력하지 않습니다.</span></label>
-      <label class="block text-sm font-extrabold text-slate-950">이메일<input class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 text-base" name="email" type="email" required autocomplete="email"></label>
-      <label class="block text-sm font-extrabold text-slate-950">비밀번호<input class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 text-base" name="password" type="password" minlength="8" required autocomplete="new-password"></label>
-      <button class="rounded-xl bg-slate-950 px-5 py-3 text-base font-extrabold text-white hover:bg-slate-800" type="submit">+ 등록 요청</button>
+  <section class="mx-auto max-w-3xl space-y-6">
+    <div class="gm-page-header">
+      <p class="gm-eyebrow">Account Request</p>
+      <h1 class="gm-page-title mt-2">등록 요청</h1>
+      <p class="gm-body mt-3">학교 공용 GPT Pro 계정 사용이 필요한 경우 아래 정보를 입력해 관리자에게 등록 요청을 보낼 수 있습니다.</p>
+    </div>
+
+    <form class="gm-surface space-y-5 p-6" method="post" action="{{ url_for('auth.register_post') }}">
+      <div class="grid gap-5 md:grid-cols-2">
+        <label class="block text-sm font-extrabold text-slate-950" for="name">이름
+          <input class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 text-base" id="name" name="name" required autocomplete="name" placeholder="예: 홍길동">
+        </label>
+        <label class="block text-sm font-extrabold text-slate-950" for="department">부서
+          <input class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 text-base" id="department" name="department" placeholder="예: 정보과">
+        </label>
+        <label class="block text-sm font-extrabold text-slate-950" for="extension">내선번호
+          <input class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 text-base" id="extension" name="extension" placeholder="예: 1234">
+          <span class="gm-caption mt-2 block">휴대폰 번호는 입력하지 않습니다.</span>
+        </label>
+        <label class="block text-sm font-extrabold text-slate-950" for="email">이메일
+          <input class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 text-base" id="email" name="email" type="email" required autocomplete="email">
+        </label>
+      </div>
+      <label class="block text-sm font-extrabold text-slate-950" for="password">비밀번호
+        <input class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 text-base" id="password" name="password" type="password" minlength="8" required autocomplete="new-password">
+      </label>
+      <button class="gm-button-primary" type="submit">등록 요청</button>
     </form>
     {% include "partials/_auth_info.html" %}
   </section>

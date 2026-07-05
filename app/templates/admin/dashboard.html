@@ -9,17 +9,18 @@
 {% macro admin_card(current_section, target, icon, title, description, button) -%}
   {% set is_current = current_section == target or (current_section == 'overview' and target == 'settings') %}
   <section class="gm-admin-card gm-card-hover rounded-2xl border border-slate-200 bg-white p-5 shadow-sm {% if is_current %}gm-admin-card-active{% endif %}">
-    <h2 class="text-lg font-extrabold text-slate-950">{{ title }}</h2>
+    <div class="flex items-start justify-between gap-3"><h2 class="text-lg font-extrabold text-slate-950">{{ title }}</h2><span class="gm-admin-card-icon" aria-hidden="true">{{ icon }}</span></div>
     <p class="mt-3 min-h-12 text-sm leading-6 text-slate-600">{{ description }}</p>
-    <a class="mt-4 inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-slate-950 px-4 text-sm font-extrabold text-white hover:bg-slate-800" href="{{ url_for('admin.dashboard', section=target) }}" {% if is_current %}aria-current="page"{% endif %}>{{ button }}</a>
+    <a class="gm-button-primary mt-4 w-full" href="{{ url_for('admin.dashboard', section=target) }}" {% if is_current %}aria-current="page"{% endif %}>{{ button }}</a>
   </section>
 {%- endmacro %}
 
 {% block content %}
   <section class="admin-shell space-y-6">
-    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-      <h1 class="flex items-center gap-2 text-2xl font-extrabold text-slate-950">관리자</h1>
-      <p class="mt-3 text-base leading-7 text-slate-600">신청 항목, 안내 문구, 사용자, 등록 요청, 통계, 백업, 테스트를 관리합니다.</p>
+    <div class="gm-page-header">
+      <p class="gm-eyebrow">Admin Workspace</p>
+      <h1 class="gm-page-title mt-2">관리자</h1>
+      <p class="gm-body mt-3">신청 항목, 안내 문구, 사용자, 등록 요청, 통계, 백업, 테스트를 관리합니다.</p>
     </div>
 
     <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -91,7 +92,7 @@
 
           {% for guide in guides %}
             <fieldset class="rounded-2xl border border-slate-200 bg-white p-4">
-              <legend class="px-1 text-lg font-extrabold text-slate-950">{{ guide.title }} <span class="rounded-full bg-emerald-50 px-2 py-1 text-xs text-emerald-700">{% if guide.is_active %}활성{% else %}비활성{% endif %}</span></legend>
+              <legend class="px-1 text-lg font-extrabold text-slate-950">{{ guide.title }} <span class="gm-badge {% if guide.is_active %}gm-badge-success{% else %}gm-badge-warning{% endif %}">{% if guide.is_active %}활성{% else %}비활성{% endif %}</span></legend>
               <p class="mt-1 text-xs font-semibold text-slate-400">{{ guide.code }}</p>
               <div class="mt-4 grid gap-4 md:grid-cols-2">
                 <label class="block text-sm font-bold text-slate-700">분류<input class="mt-2 w-full rounded-xl border border-slate-300 px-3 py-2.5" name="guide_{{ guide.id }}_category" value="{{ guide.category }}"></label>
@@ -327,7 +328,7 @@
             <thead class="bg-slate-50 text-left text-slate-600"><tr><th class="px-4 py-3">사용자</th><th class="px-4 py-3">Provider</th><th class="px-4 py-3">상태</th><th class="px-4 py-3">마지막 4자리</th><th class="px-4 py-3">등록일</th><th class="px-4 py-3">최근 사용일</th></tr></thead>
             <tbody class="divide-y divide-slate-100">
               {% for key in api_key_statuses %}
-                <tr><td class="px-4 py-3 font-bold text-slate-950">{{ key.user.name }}<br><span class="text-xs font-normal text-slate-500">{{ key.user.email }}</span></td><td class="px-4 py-3 text-slate-700">{{ key.provider }}</td><td class="px-4 py-3"><span class="rounded-full {% if key.is_active %}bg-emerald-50 text-emerald-700{% else %}bg-amber-50 text-amber-700{% endif %} px-3 py-1 text-xs font-bold">{{ '활성' if key.is_active else '비활성' }}</span></td><td class="px-4 py-3 text-slate-700">•••• {{ key.key_last4 }}</td><td class="px-4 py-3 text-slate-600">{{ key.created_at.strftime('%Y-%m-%d %H:%M') }}</td><td class="px-4 py-3 text-slate-600">{{ key.last_used_at.strftime('%Y-%m-%d %H:%M') if key.last_used_at else '-' }}</td></tr>
+                <tr><td class="px-4 py-3 font-bold text-slate-950">{{ key.user.name }}<br><span class="text-xs font-normal text-slate-500">{{ key.user.email }}</span></td><td class="px-4 py-3 text-slate-700">{{ key.provider }}</td><td class="px-4 py-3"><span class="gm-badge {% if key.is_active %}gm-badge-success{% else %}gm-badge-warning{% endif %}">{{ '활성' if key.is_active else '비활성' }}</span></td><td class="px-4 py-3 text-slate-700">•••• {{ key.key_last4 }}</td><td class="px-4 py-3 text-slate-600">{{ key.created_at.strftime('%Y-%m-%d %H:%M') }}</td><td class="px-4 py-3 text-slate-600">{{ key.last_used_at.strftime('%Y-%m-%d %H:%M') if key.last_used_at else '-' }}</td></tr>
               {% else %}
                 <tr><td class="px-4 py-8 text-center text-slate-500" colspan="6">등록된 사용자 API Key가 없습니다.</td></tr>
               {% endfor %}
@@ -402,7 +403,7 @@
                 <tbody class="divide-y divide-slate-100">
                   {% for test_file in test_result.test_files %}
                     {% set status = test_file.status %}
-                    {% set status_class = 'gm-badge-success' if status == 'PASS' else 'bg-rose-50 text-rose-700 border-red-200' if status == 'FAIL' else 'gm-badge-warning' if status == 'SKIP' else '' %}
+                    {% set status_class = 'gm-badge-success' if status == 'PASS' else 'gm-badge-danger' if status == 'FAIL' else 'gm-badge-warning' if status == 'SKIP' else 'gm-badge-muted' %}
                     <tr class="align-top hover:bg-slate-50/80">
                       <td class="whitespace-nowrap px-4 py-3 font-bold text-slate-950">{{ test_file.file }}</td>
                       <td class="px-4 py-3 text-slate-700">{{ test_file.target }}</td>
@@ -418,7 +419,7 @@
             </div>
           </div>
 
-          <details class="mt-5 rounded-xl border border-slate-300 bg-white p-4" open><summary class="cursor-pointer font-bold">상세 테스트 보기</summary><pre class="mt-4 max-h-[36rem] overflow-auto whitespace-pre-wrap rounded-xl bg-slate-950 p-4 text-xs leading-5 text-slate-100">{{ test_result.output }}</pre></details>
+          <details class="gm-surface mt-5 p-4" open><summary class="cursor-pointer font-bold">상세 테스트 보기</summary><pre class="gm-log-output mt-4 max-h-[36rem] overflow-auto whitespace-pre-wrap p-4 text-xs leading-5">{{ test_result.output }}</pre></details>
         {% else %}
           <div class="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-8 text-center">
             <h3 class="font-extrabold text-slate-950">아직 실행된 테스트가 없습니다</h3>

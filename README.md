@@ -75,7 +75,7 @@ Docker Compose 기반 배포
 
 ## 📚 프로젝트 문서 안내
 
-README는 프로젝트의 입구 역할을 합니다. 현재 상태는 PROJECT_STATUS, 구조는 SYSTEM_DESIGN, 교육 철학은 EDUCATION, 배포 절차는 deployment 문서, 변경 이력은 development 문서에서 확인합니다.
+README는 프로젝트의 입구 역할을 합니다. 현재 상태는 PROJECT_STATUS, 구조는 SYSTEM_DESIGN, UI 기준은 docs/ui 문서, 교육 철학은 EDUCATION, 배포 절차는 deployment 문서, 변경 이력은 development 문서에서 확인합니다.
 
 | 문서 | 언제 읽는가 | 담고 있는 내용 |
 | --- | --- | --- |
@@ -92,6 +92,9 @@ README는 프로젝트의 입구 역할을 합니다. 현재 상태는 PROJECT_S
 | [docs/development/DEVELOPMENT_LOG.md](docs/development/DEVELOPMENT_LOG.md) | 구현 과정을 추적할 때 | 단계별 구현 내용, 결정 이유, 검증 기록 |
 | [docs/development/TEST_REPORT.md](docs/development/TEST_REPORT.md) | 테스트 이력을 볼 때 | 테스트 원칙, 단계별 테스트 결과 |
 | [docs/development/RELEASE_CHECKLIST.md](docs/development/RELEASE_CHECKLIST.md) | 배포/제출 전 점검할 때 | 현재 릴리스 기준, 완료 조건, 최종 테스트 시나리오 |
+| [docs/ui/UI_GUIDE.md](docs/ui/UI_GUIDE.md) | 화면별 UI 기준을 볼 때 | Landing, Auth, Dashboard, Prompt, Admin 등 화면별 UI/UX 규칙 |
+| [docs/ui/DESIGN_SYSTEM.md](docs/ui/DESIGN_SYSTEM.md) | 공통 UI 토큰과 컴포넌트를 볼 때 | color, type, spacing, radius, badge, table, form, accessibility 기준 |
+| [docs/ui/DESIGN_DECISIONS.md](docs/ui/DESIGN_DECISIONS.md) | 디자인 선택 이유를 볼 때 | Apple/Vercel/GitHub/Linear 등 참고 범위와 제외 기준 |
 | [docs/guides/CODEX_PHASE_1_PROMPT.md](docs/guides/CODEX_PHASE_1_PROMPT.md) | 초기 Codex 프롬프트를 참고할 때 | Phase 1 작업 지시문 기록 |
 | [docs/deployment/OCI_DEV_SERVER_SETUP.md](docs/deployment/OCI_DEV_SERVER_SETUP.md) | 서버 구축과 배포를 진행할 때 | OCI, Docker, Nginx, HTTPS 구성 절차 |
 | [docs/deployment/GOOGLE_OAUTH_REDIRECT_URI.md](docs/deployment/GOOGLE_OAUTH_REDIRECT_URI.md) | Google OAuth를 설정할 때 | Redirect URI, 승인 정책, 점검 방법 |
@@ -115,8 +118,9 @@ README는 프로젝트의 입구 역할을 합니다. 현재 상태는 PROJECT_S
 | [docs/development/2026-07-04_FULL_OPERATIONAL_FEATURES.md](docs/development/2026-07-04_FULL_OPERATIONAL_FEATURES.md) | 전체 운영 편의 기능 보완 기록 |
 | [docs/development/2026-07-04_UI_SYSTEM_REFRESH.md](docs/development/2026-07-04_UI_SYSTEM_REFRESH.md) | UI 디자인 시스템 개선 기록 |
 | [docs/development/2026-07-05_UX_OPERATIONAL_FINISHING.md](docs/development/2026-07-05_UX_OPERATIONAL_FINISHING.md) | 예약 UX, 모바일 내비게이션, CSV 필터, 백업 보관 정책 마감 보완 기록 |
+| [docs/development/2026-07-05_UI_DESIGN_SYSTEM_IMPLEMENTATION.md](docs/development/2026-07-05_UI_DESIGN_SYSTEM_IMPLEMENTATION.md) | UI 디자인 시스템 실제 코드 적용 기록 |
 
-운영 방식은 README에서 출발해 `PROJECT_STATUS.md`, `SYSTEM_DESIGN.md`, `docs/EDUCATION.md`, 배포 문서, 실제 코드 순서로 연결되도록 구성했습니다. 초기 요구사항과 일정 문서는 기록으로 보존하되 현재 상태 판단에는 PROJECT_STATUS를 우선합니다.
+운영 방식은 README에서 출발해 `PROJECT_STATUS.md`, `SYSTEM_DESIGN.md`, `docs/ui` 문서, `docs/EDUCATION.md`, 배포 문서, 실제 코드 순서로 연결되도록 구성했습니다. 초기 요구사항과 일정 문서는 기록으로 보존하되 현재 상태 판단에는 PROJECT_STATUS를 우선합니다.
 
 ## 🎓 종로산업정보학교 AI컴퓨터과 교육과정
 

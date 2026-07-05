@@ -4,11 +4,11 @@
 
 {% block content %}
   <section class="space-y-6">
-    <div class="gm-surface p-6 sm:p-7">
+    <div class="gm-page-header">
       <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p class="gm-eyebrow">Prompt Workspace</p>
-          <h1 class="gm-page-title mt-2 text-3xl">✓ 새 프롬프트 정리</h1>
+          <h1 class="gm-page-title mt-2">새 프롬프트 정리</h1>
           <p class="gm-body mt-3 max-w-3xl">거친 요청을 생성형 AI가 이해하기 쉬운 구조화된 프롬프트로 정리합니다. OpenAI, Google Gemini, Anthropic Claude 중 사용자 본인의 API Key로 호출합니다.</p>
         </div>
         <a class="gm-button-secondary" href="{{ url_for('prompts.index') }}">목록</a>
@@ -16,7 +16,7 @@
     </div>
 
     <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
-      <form class="space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" method="post" action="{{ url_for('prompts.create') }}" data-prompt-form>
+      <form class="gm-surface space-y-5 p-6" method="post" action="{{ url_for('prompts.create') }}" data-prompt-form>
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="grid gap-4 md:grid-cols-2">
           <label class="block text-sm font-extrabold text-slate-950" for="provider">Provider
@@ -49,7 +49,7 @@
         <label class="block text-sm font-extrabold text-slate-950" for="prompt_template">정리 템플릿<select class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-base" id="prompt_template"><option value="">직접 작성</option>{% for template in prompt_templates %}<option value="{{ loop.index0 }}" data-goal="{{ template.goal }}" data-prompt="{{ template.prompt }}">{{ template.name }}</option>{% endfor %}</select></label>
         <label class="block text-sm font-extrabold text-slate-950" for="review_goal">정리 목표<input class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 text-base focus:border-slate-950 focus:outline-none focus:ring-1 focus:ring-slate-950" id="review_goal" name="review_goal" value="요청 의도 명확화와 실행 가능한 프롬프트 정리"></label>
         <label class="block text-sm font-extrabold text-slate-950" for="source_prompt">정리 대상 요청<textarea class="mt-2 min-h-72 w-full rounded-xl border border-slate-300 px-4 py-3 text-base leading-7 focus:border-slate-950 focus:outline-none focus:ring-1 focus:ring-slate-950" id="source_prompt" name="source_prompt" required></textarea></label>
-        <div class="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm font-semibold leading-6 text-amber-900">학생 개인정보, 성적, 생활기록부 원문, 평가 자료, 상담 내용, 비공개 업무자료는 입력하지 않습니다. 테스트와 실제 정리 호출 모두 Provider 정책에 따라 비용이 발생할 수 있습니다.</div>
+        <div class="gm-alert gm-alert-warning">학생 개인정보, 성적, 생활기록부 원문, 평가 자료, 상담 내용, 비공개 업무자료는 입력하지 않습니다. 테스트와 실제 정리 호출 모두 Provider 정책에 따라 비용이 발생할 수 있습니다.</div>
         <div class="flex flex-wrap gap-3">
           <button class="gm-button-primary" type="submit" data-submit-button>정리 실행</button>
           <a class="gm-button-secondary" href="{{ url_for('prompts.index') }}">목록</a>
@@ -98,7 +98,8 @@
         if (!prompt.value.trim()) prompt.value = option.dataset.prompt;
       });
       runtimeKey.value = localStorage.getItem(keyName()) || '';
-      document.querySelector('[data-prompt-form]').addEventListener('submit', function () { submit.disabled = true; submit.textContent = '처리 중'; });
+      document.querySelector('[data-prompt-form]').addEventListener('submit', function () { submit.disabled = true; submit.textContent = '처리 중';
+        submit.setAttribute('aria-busy', 'true'); });
     })();
   </script>
 {% endblock %}

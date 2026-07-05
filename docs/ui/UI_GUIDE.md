@@ -33,7 +33,7 @@
 - 프로젝트 이름 표시
 - 한 줄 설명
 - Google 로그인, 로컬 로그인, 등록 요청 CTA
-- 핵심 기능 3개 소개
+- 핵심 기능 4개 소개
 
 핵심 컴포넌트:
 
@@ -45,7 +45,7 @@
 
 - Apple식 가독성과 Vercel식 Landing 구조를 참고한다.
 - 첫 viewport에서 프로젝트명, 설명, CTA가 보여야 한다.
-- 실제 화면 미리보기와 AI 비교 예시는 향후 개선에서 추가한다.
+- 현재 Landing은 실제 구현 범위 안의 운영 미리보기만 표시한다. AI 비교 예시는 미구현 기능처럼 보일 수 있어 표시하지 않는다.
 
 상태 표현:
 
@@ -64,11 +64,11 @@
 
 - CTA는 세로 stack 우선, 넓은 화면에서 row로 전환한다.
 
-향후 개선:
+현재 구현 메모:
 
-- 실제 Dashboard/Prompt Result 미리보기 mock section 추가
-- AI 비교 예시 카드 추가
-- 기능 3-4개를 예약, 기록, 프롬프트 정리, 관리자 검증으로 재정렬
+- Hero 오른쪽 미리보기는 예약, 기록, 단일 Provider 프롬프트 정리 흐름만 표현한다.
+- 기능 카드는 인증, 예약, AI, 보안 4개로 정리한다.
+- Vercel식 CTA 구조는 적용하되 대형 gradient와 개발자 플랫폼 톤은 제외한다.
 
 ## Login / Auth
 
@@ -190,10 +190,15 @@
 - KPI grid는 단일 column 또는 2-column으로 줄인다.
 - 긴 예약 제목은 줄바꿈 허용.
 
+현재 구현 메모:
+
+- Dashboard는 `gm-page-header`, `gm-stat-card`, `gm-action-card`, `gm-badge`를 사용한다.
+- 빠른 실행은 사용 신청, 오늘 예약, 예약 캘린더, 프롬프트 정리, 사용 안내 순서로 배치한다.
+- 카드 안에 큰 카드를 중첩하지 않고 목록/행 구조를 우선한다.
+
 향후 개선:
 
 - 최근 Prompt, 최근 테스트, 최근 활동 feed 추가
-- 빠른 실행 command row 추가
 
 ## Prompt 입력
 
@@ -262,20 +267,19 @@
 
 - Command palette 형태의 템플릿 검색
 - Prompt 품질 점검 checklist
-- 실행 전 예상 단계 timeline preview
 
 ## Prompt 실행
 
 현재 실제 구현:
 
 - form submit 후 서버에서 단일 Provider를 호출한다.
-- submit button은 `처리 중`으로 바뀌고 disabled 된다.
-- 별도 streaming 또는 multi-provider timeline은 아직 없다.
+- submit button은 `처리 중`으로 바뀌고 disabled 되며 `aria-busy=true`를 갖는다.
+- 오른쪽 보조 panel은 Prompt 입력, 실행 준비, 선택 Provider 실행, 결과 저장, 완료의 단일 Provider 단계만 표시한다.
+- streaming, multi-provider 병렬 실행, 모델 비교 timeline은 구현하지 않는다.
 
 향후 설계:
 
-- Cursor + Raycast 참고.
-- Prompt 입력 -> 실행 준비 -> GPT 실행 -> Gemini 실행 -> Claude 실행 -> 비교 분석 -> 완료 단계 timeline을 제공한다.
+- multi-provider 비교가 백엔드에 추가될 때만 Cursor + Raycast식 단계 timeline을 확장한다.
 
 핵심 컴포넌트:
 
@@ -295,12 +299,12 @@
 
 오류 상태:
 
-- 특정 Provider 실패 시 전체 실패와 부분 성공을 구분한다.
+- 단일 Provider 실패 시 서버 flash와 기존 오류 흐름으로 안내한다.
 - API Key 없음은 설정 화면으로 안내한다.
 
 주의:
 
-- 현재 API 구조는 단일 Provider 실행이므로 이 화면은 구현 승인 후 별도 설계가 필요하다.
+- 현재 API 구조는 단일 Provider 실행이다. multi-provider/streaming UI는 백엔드 구현 승인 전까지 추가하지 않는다.
 
 ## Prompt 결과
 
@@ -355,21 +359,22 @@
 - 2열 grid를 1열로 전환.
 - pre 영역은 가로 overflow 없이 `whitespace-pre-wrap`.
 
+현재 구현 메모:
+
+- 결과 화면은 `검토 메모` 영역에서 단일 Provider 결과임을 명확히 표시한다.
+- 위험 요소, 개선 제안, History 연결은 보조 inset panel로 제공한다.
+
 향후 개선:
 
-- 비교 요약
-- 차이점
-- 위험 요소
-- 개선 제안
-- 근거/참고 source card
-- History 연결
+- multi-provider 구현 후 비교 요약, 차이점, 근거/참고 source card 추가
 
 ## Model 비교
 
 현재 실제 구현:
 
 - Provider별 API Key와 모델 선택은 가능하다.
-- 하나의 prompt를 GPT/Gemini/Claude에 동시에 실행하고 비교하는 화면은 아직 없다.
+- 하나의 prompt를 GPT/Gemini/Claude에 동시에 실행하고 비교하는 화면은 없다.
+- 현재 UI에는 비교가 구현된 것처럼 보이는 preview나 CTA를 두지 않는다.
 
 향후 설계:
 
@@ -737,21 +742,33 @@
 - anchor button wrap.
 - guide body는 1열로 전환.
 
-## 코드 수정 전 영향 범위
+## 2026-07-05 실제 구현 반영 범위
 
-승인 후 UI 구현의 예상 영향 범위:
+이번 UI 디자인 시스템 적용에서 실제 수정한 범위:
 
 1. 공통 Layout: `app/templates/base.html`, `app/static/styles.css`
-2. Typography / Color / Spacing: `app/static/styles.css`
-3. Button / Card / Badge / Table: `app/static/styles.css`, 각 template class
+2. Typography / Color / Spacing / Radius: `app/static/styles.css`
+3. Button / Card / Badge / Table / Alert / Empty State: `app/static/styles.css`, 각 template class
 4. Landing: `app/templates/index.html`
-5. Dashboard: `app/templates/dashboard.html`
-6. Prompt 실행 화면: `app/templates/prompts/new.html`, `app/prompts/routes.py`는 multi-provider 구현 시 별도 승인 필요
-7. Result 화면: `app/templates/prompts/show.html`
-8. Test Result: `app/templates/admin/dashboard.html`, 필요 시 `app/admin/routes.py`
-9. Admin / Settings: `app/templates/admin/dashboard.html`, `app/templates/settings/api_key.html`
-10. Mobile 대응: `app/templates/base.html`, `app/static/styles.css`
-11. 접근성 점검: focus, label, role, table 구조
-12. 테스트: 기존 pytest와 Playwright
+5. Auth: `app/templates/auth/login.html`, `app/templates/auth/register.html`, `app/templates/auth/pending.html`
+6. Dashboard: `app/templates/dashboard.html`
+7. Reservations: `app/templates/reservations/index.html`, `new.html`, `today.html`, `calendar.html`
+8. Logs: `app/templates/logs/index.html`, `new.html`, `show.html`
+9. Prompt 입력/결과/기록: `app/templates/prompts/new.html`, `show.html`, `index.html`
+10. Admin/Test Result: `app/templates/admin/dashboard.html`
+11. 테스트 기대 문구: `tests/test_prompt_reviews.py`
 
-이번 문서 작성 단계에서는 위 파일을 수정하지 않는다.
+유지한 범위:
+
+- URL, route, auth, 권한, DB 모델, API, 서버 로직 변경 없음
+- React/Vue/Svelte/TypeScript/Bootstrap 등 새 프레임워크와 새 dependency 추가 없음
+- flash alert의 `role="alert"` 유지
+- CSRF meta와 submit hook 유지
+- multi-provider 비교, streaming, backend timeline 기능 미구현 유지
+
+검증 결과:
+
+- `git diff --check`: PASS
+- `uv run pytest`: PASS, 91 passed
+- `npm run test:e2e`: PASS, 1 passed
+- Playwright desktop/mobile overflow 점검: PASS, Landing/Login/Dashboard/Reservations/Prompt 입력에서 수평 overflow 없음

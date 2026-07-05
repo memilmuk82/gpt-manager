@@ -886,3 +886,36 @@ Docker Compose rebuild: PASS, gpt-manager-web-1 Up
 관리자 CSV 내보내기 조건이 사용자/예약/사용 로그 CSV에 적용됨
 SQLite 백업 정리 로직이 최신 20개만 남김
 ```
+
+
+## 2026-07-05 UI 디자인 시스템 실제 적용 검증
+
+범위: `docs/ui` 기준의 light operational SaaS UI를 실제 Flask/Jinja/Tailwind CDN/Vanilla JS 화면에 적용. Landing/Auth/Dashboard/Reservations/Logs/Prompts/Admin Test Result 중심으로 검증.
+
+명령:
+
+```bash
+git diff --check
+uv run pytest
+npm run test:e2e
+# Playwright one-off desktop/mobile overflow check
+```
+
+결과:
+
+```text
+git diff --check: PASS
+pytest: PASS, 91 passed
+Playwright E2E: PASS, 1 passed
+Desktop/mobile overflow check: PASS
+```
+
+추가 확인:
+
+```text
+Landing/Login/Dashboard/Reservations/Prompt 입력 화면에서 1366x900, 390x844 viewport 수평 overflow 없음
+flash alert role=alert 유지
+CSRF meta와 submit hook 유지
+form label visible text 유지
+Prompt Result는 단일 Provider 결과로 표시되며 multi-provider 비교 UI를 새로 만들지 않음
+```

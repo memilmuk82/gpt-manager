@@ -4,13 +4,14 @@
 
 {% block content %}
   <section class="space-y-6">
-    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-      <h1 class="flex items-center gap-2 text-2xl font-extrabold text-slate-950">+ 사용 신청</h1>
-      <p class="mt-4 text-base leading-7 text-slate-600">{{ setting_value('reservation_intro_text', 'GPT Pro는 교육과정 개발, 교재 개발, 워크북 제작, 정책 분석, 코드 검토 등 고난도 교육 연구 업무 지원을 목적으로 운영됩니다.') }}</p>
-      <p class="mt-2 text-sm leading-6 text-slate-500">{{ setting_value('reservation_helper_text', '예약 등록은 시작 시간과 사용 시간을 기준으로 종료 예정 시간이 자동 계산됩니다. 지금 사용 시작은 현재 시각부터 선택한 사용 시간만큼 등록됩니다.') }}</p>
+    <div class="gm-page-header">
+      <p class="gm-eyebrow">Reservation Request</p>
+      <h1 class="gm-page-title mt-2">사용 신청</h1>
+      <p class="gm-body mt-4">{{ setting_value('reservation_intro_text', 'GPT Pro는 교육과정 개발, 교재 개발, 워크북 제작, 정책 분석, 코드 검토 등 고난도 교육 연구 업무 지원을 목적으로 운영됩니다.') }}</p>
+      <p class="gm-caption mt-2">{{ setting_value('reservation_helper_text', '예약 등록은 시작 시간과 사용 시간을 기준으로 종료 예정 시간이 자동 계산됩니다. 지금 사용 시작은 현재 시각부터 선택한 사용 시간만큼 등록됩니다.') }}</p>
     </div>
 
-    <form id="reservation-form" class="space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" method="post" action="{{ url_for('reservations.create') }}">
+    <form id="reservation-form" class="gm-surface space-y-5 p-6" method="post" action="{{ url_for('reservations.create') }}">
       <div class="grid gap-5 lg:grid-cols-2">
         <div>
           <label class="block text-sm font-extrabold text-slate-950" for="resource_id">AI 리소스</label>
@@ -58,28 +59,30 @@
             <option value="180">3시간</option>
             <option value="custom">직접 입력</option>
           </select>
-          <input class="mt-2 hidden w-full rounded-xl border border-slate-300 px-4 py-3 text-base" id="custom_duration" type="number" min="10" max="{{ max_duration|int }}" step="5" placeholder="분 단위 입력">
+          <label class="mt-2 hidden text-sm font-extrabold text-slate-950" id="custom_duration_label" for="custom_duration">직접 입력 시간(분)
+            <input class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 text-base" id="custom_duration" type="number" min="10" max="{{ max_duration|int }}" step="5" placeholder="분 단위 입력">
+          </label>
           <p class="mt-2 text-sm text-slate-500">최대 {{ max_duration|int }}분까지 신청할 수 있습니다.</p>
         </div>
       </div>
 
-      <fieldset class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
-        <legend class="px-1 text-xl font-extrabold text-slate-950">▱ 사용 전 확인</legend>
+      <fieldset class="gm-inset p-5">
+        <legend class="px-1 text-xl font-extrabold text-slate-950">사용 전 확인</legend>
         <div class="mt-3 grid gap-3 text-base leading-7 text-slate-950">
           <label class="flex gap-3"><input class="mt-1.5" type="checkbox" required> <span>개인정보·민감정보를 입력하지 않습니다.</span></label>
           <label class="flex gap-3"><input class="mt-1.5" type="checkbox" required> <span>평가·출제 자료를 입력하지 않습니다.</span></label>
           <label class="flex gap-3"><input class="mt-1.5" type="checkbox" required> <span>실제 학생 생활기록부 자료를 입력하지 않습니다.</span></label>
           <label class="flex gap-3"><input class="mt-1.5" name="safety_confirmed" type="checkbox" required> <span>실제 학생 자료를 이용한 생기부 문구 생성, 평가총평 생성, 상담문구 초안 생성을 하지 않습니다.</span></label>
         </div>
-        <p class="mt-4 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-600">사용 규칙 동의 버전: {{ usage_policy_version }}</p>
+        <p class="gm-alert mt-4 bg-white text-slate-600">사용 규칙 동의 버전: {{ usage_policy_version }}</p>
       </fieldset>
 
-      <div id="conflict-message" class="hidden rounded-2xl border p-5 text-base font-extrabold"></div>
+      <div id="conflict-message" class="hidden gm-alert"></div>
 
       <div class="flex flex-wrap gap-3">
-        <button class="inline-flex h-12 items-center gap-2 rounded-xl border border-slate-300 bg-white px-5 text-base font-extrabold text-slate-700 hover:bg-slate-50" type="button" id="conflict-button">충돌 확인</button>
-        <button class="inline-flex h-12 items-center gap-2 rounded-xl bg-slate-950 px-5 text-base font-extrabold text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60" type="submit" id="submit-button">예약 등록</button>
-        <button class="inline-flex h-12 items-center gap-2 rounded-xl bg-slate-950 px-5 text-base font-extrabold text-white hover:bg-slate-800" type="button" id="start-now-button">지금 사용 시작</button>
+        <button class="gm-button-secondary" type="button" id="conflict-button">충돌 확인</button>
+        <button class="gm-button-primary" type="submit" id="submit-button">예약 등록</button>
+        <button class="gm-button-primary" type="button" id="start-now-button">지금 사용 시작</button>
       </div>
     </form>
   </section>
@@ -92,6 +95,7 @@
       const end = document.getElementById('end_at');
       const duration = document.getElementById('duration_minutes');
       const customDuration = document.getElementById('custom_duration');
+      const customDurationLabel = document.getElementById('custom_duration_label');
       const form = document.getElementById('reservation-form');
       const message = document.getElementById('conflict-message');
       const submitButton = document.getElementById('submit-button');
@@ -108,11 +112,11 @@
 
       const setConflictState = (state, text) => {
         const classes = {
-          idle: 'hidden rounded-2xl border p-5 text-base font-extrabold',
-          checking: 'rounded-2xl border p-5 text-base font-extrabold border-slate-200 bg-slate-50 text-slate-700',
-          ok: 'rounded-2xl border p-5 text-base font-extrabold border-emerald-200 bg-emerald-50 text-emerald-800',
-          error: 'rounded-2xl border p-5 text-base font-extrabold border-red-200 bg-red-50 text-red-800',
-          pending: 'rounded-2xl border p-5 text-base font-extrabold border-amber-200 bg-amber-50 text-amber-900'
+          idle: 'hidden gm-alert',
+          checking: 'gm-alert border-slate-200 bg-slate-50 text-slate-700',
+          ok: 'gm-alert gm-alert-success',
+          error: 'gm-alert gm-alert-danger',
+          pending: 'gm-alert gm-alert-warning'
         };
         message.className = classes[state];
         message.textContent = text || '';
@@ -158,11 +162,11 @@
         const preset = Array.from(duration.options).find((option) => Number(option.value) === diff);
         if (preset) {
           duration.value = preset.value;
-          customDuration.classList.add('hidden');
+          customDurationLabel.classList.add('hidden');
         } else if (diff > 0) {
           duration.value = 'custom';
           customDuration.value = Math.min(diff, maxDuration);
-          customDuration.classList.remove('hidden');
+          customDurationLabel.classList.remove('hidden');
         }
         scheduleConflictCheck();
       };
@@ -185,7 +189,7 @@
       start.addEventListener('change', updateEnd);
       end.addEventListener('change', updateDurationFromEnd);
       duration.addEventListener('change', function () {
-        customDuration.classList.toggle('hidden', duration.value !== 'custom');
+        customDurationLabel.classList.toggle('hidden', duration.value !== 'custom');
         updateEnd();
       });
       customDuration.addEventListener('input', updateEnd);

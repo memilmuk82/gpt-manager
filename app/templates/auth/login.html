@@ -3,20 +3,26 @@
 {% block title %}로그인 - {{ config.get("APP_TITLE", "ChatGPT Pro 5X 공동 사용 지원 시스템") }}{% endblock %}
 
 {% block content %}
-  <section class="mx-auto max-w-md space-y-6">
-    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-      <p class="text-sm font-semibold text-slate-500">{{ config.get("ORGANIZATION_NAME", "종로산업정보학교") }}</p>
-      <h1 class="mt-2 text-3xl font-extrabold text-slate-950">로그인</h1>
-      <p class="mt-2 text-sm leading-6 text-slate-600">로컬 계정 또는 Google 계정으로 로그인합니다.</p>
-      <p class="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm leading-6 text-amber-900">리뷰용 관리자 계정은 Google 로그인이 아니라 아래 이메일/비밀번호 입력 폼으로 로그인합니다.</p>
+  <section class="gm-auth-shell">
+    <div class="gm-page-header">
+      <p class="gm-eyebrow">{{ config.get("ORGANIZATION_NAME", "종로산업정보학교") }}</p>
+      <h1 class="gm-page-title mt-2">로그인</h1>
+      <p class="gm-body mt-3 text-sm">로컬 계정 또는 Google 계정으로 로그인합니다.</p>
+      <p class="gm-alert gm-alert-warning mt-4">리뷰용 관리자 계정은 Google 로그인이 아니라 아래 이메일/비밀번호 입력 폼으로 로그인합니다.</p>
     </div>
 
-    <a class="inline-flex rounded-full border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50" href="{{ url_for('auth.google_login') }}">Google 로그인</a>
+    <div class="gm-surface p-5">
+      <a class="gm-button-secondary w-full" href="{{ url_for('auth.google_login') }}">Google 로그인</a>
+    </div>
 
-    <form class="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm" method="post" action="{{ url_for('auth.login_post', next=request.args.get('next')) }}">
-      <label class="block text-sm font-semibold text-slate-700">이메일<input class="mt-2 w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm" name="email" type="email" required autocomplete="email"></label>
-      <label class="block text-sm font-semibold text-slate-700">비밀번호<input class="mt-2 w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm" name="password" type="password" required autocomplete="current-password"></label>
-      <button class="rounded-full bg-slate-950 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800" type="submit">로그인</button>
+    <form class="gm-surface space-y-4 p-5" method="post" action="{{ url_for('auth.login_post', next=request.args.get('next')) }}">
+      <label class="block text-sm font-extrabold text-slate-950" for="email">이메일
+        <input class="mt-2 w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm" id="email" name="email" type="email" required autocomplete="email">
+      </label>
+      <label class="block text-sm font-extrabold text-slate-950" for="password">비밀번호
+        <input class="mt-2 w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm" id="password" name="password" type="password" required autocomplete="current-password">
+      </label>
+      <button class="gm-button-primary w-full" type="submit">로그인</button>
     </form>
   </section>
 {% endblock %}

@@ -7,7 +7,7 @@
 ## ✅ 1. 현재 릴리스 기준
 
 ```text
-상태: UX/운영 마감 보완 및 문서화 완료
+상태: UI 디자인 시스템 실제 적용 및 문서화 완료
 기준일: 2026-07-05
 운영 도메인: https://dev-gpt.memilmuk82.com
 pytest: 91 passed
@@ -47,6 +47,9 @@ Docker Compose rebuild: PASS
 [x] Footer 이용약관/개인정보처리방침 링크 확인
 [x] /terms, /privacy HTTPS 200 확인
 [x] Markdown 법적 문서 raw HTML escape 테스트 확인
+[x] light operational SaaS UI 적용 확인
+[x] 주요 화면 desktop/mobile 수평 overflow 없음 확인
+[x] UI 문서와 실제 구현 정합성 확인
 ```
 
 ## 🔒 3. 운영 전 확인
@@ -79,7 +82,8 @@ Docker Compose rebuild: PASS
 14. 사용자/예약/로그 CSV 조건별 내보내기와 DB 백업 보관 정책 확인
 15. uv run pytest 실행
 16. npm run test:e2e 실행
-17. docker compose up -d --build 후 /healthz 확인
+17. 주요 UI 화면 desktop/mobile overflow 확인
+18. docker compose up -d --build 후 /healthz 확인
 ```
 
 ## 🗣️ 5. 제출 설명 핵심 문장

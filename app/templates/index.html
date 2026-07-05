@@ -3,12 +3,12 @@
 {% block title %}{{ setting_value('app_title', config.get('APP_TITLE', 'ChatGPT Pro 5X 공동 사용 지원 시스템')) }}{% endblock %}
 
 {% block content %}
-<section class="space-y-6">
+<section class="space-y-5 sm:space-y-6">
   <div class="gm-hero p-6 sm:p-8 lg:p-10">
-    <div class="grid gap-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-center">
-      <div>
+    <div class="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+      <div class="gm-korean-wrap">
         <p class="gm-eyebrow">{{ setting_value('organization_name', config.get('ORGANIZATION_NAME', '종로산업정보학교')) }}</p>
-        <h1 class="gm-page-title mt-3 max-w-4xl">{{ setting_value('app_title', config.get('APP_TITLE', 'ChatGPT Pro 5X 공동 사용 지원 시스템')) }}</h1>
+        <h1 class="gm-page-title mt-3 max-w-3xl">{{ setting_value('app_title', config.get('APP_TITLE', 'ChatGPT Pro 5X 공동 사용 지원 시스템')) }}</h1>
         <p class="gm-body mt-5 max-w-2xl">학교 공용 생성형 AI 계정의 예약, 사용 기록, 승인, 안전 안내를 한 곳에서 관리하는 교사용 AI 업무 플랫폼입니다.</p>
         <div class="mt-7 flex flex-col gap-3 sm:flex-row">
           <a class="gm-button-primary" href="{{ url_for('auth.google_login') }}">Google 로그인</a>
@@ -17,7 +17,7 @@
         </div>
       </div>
 
-      <div class="gm-preview-window overflow-hidden">
+      <div class="gm-preview-window overflow-hidden" aria-label="운영 화면 미리보기">
         <div class="gm-preview-bar" aria-hidden="true">
           <span class="gm-preview-dot"></span>
           <span class="gm-preview-dot"></span>
@@ -27,20 +27,20 @@
           <div class="grid gap-3 sm:grid-cols-3">
             <div class="gm-stat-card"><span class="gm-caption font-bold">오늘 예약</span><strong>3</strong></div>
             <div class="gm-stat-card"><span class="gm-caption font-bold">프롬프트 정리</span><strong>12</strong></div>
-            <div class="gm-stat-card"><span class="gm-caption font-bold">로그 미작성</span><strong>1</strong></div>
+            <div class="gm-stat-card border-amber-200 bg-amber-50"><span class="gm-caption font-bold text-amber-700">로그 미작성</span><strong class="text-amber-950">1</strong></div>
           </div>
-          <div class="rounded-2xl border border-slate-200 bg-white/80 p-4">
+          <div class="gm-inset p-4">
             <div class="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <p class="gm-eyebrow">AI 비교 예시</p>
-                <h2 class="mt-1 text-base font-extrabold text-slate-950">수업 자료 요청 정리</h2>
+                <p class="gm-eyebrow">오늘 운영 상태</p>
+                <h2 class="mt-1 text-base font-extrabold text-slate-950">수업 자료 제작 예약</h2>
               </div>
-              <span class="gm-badge gm-badge-success">완료</span>
+              <span class="gm-badge gm-badge-info">예약</span>
             </div>
             <div class="mt-4 grid gap-3 sm:grid-cols-3">
-              <div class="gm-model-card" data-provider="openai"><p class="font-extrabold text-slate-950">GPT</p><p class="gm-caption mt-1">구조화</p></div>
-              <div class="gm-model-card" data-provider="google"><p class="font-extrabold text-slate-950">Gemini</p><p class="gm-caption mt-1">자료 관점</p></div>
-              <div class="gm-model-card" data-provider="anthropic"><p class="font-extrabold text-slate-950">Claude</p><p class="gm-caption mt-1">위험 검토</p></div>
+              <div class="gm-model-card"><p class="font-extrabold text-slate-950">예약</p><p class="gm-caption mt-1">시간 충돌 확인</p></div>
+              <div class="gm-model-card"><p class="font-extrabold text-slate-950">기록</p><p class="gm-caption mt-1">사용 로그 작성</p></div>
+              <div class="gm-model-card"><p class="font-extrabold text-slate-950">정리</p><p class="gm-caption mt-1">단일 Provider 실행</p></div>
             </div>
           </div>
         </div>
@@ -50,22 +50,22 @@
 
   <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
     <section class="gm-card-hover gm-surface p-5">
-      <span class="gm-badge">인증</span>
+      <span class="gm-badge gm-badge-info">인증</span>
       <h2 class="gm-section-title mt-4">사용자 인증</h2>
       <p class="gm-body mt-2 text-sm">로컬 로그인과 Google OAuth를 지원하고 승인 상태에 따라 접근을 제한합니다.</p>
     </section>
     <section class="gm-card-hover gm-surface p-5">
-      <span class="gm-badge">예약</span>
+      <span class="gm-badge gm-badge-info">예약</span>
       <h2 class="gm-section-title mt-4">예약 관리</h2>
       <p class="gm-body mt-2 text-sm">사용 신청, 충돌 확인, 오늘 예약, 월간 캘린더, 완료 처리를 지원합니다.</p>
     </section>
     <section class="gm-card-hover gm-surface p-5">
-      <span class="gm-badge">AI</span>
+      <span class="gm-badge gm-badge-info">AI</span>
       <h2 class="gm-section-title mt-4">프롬프트 정리</h2>
       <p class="gm-body mt-2 text-sm">거친 요청을 업무 목적과 제약 조건이 드러나는 실행 가능한 프롬프트로 정리합니다.</p>
     </section>
     <section class="gm-card-hover gm-surface p-5">
-      <span class="gm-badge">보안</span>
+      <span class="gm-badge gm-badge-warning">보안</span>
       <h2 class="gm-section-title mt-4">안전한 활용 안내</h2>
       <p class="gm-body mt-2 text-sm">개인정보, 평가 보안 자료, 비공개 업무자료 입력을 예방하는 절차를 제공합니다.</p>
     </section>

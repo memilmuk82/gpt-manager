@@ -4,18 +4,18 @@
 
 {% block content %}
   <section class="space-y-6">
-    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div class="gm-page-header">
       <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div><h1 class="text-2xl font-extrabold text-slate-950">▦ 예약 캘린더</h1><p class="mt-2 text-sm text-slate-600">월별 공용 AI 리소스 예약 현황을 확인합니다.</p></div>
-        <div class="flex flex-wrap gap-2"><a class="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-bold" href="{{ url_for('reservations.calendar', month=previous_month.strftime('%Y-%m')) }}">이전 달</a><a class="rounded-xl bg-slate-950 px-4 py-2 text-sm font-bold text-white" href="{{ url_for('reservations.calendar') }}">이번 달</a><a class="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-bold" href="{{ url_for('reservations.calendar', month=next_month.strftime('%Y-%m')) }}">다음 달</a></div>
+        <div><p class="gm-eyebrow">Calendar</p><h1 class="gm-page-title mt-2">예약 캘린더</h1><p class="gm-body mt-2 text-sm">월별 공용 AI 리소스 예약 현황을 확인합니다.</p></div>
+        <div class="flex flex-wrap gap-2"><a class="gm-button-secondary gm-button-compact" href="{{ url_for('reservations.calendar', month=previous_month.strftime('%Y-%m')) }}">이전 달</a><a class="gm-button-primary gm-button-compact" href="{{ url_for('reservations.calendar') }}">이번 달</a><a class="gm-button-secondary gm-button-compact" href="{{ url_for('reservations.calendar', month=next_month.strftime('%Y-%m')) }}">다음 달</a></div>
       </div>
       <h2 class="mt-5 text-xl font-extrabold text-slate-950">{{ selected_month.strftime('%Y-%m') }}</h2>
     </div>
-    <div class="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div class="gm-table-wrap">
       <table class="min-w-full table-fixed border-collapse text-sm">
         <thead class="bg-slate-50 text-slate-600"><tr>{% for label in ['일', '월', '화', '수', '목', '금', '토'] %}<th class="border-b border-slate-200 px-3 py-3 text-left font-extrabold">{{ label }}</th>{% endfor %}</tr></thead>
         <tbody>
-          {% for week in weeks %}<tr class="align-top">{% for day in week %}<td class="h-36 border-b border-r border-slate-100 p-3 {% if day.month != selected_month.month %}bg-slate-50 text-slate-400{% endif %}"><p class="font-extrabold">{{ day.day }}</p><div class="mt-2 space-y-2">{% for reservation in reservations_by_date.get(day, []) %}<article class="rounded-lg border border-slate-200 bg-white p-2"><p class="font-bold text-slate-950">{{ reservation.start_at.strftime('%H:%M') }} {{ reservation.purpose }}</p><p class="mt-1 text-xs text-slate-500">{{ reservation.user.name }} / {{ reservation.resource.name }}</p></article>{% endfor %}</div></td>{% endfor %}</tr>{% endfor %}
+          {% for week in weeks %}<tr class="align-top">{% for day in week %}<td class="h-36 border-b border-r border-slate-100 p-3 {% if day.month != selected_month.month %}bg-slate-50 text-slate-400{% endif %}"><p class="font-extrabold">{{ day.day }}</p><div class="mt-2 space-y-2">{% for reservation in reservations_by_date.get(day, []) %}<article class="rounded-lg border border-slate-200 bg-white p-2 gm-korean-wrap"><p class="font-bold text-slate-950">{{ reservation.start_at.strftime('%H:%M') }} {{ reservation.purpose }}</p><p class="mt-1 text-xs text-slate-500">{{ reservation.user.name }} / {{ reservation.resource.name }}</p></article>{% endfor %}</div></td>{% endfor %}</tr>{% endfor %}
         </tbody>
       </table>
     </div>

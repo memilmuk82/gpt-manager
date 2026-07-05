@@ -58,6 +58,34 @@ Nginx
 OCI Ubuntu
 ```
 
+
+## 2.1 UI 구조와 디자인 시스템
+
+```text
+Frontend: Flask Jinja2 templates + Tailwind CDN + app/static/styles.css + Vanilla JavaScript
+Design direction: light operational SaaS for school operations
+Primary color: #1f3a5f
+Surface: slate 기반 light surface
+Radius: card 12px, button/input 10px 중심
+```
+
+공통 UI 기준:
+
+```text
+base.html: header/nav/footer/flash/main shell, CSRF meta와 POST submit hook
+styles.css: gm-page-header, gm-surface, gm-inset, gm-button, gm-badge, gm-table, gm-alert, gm-code-panel
+Landing/Auth/Dashboard/Reservations/Logs/Prompts/Admin Test Result: 문서화된 UI 시스템 적용
+```
+
+제한:
+
+```text
+React/Vue/Svelte/TypeScript/Bootstrap 등 SPA/프레임워크 추가 없음
+새 dependency 없음
+URL, route, auth, 권한, DB 모델, API, 서버 로직 변경 없음
+multi-provider 비교, streaming, backend timeline 기능 미구현 유지
+```
+
 ## 3. 설정값
 
 주요 환경변수:

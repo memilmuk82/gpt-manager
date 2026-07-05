@@ -5,7 +5,7 @@
 ## 🗺️ 권장 읽기 순서
 
 ```text
-README.md -> PROJECT_STATUS.md -> SYSTEM_DESIGN.md -> docs/EDUCATION.md -> docs/development/DEVELOPMENT_LOG.md -> docs/development/TEST_REPORT.md -> docs/deployment/OCI_DEV_SERVER_SETUP.md
+README.md -> PROJECT_STATUS.md -> SYSTEM_DESIGN.md -> docs/ui/UI_GUIDE.md -> docs/EDUCATION.md -> docs/development/DEVELOPMENT_LOG.md -> docs/development/TEST_REPORT.md -> docs/deployment/OCI_DEV_SERVER_SETUP.md
 ```
 
 초기 요구사항과 일정 문서는 `PRD.md`, `DEVELOPMENT_PLAN.md`에 보존하고, 현재 상태 판단은 `PROJECT_STATUS.md`를 우선합니다.
@@ -32,6 +32,13 @@ README.md -> PROJECT_STATUS.md -> SYSTEM_DESIGN.md -> docs/EDUCATION.md -> docs/
 - `docs/adr/0003-release-freeze.md`
 - `docs/adr/0004-byok-llm-provider-settings.md`
 
+## 🎨 UI 문서
+
+- `docs/ui/UI_GUIDE.md`
+- `docs/ui/DESIGN_SYSTEM.md`
+- `docs/ui/DESIGN_DECISIONS.md`
+- `docs/ui/references/`
+
 ## 📝 개발·검증 기록
 
 - `docs/development/DEVELOPMENT_LOG.md`
@@ -43,6 +50,7 @@ README.md -> PROJECT_STATUS.md -> SYSTEM_DESIGN.md -> docs/EDUCATION.md -> docs/
 - `docs/development/2026-07-04_FULL_OPERATIONAL_FEATURES.md`
 - `docs/development/2026-07-04_UI_SYSTEM_REFRESH.md`
 - `docs/development/2026-07-05_UX_OPERATIONAL_FINISHING.md`
+- `docs/development/2026-07-05_UI_DESIGN_SYSTEM_IMPLEMENTATION.md`
 - `docs/guides/CODEX_PHASE_1_PROMPT.md`
 
 ## 🚀 배포·운영·법적 문서

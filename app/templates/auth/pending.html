@@ -3,9 +3,29 @@
 {% block title %}미등록 사용자 - {{ setting_value('app_title', config.get('APP_TITLE', 'ChatGPT Pro 5X 공동 사용 지원 시스템')) }}{% endblock %}
 
 {% block content %}
-  <section class="space-y-6">
-    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"><h1 class="flex items-center gap-2 text-2xl font-extrabold text-slate-950">ⓘ 등록되지 않은 사용자입니다</h1><p class="mt-4 text-base leading-7 text-slate-600">본 시스템은 부서 GPT Pro 공동 사용 지원 시스템입니다. 사용이 필요한 경우 등록 요청 상태를 확인하고 관리자 승인을 기다려 주세요.</p><div class="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-4"><p class="text-sm text-slate-500">접속 계정</p><p class="mt-1 font-extrabold text-slate-950">{{ current_user.email or '확인 불가' }}</p></div></div>
-    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"><h2 class="text-xl font-extrabold text-slate-950">♙ 등록 요청 정보</h2><dl class="mt-4 grid gap-3 text-sm md:grid-cols-2"><div class="rounded-xl border border-slate-200 bg-slate-50 p-4"><dt class="text-slate-500">이름</dt><dd class="mt-1 font-bold text-slate-950">{{ current_user.name or '확인 불가' }}</dd></div><div class="rounded-xl border border-slate-200 bg-slate-50 p-4"><dt class="text-slate-500">부서</dt><dd class="mt-1 font-bold text-slate-950">{{ current_user.department or '미입력' }}</dd></div><div class="rounded-xl border border-slate-200 bg-slate-50 p-4"><dt class="text-slate-500">내선번호</dt><dd class="mt-1 font-bold text-slate-950">{{ current_user.extension or '미입력' }}</dd></div><div class="rounded-xl border border-amber-200 bg-amber-50 p-4"><dt class="text-amber-800">등록 요청 상태</dt><dd class="mt-1 font-bold text-amber-900">관리자 승인 대기</dd></div></dl><form class="mt-5" method="post" action="{{ url_for('auth.logout') }}"><button class="rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-extrabold text-slate-700" type="submit">▣ 사용 종료</button></form></div>
+  <section class="mx-auto max-w-4xl space-y-6">
+    <div class="gm-page-header">
+      <span class="gm-badge gm-badge-warning">관리자 승인 대기</span>
+      <h1 class="gm-page-title mt-3">등록되지 않은 사용자입니다</h1>
+      <p class="gm-body mt-4">본 시스템은 부서 GPT Pro 공동 사용 지원 시스템입니다. 사용이 필요한 경우 등록 요청 상태를 확인하고 관리자 승인을 기다려 주세요.</p>
+      <div class="gm-inset mt-5 p-4">
+        <p class="gm-caption font-bold">접속 계정</p>
+        <p class="mt-1 font-extrabold text-slate-950">{{ current_user.email or '확인 불가' }}</p>
+      </div>
+    </div>
+
+    <div class="gm-surface p-6">
+      <h2 class="gm-section-title">등록 요청 정보</h2>
+      <dl class="mt-4 grid gap-3 text-sm md:grid-cols-2">
+        <div class="gm-inset p-4"><dt class="gm-caption font-bold">이름</dt><dd class="mt-1 font-bold text-slate-950">{{ current_user.name or '확인 불가' }}</dd></div>
+        <div class="gm-inset p-4"><dt class="gm-caption font-bold">부서</dt><dd class="mt-1 font-bold text-slate-950">{{ current_user.department or '미입력' }}</dd></div>
+        <div class="gm-inset p-4"><dt class="gm-caption font-bold">내선번호</dt><dd class="mt-1 font-bold text-slate-950">{{ current_user.extension or '미입력' }}</dd></div>
+        <div class="gm-alert gm-alert-warning"><dt class="font-bold">등록 요청 상태</dt><dd class="mt-1 font-extrabold">관리자 승인 대기</dd></div>
+      </dl>
+      <form class="mt-5" method="post" action="{{ url_for('auth.logout') }}">
+        <button class="gm-button-secondary" type="submit">사용 종료</button>
+      </form>
+    </div>
     {% include "partials/_auth_info.html" %}
   </section>
 {% endblock %}

@@ -85,7 +85,7 @@ def test_prompt_review_menu_and_pages_match_current_design(client, app):
     assert new_response.status_code == 200
     assert "프롬프트 정리" in dashboard_html
     assert "구조화된 프롬프트로 정리" in index_html
-    assert "✓ 새 프롬프트 정리" in new_html
+    assert "새 프롬프트 정리" in new_html
     assert "PROMPT REVIEWS" not in index_html
 
 
