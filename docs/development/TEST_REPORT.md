@@ -430,7 +430,7 @@ tests/test_auth.py - ASSISTANT_ADMIN_EMAILS 자동 role 부여
 
 ```text
 날짜: 2026-07-02
-범위: 이용약관, 개인정보처리방침, 정보관리책임자, Copyright Footer, Markdown 렌더링
+범위: 이용약관, 개인정보처리방침, 기관명, 대표번호, Copyright Footer, Markdown 렌더링
 
 문법 검사:
 python3 -m py_compile app/routes/main.py app/services/legal_markdown_service.py app/__init__.py
@@ -459,6 +459,9 @@ FAIL: 0
 
 ```text
 Footer Copyright 출력
+Footer 기관명 출력
+Footer 대표번호 출력
+Footer 정보관리책임자 이름/이메일 미출력
 Footer 이용약관 링크 /terms 이동
 Footer 개인정보처리방침 링크 /privacy 이동
 /terms 정상 출력

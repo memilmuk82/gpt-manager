@@ -2,18 +2,21 @@ from app import create_app
 from app.services import legal_markdown_service
 
 
-def test_footer_links_and_manager_info_are_visible(client):
+def test_footer_links_and_contact_info_are_visible(client):
     response = client.get("/")
     body = response.get_data(as_text=True)
 
     assert response.status_code == 200
     assert "Copyright © 2026 GPT Share Manager vNext" in body
+    assert "종로산업정보학교" in body
+    assert "대표번호 02-2237-0465" in body
     assert "이용약관" in body
     assert "개인정보처리방침" in body
-    assert "정보관리책임자" in body
-    assert "이진선" in body
     assert "02-2237-0465" in body
-    assert "memilmuk@sen.go.kr" in body
+    assert "정보관리책임자" not in body
+    assert "이진선" not in body
+    assert "memilmuk@sen.go.kr" not in body
+    assert "mailto:" not in body
     assert "/terms" in body
     assert "/privacy" in body
 

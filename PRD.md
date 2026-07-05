@@ -40,7 +40,7 @@ gpt-share-manager-vnext
 프롬프트 기록 관리
 OpenAI, Google Gemini, Anthropic Claude 사용자별 BYOK를 활용한 프롬프트 정리/개선
 이용약관과 개인정보처리방침 제공
-정보관리책임자 안내
+기관 대표번호 안내
 ```
 
 즉, GPT를 직접 제어하는 앱이 아니라 **공용 AI 사용 운영을 기록하고 개선하는 앱**이다.
@@ -115,7 +115,7 @@ AI Provider/API Key 설정
 12. 관리자/보조관리자 대시보드
 13. 오늘 예약 화면
 14. 이용약관/개인정보처리방침 페이지
-15. Footer 정보관리책임자 안내
+15. Footer 기관 대표번호 안내
 16. Docker Compose 실행
 17. SQLite 볼륨 저장
 18. README/시연 문서

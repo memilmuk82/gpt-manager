@@ -302,7 +302,7 @@ BYOK 기반 AI 프롬프트 정리 결과 저장/조회
 관리자 사용자 목록 검색/권한/상태 필터
 관리자가 수정할 수 있는 사용 안내 화면
 GPT 접속 안내 제목, 사용 신청 안내 문구, 사용 안내 소개 문구를 Settings로 관리
-공통 Footer Copyright/정보관리책임자 표시
+공통 Footer Copyright, 기관명, 대표번호, 법적 고지 링크 표시
 /terms 이용약관 페이지
 /privacy 개인정보처리방침 페이지
 Markdown 기반 법적 문서 관리

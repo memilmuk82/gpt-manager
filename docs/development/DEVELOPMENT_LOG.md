@@ -503,7 +503,7 @@ docs/legal/TERMS.md Markdown 이용약관 작성
 docs/legal/PRIVACY_POLICY.md Markdown 개인정보처리방침 작성
 /terms 라우트 추가
 /privacy 라우트 추가
-공통 Footer에 Copyright, 이용약관, 개인정보처리방침, 정보관리책임자, 기관명 표시
+공통 Footer에 Copyright, 기관명, 대표번호, 이용약관, 개인정보처리방침 표시
 법적 문서를 HTML 템플릿에 직접 작성하지 않고 Markdown 파일에서 렌더링하도록 구성
 승인 대기 사용자도 /terms, /privacy 접근 가능하도록 허용 endpoint 추가
 ```
@@ -838,4 +838,20 @@ uv run pytest tests/test_api_keys.py tests/test_prompt_reviews.py: PASS, 20 pass
 uv run pytest: PASS, 88 passed
 관리자 /admin/tests/run 렌더링 확인: PASS
 Anthropic API 새로고침 결과에 claude-opus-4-7 포함 시 그대로 반환 확인: PASS
+```
+
+
+## 2026-07-05 - Footer 개인정보 노출 최소화
+
+```text
+공통 Footer에서 정보관리책임자 이름과 개인 업무메일 mailto 링크 제거
+Footer 표시 항목을 기관명, 대표번호, 이용약관, 개인정보처리방침 링크로 정리
+이용약관과 개인정보처리방침 원문은 기존 내용 유지
+README, PRD, PROJECT_STATUS, PROJECT_INSTRUCTIONS, 개발 로그, 테스트 리포트의 Footer 설명 최신화
+```
+
+### 검증
+
+```text
+uv run pytest tests/test_legal_pages.py: PASS, 5 passed
 ```
