@@ -950,3 +950,22 @@ python3 -m py_compile app/admin/routes.py app/routes/main.py: PASS
 uv run pytest: PASS, 95 passed
 npm run test:e2e: PASS, 2 passed
 ```
+
+## 2026-07-05 - 예약 직접 입력 최대 시간 8시간 반영
+
+### 변경 내용
+
+```text
+max_duration_minutes 기본값을 180분에서 480분으로 변경
+운영 DB에 기존 기본값 180이 남아 있으면 앱 초기화 시 480으로 보정
+예약 화면 직접 입력 max와 안내 문구가 기본 480분으로 표시되도록 테스트 추가
+```
+
+### 검증
+
+```text
+python3 -m py_compile app/__init__.py app/defaults.py app/reservations/routes.py: PASS
+uv run pytest tests/test_config.py tests/test_reservations.py: PASS, 17 passed
+uv run pytest: PASS, 97 passed
+npm run test:e2e: PASS, 2 passed
+```

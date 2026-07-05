@@ -103,7 +103,7 @@ def new():
         resources=_active_resources(),
         work_types=_active_work_types(),
         default_duration=_setting_int("default_duration_minutes", 60),
-        max_duration=_setting_int("max_duration_minutes", 180),
+        max_duration=_setting_int("max_duration_minutes", 480),
         usage_policy_version=_setting_value("usage_policy_version", "2026-07-04"),
     )
 
@@ -157,7 +157,7 @@ def create():
             resources=_active_resources(),
             work_types=_active_work_types(),
             default_duration=_setting_int("default_duration_minutes", 60),
-            max_duration=_setting_int("max_duration_minutes", 180),
+            max_duration=_setting_int("max_duration_minutes", 480),
             usage_policy_version=_setting_value("usage_policy_version", "2026-07-04"),
         ), 400
 

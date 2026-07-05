@@ -24,7 +24,7 @@ OpenRouter: 현재 미지원
 ```text
 상태: UI 디자인 시스템, 개인 프로필, 관리자 테스트 힌트 반영 완료
 최근 검증일: 2026-07-05
-pytest: PASS, 95 passed
+pytest: PASS, 97 passed
 Playwright E2E: PASS, 2 passed
 Docker Compose rebuild: PASS, gpt-manager-web-1 Up, /healthz 200
 운영 Health Check: PASS, /healthz 200 {"status":"ok"}
@@ -41,7 +41,7 @@ README 개발 배경과 기술 선택 이유 중복 정리
 운영 편의 기능 및 관리자 기능 문서화
 Apple/Vercel/GitHub/Linear 기준의 light operational SaaS UI 디자인 시스템 실제 적용
 RC 운영 CRUD 검증 1782896313 시연 더미데이터 seed 스크립트 추가 및 DB 주입 완료
-예약 자동 충돌 확인, 모바일 더보기 내비게이션, CSV 조건 필터, 백업 최근 20개 보관 정책 반영
+예약 자동 충돌 확인, 직접 입력 최대 8시간(480분), 모바일 더보기 내비게이션, CSV 조건 필터, 백업 최근 20개 보관 정책 반영
 Landing/Auth/Dashboard/Reservations/Logs/Prompts/Admin Test Result 주요 화면 UI 정리
 /profile 개인 프로필 화면 추가 및 헤더 사용자 badge 링크 변경
 관리자 Test Result 실패 원인 요약/해결 힌트 추가
@@ -82,7 +82,7 @@ Deploy: Docker Compose + Gunicorn + Nginx + OCI Ubuntu
 Google OAuth 로그인
 승인 대기/정지 계정 접근 제어
 사용 신청/내 예약/오늘 예약/월간 예약 캘린더
-예약 충돌 확인 API, 자동 충돌 확인 UI, 사용 규칙 동의 버전 기록
+예약 충돌 확인 API, 자동 충돌 확인 UI, 직접 입력 최대 8시간(480분), 사용 규칙 동의 버전 기록
 사용 로그 작성/조회/검색/필터
 완료 예약 미작성 로그 알림과 자동 선택
 홈 KPI 카드와 운영 공지 배너
@@ -132,12 +132,12 @@ Port binding: 127.0.0.1:5000 -> container 5000
 ## 🧾 8. 테스트 결과
 
 ```text
-uv run pytest: PASS, 95 passed
+uv run pytest: PASS, 97 passed
 npm run test:e2e: PASS, 2 passed
 python3 -m py_compile: PASS
 Docker Compose up -d --build: PASS
 관리자 테스트 실행 화면: 테스트 파일별 검증 대상/주요 내용/상태/실패 원인 요약/해결 힌트 표시 확인
-예약 UX: 자동 충돌 확인과 max_duration_minutes 화면 반영 확인
+예약 UX: 자동 충돌 확인과 max_duration_minutes 480분 기본값 화면 반영 확인
 관리자 운영 도구: CSV 조건 필터와 백업 최근 20개 보관 정책 확인
 UI 검증: Landing/Login/Dashboard/Reservations/Prompt 입력/Profile/Admin sections desktop/mobile 수평 overflow 없음
 ```

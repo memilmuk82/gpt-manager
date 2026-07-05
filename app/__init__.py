@@ -200,6 +200,18 @@ def _seed_default_records(app: Flask) -> None:
             )
             changed = True
 
+    max_duration_setting = db.session.get(AppSetting, "max_duration_minutes")
+    if max_duration_setting is not None:
+        if max_duration_setting.value.strip() == "180":
+            max_duration_setting.value = "480"
+            changed = True
+        if max_duration_setting.label != "최대 사용 시간":
+            max_duration_setting.label = "최대 사용 시간"
+            changed = True
+        if max_duration_setting.help_text != "직접 입력은 8시간(480분)까지 신청 가능":
+            max_duration_setting.help_text = "직접 입력은 8시간(480분)까지 신청 가능"
+            changed = True
+
     for code, category, title, body, sort_order, is_active in DEFAULT_GUIDES:
         if GuideItem.query.filter_by(code=code).first() is None:
             db.session.add(

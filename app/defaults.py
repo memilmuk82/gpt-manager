@@ -30,7 +30,7 @@ DEFAULT_SETTINGS = [
     ("usage_policy_version", "2026-07-04", "사용 규칙 버전", "예약 시 저장되는 사용 규칙 동의 버전", 98),
     ("ai_usage_order", "1. SenGPT\n2. Gemini Education Plus\n3. NotebookLM Plus\n4. GPT Pro 5x", "AI 활용 권장 순서", "AI 활용 권장 순서", 100),
     ("default_duration_minutes", "60", "기본 사용 시간", "기본 예상 사용 시간", 110),
-    ("max_duration_minutes", "180", "장시간 사용 안내 기준", "3시간 이상 사용 시 사전 조율 권장", 120),
+    ("max_duration_minutes", "480", "최대 사용 시간", "직접 입력은 8시간(480분)까지 신청 가능", 120),
 ]
 
 DEFAULT_GUIDES = [

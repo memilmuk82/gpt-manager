@@ -62,3 +62,29 @@ def test_legacy_sqlite_user_table_gets_phase6_columns(tmp_path):
 
     assert "auth_provider" in columns
     assert "approval_status" in columns
+
+
+def test_default_seed_updates_legacy_reservation_max_duration(app):
+    from app import _seed_default_records
+    from app.extensions import db
+    from app.models import AppSetting
+
+    with app.app_context():
+        db.session.add(
+            AppSetting(
+                key="max_duration_minutes",
+                value="180",
+                label="장시간 사용 안내 기준",
+                help_text="3시간 이상 사용 시 사전 조율 권장",
+                sort_order=120,
+            )
+        )
+        db.session.commit()
+        app.config["TESTING"] = False
+
+        _seed_default_records(app)
+
+        setting = db.session.get(AppSetting, "max_duration_minutes")
+        assert setting.value == "480"
+        assert setting.label == "최대 사용 시간"
+        assert "8시간(480분)" in setting.help_text

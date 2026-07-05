@@ -245,7 +245,7 @@ run.py                       Flask 앱 실행 진입점
 ```text
 상태: UI 디자인 시스템, 개인 프로필, 관리자 테스트 힌트 반영 완료
 최근 검증일: 2026-07-05
-테스트: uv run pytest, 95 passed
+테스트: uv run pytest, 97 passed
 E2E: npm run test:e2e, 2 passed
 운영 도메인: https://dev-gpt.memilmuk82.com
 배포: OCI Ubuntu + Docker Compose + Gunicorn + Nginx + HTTPS
@@ -281,6 +281,7 @@ CSRF 토큰 기반 POST 요청 보호
 공용 생성형 AI 계정 예약 생성/조회/취소/완료
 오늘 예약 전체 현황 조회
 예약 충돌 검증, 자동 충돌 확인, 충돌 시 예약 버튼 비활성화
+예약 사용 시간 직접 입력은 최대 8시간(480분)까지 지원
 완료 예약의 사용 로그 작성 유도 및 예약 자동 선택
 내 예약 검색/상태 필터
 사용 로그 작성/조회
@@ -535,7 +536,7 @@ uv run pytest
 현재 테스트 결과:
 
 ```text
-95 passed
+97 passed
 ```
 
 현재 테스트 범위:

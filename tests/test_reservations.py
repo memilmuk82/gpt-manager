@@ -372,6 +372,20 @@ def test_reservation_records_configured_usage_policy_version(client, app):
         assert Reservation.query.one().consent_version == "policy-v2"
 
 
+def test_reservation_form_defaults_to_eight_hour_custom_duration(client, app):
+    with app.app_context():
+        create_user()
+        create_resource()
+
+    login(client)
+    response = client.get("/reservations/new")
+    body = response.get_data(as_text=True)
+
+    assert response.status_code == 200
+    assert 'max="480"' in body
+    assert "최대 480분까지 신청할 수 있습니다." in body
+
+
 def test_reservation_form_uses_configured_max_duration(client, app):
     with app.app_context():
         create_user()

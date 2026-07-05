@@ -14,7 +14,7 @@ UI 디자인 시스템 실제 적용 완료
 기준 브랜치: master
 운영 도메인: https://dev-gpt.memilmuk82.com
 최근 검증 기준: 2026-07-05
-uv run pytest: 95 passed
+uv run pytest: 97 passed
 npm run test:e2e: 2 passed
 Docker Compose 재빌드: PASS, gpt-manager-web-1 Up, /healthz 200
 ```
@@ -35,7 +35,7 @@ EDUCATION.md: 교육 철학과 기술 선정 이유
 ## 🧩 최근 정리 내용
 
 ```text
-예약 생성 화면 자동 충돌 확인과 max_duration_minutes 반영
+예약 생성 화면 자동 충돌 확인과 max_duration_minutes 480분 기본값 반영
 모바일 내비게이션을 핵심 메뉴와 더보기 구조로 정리
 관리자 CSV 내보내기에 기간/사용자/리소스/작업유형/상태/검색어 필터 추가
 관리자 SQLite 백업은 최근 20개 보관 정책 적용
@@ -50,7 +50,7 @@ docs/ui 3개 문서와 README, PROJECT_STATUS, SYSTEM_DESIGN, RELEASE_CHECKLIST,
 
 ```text
 python3 -m py_compile app/admin/routes.py app/reservations/routes.py: PASS
-uv run pytest: PASS, 95 passed
+uv run pytest: PASS, 97 passed
 npm run test:e2e: PASS, 2 passed
 git diff --check: PASS
 Playwright Profile/Admin/mobile overflow check: PASS
