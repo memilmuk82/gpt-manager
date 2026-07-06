@@ -106,7 +106,7 @@ ADMIN_EMAILS=<comma-separated-admin-emails>
 ASSISTANT_ADMIN_EMAILS=<comma-separated-assistant-admin-emails>
 REVIEW_ADMIN_EMAIL=review.admin@senedu.kr
 REVIEW_ADMIN_PASSWORD=<review-admin-password>
-LLM_KEY_ENCRYPTION_SECRET=change-this-secret
+LLM_KEY_ENCRYPTION_SECRET=<stable-server-secret>
 GEMINI_MODEL=gemini-3.1-flash-lite
 GEMINI_MAX_INPUT_CHARS=3000
 GEMINI_MAX_OUTPUT_TOKENS=1200
@@ -114,6 +114,8 @@ MAX_DAILY_AI_CALLS_PER_USER=20
 MAX_MONTHLY_AI_CALLS_PER_USER=500
 AI_REQUEST_COOLDOWN_SECONDS=5
 ```
+
+Provider별 기본/추천 모델 목록은 `app/services/llm/registry.py`를 기준으로 한다. `GEMINI_MODEL`은 기존 Gemini 설정 호환용 환경변수이며, 사용자 화면의 선택 모델은 Provider별 저장 설정을 우선한다.
 
 ## 4. 데이터 모델
 

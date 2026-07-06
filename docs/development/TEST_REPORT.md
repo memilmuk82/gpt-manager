@@ -1026,3 +1026,23 @@ Docker Compose rebuild: PASS, gpt-manager-web-1 Up
 /terms: PASS, 200
 /privacy: PASS, 200
 ```
+
+## 2026-07-06 전체 Markdown 문서 정합성 점검
+
+범위: `rg --files -g "*.md"` 기준 Markdown 문서 52개 전체. 현재 상태 문서, 기록 문서, UI reference 문서, 배포 문서, 법적 문서의 역할을 구분하고 실제 코드와 충돌하는 암호화 키, Provider 모델, Docker 법적 문서 포함 조건을 수정했다.
+
+명령:
+
+```bash
+rg --files -g "*.md"
+uv run pytest
+npm run test:e2e
+```
+
+결과:
+
+```text
+Markdown inventory: PASS
+uv run pytest: PASS, 97 passed
+npm run test:e2e: PASS, 2 passed
+```

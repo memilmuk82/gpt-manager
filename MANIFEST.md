@@ -8,7 +8,7 @@
 README.md -> PROJECT_STATUS.md -> SYSTEM_DESIGN.md -> docs/ui/UI_GUIDE.md -> docs/EDUCATION.md -> docs/development/DEVELOPMENT_LOG.md -> docs/development/TEST_REPORT.md -> docs/deployment/OCI_DEV_SERVER_SETUP.md
 ```
 
-초기 요구사항과 일정 문서는 `PRD.md`, `DEVELOPMENT_PLAN.md`에 보존하고, 현재 상태 판단은 `PROJECT_STATUS.md`를 우선합니다.
+초기 요구사항과 일정 문서는 `PRD.md`, `DEVELOPMENT_PLAN.md`에 보존하고, 현재 상태 판단은 `PROJECT_STATUS.md`를 우선합니다. `docs/ui/references/` 문서는 디자인 참고 자료이며 현재 구현 사양은 `docs/ui/UI_GUIDE.md`, `docs/ui/DESIGN_SYSTEM.md`, 실제 템플릿과 CSS를 기준으로 확인합니다.
 
 ## 🧭 핵심 문서
 

@@ -1026,3 +1026,25 @@ curl http://127.0.0.1:5000/healthz: PASS, {"status":"ok"}
 curl http://127.0.0.1:5000/terms: PASS, 200
 curl http://127.0.0.1:5000/privacy: PASS, 200
 ```
+
+## 2026-07-06 - 전체 Markdown 문서 정합성 점검
+
+### 변경 내용
+
+```text
+전체 Markdown 파일 52개를 rg --files -g "*.md" 기준으로 점검
+현재 상태 문서와 기록 문서의 역할을 분리하고, 최신 판단 기준은 PROJECT_STATUS.md임을 재확인
+TASK.md의 최신 검증일과 Docker /terms, /privacy 검증 기준 갱신
+SECURITY_DECISIONS.md의 사용자 LLM API Key 암호화 비밀값 설명을 LLM_KEY_ENCRYPTION_SECRET 기준으로 수정
+TECH_STACK_DECISIONS.md의 Provider 모델 설명을 app/services/llm/registry.py 기준으로 정리
+OCI 배포 문서의 .gitignore 예시와 Docker 법적 Markdown 포함 조건 보강
+MANIFEST.md에 UI reference 문서가 구현 사양이 아닌 참고 자료임을 명시
+```
+
+### 검증
+
+```text
+rg --files -g "*.md": PASS
+uv run pytest: PASS, 97 passed
+npm run test:e2e: PASS, 2 passed
+```

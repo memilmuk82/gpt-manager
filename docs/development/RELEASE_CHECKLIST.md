@@ -55,7 +55,7 @@ Docker Compose rebuild: PASS
 
 ```text
 [ ] 제출/리뷰가 끝난 뒤 ENABLE_REVIEW_ADMIN=false 확인
-[ ] 운영 SECRET_KEY와 APP_ENCRYPTION_KEY가 고정값인지 확인
+[ ] 운영 SECRET_KEY, APP_ENCRYPTION_KEY, LLM_KEY_ENCRYPTION_SECRET이 고정값인지 확인
 [ ] Google OAuth Redirect URI가 운영 도메인과 일치하는지 확인
 [ ] 운영 DB 백업 파일 생성 및 복원 절차 리허설
 [ ] 이용약관/개인정보처리방침 기관 최종 검토

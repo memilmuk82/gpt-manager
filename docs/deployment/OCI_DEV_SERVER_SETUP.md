@@ -334,7 +334,7 @@ GOOGLE_REDIRECT_URI=https://<your-domain>/auth/google/callback
 ALLOWED_GOOGLE_DOMAIN=
 ADMIN_EMAILS=admin@senedu.kr
 ASSISTANT_ADMIN_EMAILS=
-LLM_KEY_ENCRYPTION_SECRET=change-this-secret
+LLM_KEY_ENCRYPTION_SECRET=<stable-server-secret>
 GEMINI_MODEL=gemini-3.1-flash-lite
 GEMINI_MAX_INPUT_CHARS=3000
 GEMINI_MAX_OUTPUT_TOKENS=1200
@@ -342,6 +342,8 @@ MAX_DAILY_AI_CALLS_PER_USER=20
 MAX_MONTHLY_AI_CALLS_PER_USER=500
 AI_REQUEST_COOLDOWN_SECONDS=5
 ```
+
+Provider별 기본/추천 모델 목록은 코드의 `app/services/llm/registry.py`를 기준으로 한다. `GEMINI_MODEL`은 기존 Gemini 설정 호환용으로 남아 있으며, 사용자별 선택 모델은 설정 화면에서 Provider별로 저장된다.
 
 `APP_ENCRYPTION_KEY`는 Fernet 키 형식으로 생성한다.
 
@@ -357,13 +359,14 @@ Docker만 사용하는 경우:
 docker compose run --rm web python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
 ```
 
-Google OAuth Redirect URI 설정은 `docs/deployment/GOOGLE_OAUTH_REDIRECT_URI.md`를 기준으로 확인한다.
+Google OAuth Redirect URI 설정은 `docs/deployment/GOOGLE_OAUTH_REDIRECT_URI.md`를 기준으로 확인한다. Docker 이미지는 `docs/` 전체를 제외하지만, 앱 런타임에서 읽는 `docs/legal/TERMS.md`와 `docs/legal/PRIVACY_POLICY.md`는 `.dockerignore` 예외로 반드시 포함한다.
 
 `.gitignore`에 반드시 포함한다.
 
 ```gitignore
 .env
 *.db
+instance/
 data/*.db
 data/*.sqlite
 data/*.sqlite3

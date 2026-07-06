@@ -13,10 +13,10 @@ UI 디자인 시스템 실제 적용 완료
 ```text
 기준 브랜치: master
 운영 도메인: https://dev-gpt.memilmuk82.com
-최근 검증 기준: 2026-07-05
+최근 검증 기준: 2026-07-06
 uv run pytest: 97 passed
 npm run test:e2e: 2 passed
-Docker Compose 재빌드: PASS, gpt-manager-web-1 Up, /healthz 200
+Docker Compose 재빌드: PASS, gpt-manager-web-1 Up, /healthz 200, /terms 200, /privacy 200
 ```
 
 ## 📚 문서 역할
@@ -54,6 +54,7 @@ uv run pytest: PASS, 97 passed
 npm run test:e2e: PASS, 2 passed
 git diff --check: PASS
 Playwright Profile/Admin/mobile overflow check: PASS
+Docker /terms/privacy runtime check: PASS
 ```
 
 ## 📎 다음 운영 TODO

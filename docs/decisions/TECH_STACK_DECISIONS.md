@@ -82,7 +82,7 @@ OCI 단일 인스턴스에서 충분하다.
 
 ```text
 연수 요구사항과 맞다.
-프롬프트 정리은 고급 추론보다 패턴 기반 개선에 가깝다.
+프롬프트 정리는 고급 추론보다 패턴 기반 개선에 가깝다.
 비용을 줄일 수 있다.
 자유 채팅이 아니라 정형 기능 호출이라 안정적이다.
 ```
@@ -90,6 +90,6 @@ OCI 단일 인스턴스에서 충분하다.
 주의:
 
 ```text
-기본 모델은 gemini-3.1-flash-lite이며 모델명은 .env의 GEMINI_MODEL로 관리한다.
-코드에 모델명을 하드코딩하지 않는다.
+지원 Provider는 OpenAI, Google Gemini, Anthropic Claude이며 기본/추천 모델 목록은 app/services/llm/registry.py에서 관리한다.
+사용자는 Provider별 저장 키와 선택 모델을 설정할 수 있고, OpenRouter는 현재 지원하지 않는다.
 ```
