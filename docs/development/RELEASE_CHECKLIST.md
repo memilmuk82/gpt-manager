@@ -10,7 +10,7 @@
 상태: UI 디자인 시스템, 개인 프로필, 관리자 테스트 힌트 반영 완료
 기준일: 2026-07-06
 운영 도메인: https://dev-gpt.memilmuk82.com
-pytest: 92 passed
+pytest: 97 passed
 Playwright E2E: 2 passed
 Docker Compose rebuild: PASS
 ```
@@ -45,7 +45,7 @@ Docker Compose rebuild: PASS
 [x] .env.example 최신화
 [x] 도메인 HTTPS 응답 확인
 [x] Footer 이용약관/개인정보처리방침 링크 확인
-[x] /terms, /privacy HTTPS 200 확인
+[x] Markdown 법적 문서 렌더링/escape 테스트 확인
 [x] light operational SaaS UI 적용 확인
 [x] 주요 화면과 Profile/Admin sections desktop/mobile 수평 overflow 없음 확인
 [x] UI 문서와 실제 구현 정합성 확인

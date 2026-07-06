@@ -24,7 +24,7 @@ OpenRouter: 현재 미지원
 ```text
 상태: UI 디자인 시스템, 개인 프로필, 관리자 테스트 힌트 반영 완료
 최근 검증일: 2026-07-06
-pytest: PASS, 92 passed
+pytest: PASS, 97 passed
 Playwright E2E: PASS, 2 passed
 Docker Compose rebuild: PASS, gpt-manager-web-1 Up, /healthz 200
 운영 Health Check: PASS, /healthz 200 {"status":"ok"}
@@ -132,7 +132,7 @@ Port binding: 127.0.0.1:5000 -> container 5000
 ## 🧾 8. 테스트 결과
 
 ```text
-uv run pytest: PASS, 92 passed
+uv run pytest: PASS, 97 passed
 npm run test:e2e: PASS, 2 passed
 python3 -m py_compile: PASS
 Docker Compose up -d --build: PASS

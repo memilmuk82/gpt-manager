@@ -775,6 +775,6 @@
 검증 결과:
 
 - `git diff --check`: PASS
-- `uv run pytest`: PASS, 92 passed
+- `uv run pytest`: PASS, 97 passed
 - `npm run test:e2e`: PASS, 2 passed
 - Playwright desktop/mobile overflow 점검: PASS, Landing/Login/Dashboard/Reservations/Prompt 입력/Profile/Admin sections에서 수평 overflow 없음

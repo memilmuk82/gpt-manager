@@ -988,3 +988,22 @@ tests/test_legal_pages.py 삭제
 uv run pytest: PASS, 92 passed
 npm run test:e2e: PASS, 2 passed
 ```
+
+## 2026-07-06 - 법적 문서 렌더링 테스트 복원
+
+### 변경 내용
+
+```text
+tests/test_legal_pages.py를 현재 코드 기준으로 복원
+테스트 범위는 Footer 링크, 공개 접근, Markdown 렌더링, raw HTML escape 확인으로 한정
+약관과 개인정보처리방침의 법적 내용 타당성은 자동 테스트가 아니라 수동 검토와 기관 검토 대상으로 유지
+관리자 테스트 카탈로그와 저장소 구조 문서에 복원된 테스트 파일 반영
+현재 상태 문서의 pytest 기준을 97 passed로 갱신
+```
+
+### 검증
+
+```text
+uv run pytest tests/test_legal_pages.py: PASS, 5 passed
+uv run pytest: PASS, 97 passed
+```

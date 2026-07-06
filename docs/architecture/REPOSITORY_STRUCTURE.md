@@ -72,6 +72,7 @@ gpt-manager/
 │  ├─ test_config.py
 │  ├─ test_google_oauth.py
 │  ├─ test_health.py
+│  ├─ test_legal_pages.py
 │  ├─ test_prompt_reviews.py
 │  ├─ test_reservations.py
 │  ├─ test_usage_logs.py

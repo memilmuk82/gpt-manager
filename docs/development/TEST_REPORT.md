@@ -965,7 +965,7 @@ uv run pytest tests/test_config.py tests/test_reservations.py
 ```text
 py_compile: PASS
 관련 pytest: PASS, 17 passed
-전체 pytest: PASS, 92 passed
+전체 pytest: PASS, 97 passed
 Playwright E2E: PASS, 2 passed
 ```
 
@@ -985,4 +985,22 @@ npm run test:e2e
 ```text
 uv run pytest: PASS, 92 passed
 npm run test:e2e: PASS, 2 passed
+```
+
+## 2026-07-06 법적 문서 렌더링 테스트 복원 후 검증
+
+범위: `tests/test_legal_pages.py` 복원. 테스트 자동화 범위는 Footer 링크, `/terms`와 `/privacy` 공개 접근, Markdown 렌더링, raw HTML escape 확인으로 제한한다. 약관과 개인정보처리방침의 법적 내용 타당성은 수동 검토와 기관 검토로 확인한다.
+
+명령:
+
+```bash
+uv run pytest tests/test_legal_pages.py
+uv run pytest
+```
+
+결과:
+
+```text
+uv run pytest tests/test_legal_pages.py: PASS, 5 passed
+uv run pytest: PASS, 97 passed
 ```
