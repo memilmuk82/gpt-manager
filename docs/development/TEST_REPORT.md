@@ -1004,3 +1004,25 @@ uv run pytest
 uv run pytest tests/test_legal_pages.py: PASS, 5 passed
 uv run pytest: PASS, 97 passed
 ```
+
+## 2026-07-06 Docker 법적 페이지 런타임 검증
+
+범위: Docker 이미지가 런타임에 읽는 `docs/legal/TERMS.md`, `docs/legal/PRIVACY_POLICY.md` 포함 여부와 `/terms`, `/privacy` 응답 확인. `docs/` 전체는 이미지에서 제외하되 두 Markdown 원문만 예외로 포함한다.
+
+명령:
+
+```bash
+docker compose up -d --build
+curl -fsS http://127.0.0.1:5000/healthz
+curl -fsS -o /tmp/terms.html -w "terms:%{http_code}\n" http://127.0.0.1:5000/terms
+curl -fsS -o /tmp/privacy.html -w "privacy:%{http_code}\n" http://127.0.0.1:5000/privacy
+```
+
+결과:
+
+```text
+Docker Compose rebuild: PASS, gpt-manager-web-1 Up
+/healthz: PASS, {"status":"ok"}
+/terms: PASS, 200
+/privacy: PASS, 200
+```

@@ -1007,3 +1007,22 @@ tests/test_legal_pages.py를 현재 코드 기준으로 복원
 uv run pytest tests/test_legal_pages.py: PASS, 5 passed
 uv run pytest: PASS, 97 passed
 ```
+
+## 2026-07-06 - Docker 법적 문서 포함 기준 문서화
+
+### 변경 내용
+
+```text
+Docker 빌드에서 docs 전체는 제외하되 /terms와 /privacy 런타임에 필요한 TERMS.md, PRIVACY_POLICY.md만 포함하도록 문서화
+README, PROJECT_STATUS, REPOSITORY_STRUCTURE, .dockerignore 주석에 법적 Markdown 런타임 의존성 반영
+Docker 재빌드 후 /healthz, /terms, /privacy 응답 확인 기준 추가
+```
+
+### 검증
+
+```text
+Docker Compose rebuild: PASS, gpt-manager-web-1 Up
+curl http://127.0.0.1:5000/healthz: PASS, {"status":"ok"}
+curl http://127.0.0.1:5000/terms: PASS, 200
+curl http://127.0.0.1:5000/privacy: PASS, 200
+```

@@ -406,6 +406,8 @@ docker compose up -d --build
 
 ```bash
 curl http://127.0.0.1:5000/healthz
+curl http://127.0.0.1:5000/terms
+curl http://127.0.0.1:5000/privacy
 ```
 
 중지:
@@ -414,7 +416,7 @@ curl http://127.0.0.1:5000/healthz
 docker compose down
 ```
 
-현재 `compose.yaml`은 호스트 `127.0.0.1:5000`에 바인딩합니다. 운영 공개 접속은 Nginx가 `https://dev-gpt.memilmuk82.com`에서 이 컨테이너로 프록시합니다. Docker 이미지는 관리자 전체 테스트 실행을 위해 dev dependency group도 설치합니다.
+현재 `compose.yaml`은 호스트 `127.0.0.1:5000`에 바인딩합니다. 운영 공개 접속은 Nginx가 `https://dev-gpt.memilmuk82.com`에서 이 컨테이너로 프록시합니다. Docker 이미지는 관리자 전체 테스트 실행을 위해 dev dependency group도 설치합니다. 또한 런타임에서 /terms와 /privacy가 docs/legal Markdown 원문을 읽으므로 TERMS.md와 PRIVACY_POLICY.md는 Docker 이미지에 포함합니다.
 
 SQLite 운영 DB 백업:
 

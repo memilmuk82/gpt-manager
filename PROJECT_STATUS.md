@@ -26,7 +26,7 @@ OpenRouter: 현재 미지원
 최근 검증일: 2026-07-06
 pytest: PASS, 97 passed
 Playwright E2E: PASS, 2 passed
-Docker Compose rebuild: PASS, gpt-manager-web-1 Up, /healthz 200
+Docker Compose rebuild: PASS, gpt-manager-web-1 Up, /healthz 200, /terms 200, /privacy 200
 운영 Health Check: PASS, /healthz 200 {"status":"ok"}
 HTTPS 도메인: PASS, dev-gpt.memilmuk82.com 200 OK
 HTTP -> HTTPS: PASS, 301 redirect
@@ -135,7 +135,7 @@ Port binding: 127.0.0.1:5000 -> container 5000
 uv run pytest: PASS, 97 passed
 npm run test:e2e: PASS, 2 passed
 python3 -m py_compile: PASS
-Docker Compose up -d --build: PASS
+Docker Compose up -d --build: PASS, /healthz/terms/privacy 200
 관리자 테스트 실행 화면: 테스트 파일별 검증 대상/주요 내용/상태/실패 원인 요약/해결 힌트 표시 확인
 예약 UX: 자동 충돌 확인과 max_duration_minutes 480분 기본값 화면 반영 확인
 관리자 운영 도구: CSV 조건 필터와 백업 최근 20개 보관 정책 확인
