@@ -115,7 +115,7 @@ MAX_MONTHLY_AI_CALLS_PER_USER=500
 AI_REQUEST_COOLDOWN_SECONDS=5
 ```
 
-Provider별 기본/추천 모델 목록은 `app/services/llm/registry.py`를 기준으로 한다. `GEMINI_MODEL`은 기존 Gemini 설정 호환용 환경변수이며, 사용자 화면의 선택 모델은 Provider별 저장 설정을 우선한다.
+Provider별 기본/추천 모델 목록은 `app/services/llm/registry.py`를 기준으로 한다. `GEMINI_MODEL`은 기존 Gemini 설정 호환용 환경변수이며, 사용자 화면의 선택 모델은 Provider별 저장 설정을 우선한다. 설정 화면에서 Provider select가 변경되면 페이지 전체 새로고침 없이 `/settings/api-key/models` JSON 응답으로 모델 select만 부분 갱신하며, 수동 새로고침 버튼은 실패 시 재시도/fallback 용도로 유지한다.
 
 ## 4. 데이터 모델
 
@@ -382,6 +382,7 @@ GET  /prompt-reviews/<id>
 GET  /settings/api-key
 POST /settings/api-key
 POST /settings/api-key/test
+POST /settings/api-key/models  # HTML fallback 또는 JSON 모델 목록 부분 갱신
 POST /settings/api-key/delete
 ```
 

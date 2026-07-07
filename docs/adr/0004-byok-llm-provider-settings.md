@@ -17,7 +17,7 @@ API Key는 기본적으로 서버 DB에 저장하지 않는다. 사용자가 서
 ## 결과
 
 - Provider별 adapter 구조를 사용한다.
-- 모델 목록 새로고침 실패 시 Provider별 추천 모델 목록으로 fallback한다. Anthropic Claude 기본 추천 목록은 `claude-sonnet-4-6`, `claude-haiku-4-5`, `claude-opus-4-8`이며, API 조회 결과에 `claude-opus-4-7` 등 다른 모델이 포함되면 그대로 선택 가능하게 표시한다.
+- Provider 변경 시 설정 화면의 모델 select는 페이지 전체 새로고침 없이 자동 부분 갱신한다. 모델 목록 새로고침 실패 시 Provider별 추천 모델 목록으로 fallback하며, 수동 새로고침 버튼은 재시도 경로로 유지한다. Anthropic Claude 기본 추천 목록은 `claude-sonnet-4-6`, `claude-haiku-4-5`, `claude-opus-4-8`이며, API 조회 결과에 `claude-opus-4-7` 등 다른 모델이 포함되면 그대로 선택 가능하게 표시한다.
 - 연결 테스트와 정리 실행은 비용이 발생할 수 있음을 UI에 안내한다.
 - 일일, 월간, 짧은 시간 내 연속 요청 제한을 적용한다.
 - 관리자 화면에는 등록 여부와 마지막 4자리 등 메타데이터만 표시한다.

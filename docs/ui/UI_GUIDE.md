@@ -629,6 +629,7 @@
 - API Key 암호화 저장
 - Provider 활성화
 - 브라우저 localStorage 저장 옵션
+- Provider 변경 시 모델 select 자동 부분 갱신
 - 모델 목록 새로고침
 - 연결 테스트
 - 키 삭제
@@ -663,6 +664,7 @@
 - 저장할 키 없음
 - 암호화 실패
 - 연결 테스트 실패
+- 모델 목록 자동 갱신 실패
 - 모델 목록 refresh fallback
 
 모바일 대응:

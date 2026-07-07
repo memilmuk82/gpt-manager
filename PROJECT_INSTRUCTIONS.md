@@ -341,6 +341,7 @@ GPT 계정 사용량 자동 조회
 정해진 기능 버튼에서만 API 호출
 결과 저장 후 재조회 시 API 재호출 금지
 Provider별 추천 모델 목록과 models endpoint 새로고침을 사용하며 모델명은 변경 가능성을 안내
+Provider 변경 시 모델 select는 페이지 전체 새로고침 없이 자동 부분 갱신하고, 수동 모델 목록 새로고침은 재시도/fallback 용도로 유지
 ```
 
 지원 Provider와 기본 추천 모델:

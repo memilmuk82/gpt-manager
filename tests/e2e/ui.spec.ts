@@ -67,3 +67,38 @@ test('profile, admin sections, and mobile operational UI stay usable without pag
     await expectNoPageOverflow(page);
   }
 });
+
+
+test('provider change refreshes model options without a full page reload', async ({ page }) => {
+  const password = 'password123';
+  const teacherEmail = `provider.refresh.${Date.now()}@senedu.kr`;
+
+  await registerAndLogin(page, teacherEmail, 'Provider Refresh Teacher', password);
+  await page.goto('/settings/api-key?provider=gemini');
+  await expect(page.locator('#selected_model')).toHaveValue('gemini-3.1-flash-lite');
+  await page.evaluate(() => { (window as any).__providerChangeMarker = true; });
+  await page.route('**/settings/api-key/models', async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    await route.continue();
+  });
+
+  const modelsResponse = page.waitForResponse((response) => (
+    response.url().includes('/settings/api-key/models') && response.request().method() === 'POST'
+  ));
+  await page.locator('#provider').selectOption('anthropic');
+  await expect(page.locator('#selected_model')).toBeDisabled();
+  const response = await modelsResponse;
+
+  expect(response.ok()).toBeTruthy();
+  await expect(page.locator('#selected_model')).toBeEnabled();
+  await expect(page.locator('#selected_model')).toHaveValue('claude-sonnet-4-6');
+  await expect(page.locator('#selected_model option')).toHaveText([
+    'claude-sonnet-4-6',
+    'claude-haiku-4-5',
+    'claude-opus-4-8',
+  ]);
+  await expect(page.locator('[data-model-status]')).toContainText('기본 추천 모델 목록');
+  await expect(page.locator('[data-provider-card][data-provider="anthropic"]')).toHaveClass(/ring-2/);
+  await expect(page).toHaveURL(/provider=anthropic/);
+  await expect.poll(() => page.evaluate(() => (window as any).__providerChangeMarker)).toBe(true);
+});

@@ -157,3 +157,62 @@ def test_model_refresh_falls_back_without_api_key(client, app):
     assert response.status_code == 200
     assert "gpt-5.5" in body
     assert "기본 추천 모델 목록" in body
+
+
+def test_model_refresh_json_selects_provider_default_when_current_model_is_missing(client, app):
+    with app.app_context():
+        create_user()
+
+    login(client)
+    response = client.post(
+        "/settings/api-key/models",
+        data={"provider": "anthropic", "selected_model": "gpt-5.5"},
+        headers={"Accept": "application/json"},
+    )
+    data = response.get_json()
+
+    assert response.status_code == 200
+    assert data["provider"] == "anthropic"
+    assert data["models"] == ["claude-sonnet-4-6", "claude-haiku-4-5", "claude-opus-4-8"]
+    assert data["selected_model"] == "claude-sonnet-4-6"
+    assert data["status"] == "warning"
+
+
+def test_model_refresh_json_keeps_current_model_when_available(client, app, monkeypatch):
+    def fake_list_models(provider, api_key):
+        return ["custom-model", "other-model"], True, "모델 목록을 새로고침했습니다."
+
+    monkeypatch.setattr("app.settings.routes.list_models_with_fallback", fake_list_models)
+
+    with app.app_context():
+        create_user()
+
+    login(client)
+    response = client.post(
+        "/settings/api-key/models",
+        data={"provider": "openai", "selected_model": "custom-model", "api_key": "openai-key-1111"},
+        headers={"Accept": "application/json"},
+    )
+    data = response.get_json()
+
+    assert response.status_code == 200
+    assert data["models"] == ["custom-model", "other-model"]
+    assert data["selected_model"] == "custom-model"
+    assert data["status"] == "success"
+
+
+def test_model_refresh_json_reports_invalid_provider_without_page_render(client, app):
+    with app.app_context():
+        create_user()
+
+    login(client)
+    response = client.post(
+        "/settings/api-key/models",
+        data={"provider": "unsupported"},
+        headers={"Accept": "application/json"},
+    )
+    data = response.get_json()
+
+    assert response.status_code == 400
+    assert data["status"] == "error"
+    assert data["models"] == []

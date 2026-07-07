@@ -1,4 +1,4 @@
-from flask import flash, redirect, render_template, request, url_for
+from flask import flash, jsonify, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
 from app.extensions import db
@@ -97,7 +97,14 @@ def test_api_key():
 @settings_bp.post("/api-key/models")
 @login_required
 def refresh_models():
-    provider = _provider_from_request()
+    try:
+        provider = normalize_provider(request.values.get("provider") or "gemini")
+    except ValueError:
+        if _wants_json():
+            return jsonify({"message": "지원하지 않는 AI Provider입니다.", "models": [], "status": "error"}), 400
+        flash("지원하지 않는 AI Provider입니다.", "error")
+        provider = "gemini"
+
     raw_api_key = request.form.get("api_key", "").strip()
     if not raw_api_key:
         user_api_key = _get_user_api_key(provider)
@@ -108,6 +115,23 @@ def refresh_models():
                 raw_api_key = ""
 
     models, refreshed, message = list_models_with_fallback(provider, raw_api_key or None)
+    if _wants_json():
+        selected_model = _select_model(
+            provider=provider,
+            models=models,
+            requested_model=request.form.get("selected_model", "").strip(),
+        )
+        return jsonify(
+            {
+                "provider": provider,
+                "models": models,
+                "selected_model": selected_model,
+                "refreshed": refreshed,
+                "message": message,
+                "status": "success" if refreshed else "warning",
+            }
+        )
+
     flash(message, "success" if refreshed else "warning")
     return _render_settings(provider, refreshed_models=models)
 
@@ -147,3 +171,16 @@ def _render_settings(provider: str, refreshed_models: list[str] | None = None, s
 
 def _get_user_api_key(provider: str) -> UserApiKey | None:
     return UserApiKey.query.filter_by(user_id=current_user.id, provider=provider).first()
+
+
+def _select_model(provider: str, models: list[str], requested_model: str = "") -> str:
+    if requested_model and requested_model in models:
+        return requested_model
+    provider_default = default_model(provider)
+    if provider_default in models:
+        return provider_default
+    return models[0] if models else provider_default
+
+
+def _wants_json() -> bool:
+    return request.accept_mimetypes.best == "application/json"

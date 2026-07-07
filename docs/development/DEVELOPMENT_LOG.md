@@ -4,6 +4,24 @@
 
 [README](../../README.md) · [현재 상태](../../PROJECT_STATUS.md) · [테스트 리포트](TEST_REPORT.md)
 
+## 2026-07-07 - Provider 설정 모델 목록 자동 부분 갱신
+
+### 구현
+
+```text
+/settings/api-key Provider select 변경 시 페이지 전체 새로고침 없이 /settings/api-key/models JSON 응답으로 모델 select만 갱신
+모델 목록 로딩 중 select disabled 및 상태 메시지 표시
+AbortController와 request id로 빠른 Provider 변경 시 마지막 응답만 UI 반영
+현재 모델이 새 Provider 모델 목록에 없으면 Provider 기본 모델 선택
+수동 모델 목록 새로고침 버튼은 실패 시 재시도/fallback 경로로 유지
+```
+
+### 검증
+
+```text
+tests/test_api_keys.py JSON 모델 갱신 계약 테스트 추가
+```
+
 
 ## 2026-06-30 - Phase 0
 

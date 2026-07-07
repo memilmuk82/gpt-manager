@@ -11,11 +11,31 @@
         <div>
           <p class="gm-eyebrow">개인 설정</p>
           <h1 class="gm-page-title mt-2 text-3xl">AI Provider 설정</h1>
-          <p class="gm-body mt-3 max-w-3xl">OpenAI, Google Gemini, Anthropic Claude를 사용자 본인 API Key로 연결합니다. 관리자는 공용 API Key를 제공하지 않습니다.</p>
+          <p class="gm-body mt-3 max-w-3xl">BYOK(Bring Your Own Key)는 학교나 관리자가 공용 AI API Key를 나눠 쓰는 방식이 아니라, 사용자가 본인 명의의 OpenAI, Google Gemini, Anthropic Claude API Key를 직접 연결해 사용하는 방식입니다.</p>
         </div>
         <a class="gm-button-secondary" href="{{ url_for('prompts.index') }}">프롬프트 정리</a>
       </div>
     </div>
+
+    <section class="gm-surface p-6">
+      <p class="gm-eyebrow">BYOK Overview</p>
+      <h2 class="gm-section-title mt-2">이 화면에서 설정하는 것</h2>
+      <div class="mt-5 grid gap-4 md:grid-cols-3">
+        <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <p class="text-sm font-extrabold text-slate-950">본인 키 사용</p>
+          <p class="gm-body mt-2 text-sm">Provider 계정, API Key 발급, 결제 수단, 사용량 한도는 사용자가 각 서비스에서 직접 관리합니다.</p>
+        </div>
+        <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <p class="text-sm font-extrabold text-slate-950">저장 또는 일회성 입력</p>
+          <p class="gm-body mt-2 text-sm">서버 저장을 선택하면 암호화 저장 키로 반복 실행할 수 있고, 저장하지 않으면 프롬프트 정리 화면에서 실행할 때마다 일회성으로 입력합니다.</p>
+        </div>
+        <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <p class="text-sm font-extrabold text-slate-950">외부 전송 범위</p>
+          <p class="gm-body mt-2 text-sm">프롬프트 정리 실행 시 사용자가 입력한 요청과 정리 목표가 선택한 외부 Provider API로 전송될 수 있습니다.</p>
+        </div>
+      </div>
+    </section>
+
 
     <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
       <section class="gm-surface p-6">
@@ -24,7 +44,7 @@
         <div class="mt-5 space-y-3">
           {% for provider in providers %}
             {% set key = (user_api_keys | selectattr('provider', 'equalto', provider.key) | list | first) %}
-            <a class="gm-model-card block {% if selected_provider == provider.key %}ring-2 ring-slate-300{% endif %}" data-provider="{{ provider.key }}" href="{{ url_for('settings.api_key', provider=provider.key) }}">
+            <a class="gm-model-card block {% if selected_provider == provider.key %}ring-2 ring-slate-300{% endif %}" data-provider="{{ provider.key }}" data-provider-card data-provider-has-key="{{ 'true' if key else 'false' }}" data-provider-active="{{ 'true' if key and key.is_active else 'false' }}" href="{{ url_for('settings.api_key', provider=provider.key) }}">
               <div class="flex items-center justify-between gap-3">
                 <p class="font-extrabold text-slate-950">{{ provider.label }}</p>
                 <span class="gm-badge {% if key and key.is_active %}gm-badge-success{% elif key %}gm-badge-warning{% endif %}">{% if key and key.is_active %}활성{% elif key %}비활성{% else %}미등록{% endif %}</span>
@@ -40,11 +60,11 @@
         <p class="text-xs font-extrabold text-amber-700">BYOK Security</p>
         <h2 class="mt-2 text-xl font-extrabold">BYOK 보안 안내</h2>
         <div class="mt-4 grid gap-3 text-sm font-semibold leading-6">
-          <p>이 기능은 사용자가 본인의 API Key를 등록하여 사용하는 방식입니다. API 사용 요금은 각 Provider 정책에 따라 사용자 본인에게 청구될 수 있습니다.</p>
-          <p>키 발급, 결제 설정, 사용량 관리는 사용자 본인의 책임입니다. 테스트 호출도 소량의 비용이 발생할 수 있습니다.</p>
-          <p>API Key는 기본적으로 서버 DB에 저장하지 않습니다. 저장 옵션을 선택한 경우에도 평문이 아닌 암호화된 형태로 저장됩니다.</p>
-          <p>관리자와 다른 사용자는 API Key 원문을 볼 수 없습니다. 공용 PC에서는 API Key 저장 옵션을 사용하지 마세요.</p>
-          <p>학생 개인정보, 성적, 생활기록부 원문, 민감정보는 입력하지 마세요.</p>
+          <p>관리자는 공용 API Key를 제공하지 않으며, 다른 사용자의 키를 대신 등록하거나 조회하지 않습니다.</p>
+          <p>API 사용 요금은 각 Provider 정책에 따라 사용자 본인에게 청구될 수 있습니다. 연결 테스트, 모델 목록 새로고침, 프롬프트 정리 실행도 비용이나 사용량 차감이 발생할 수 있습니다.</p>
+          <p>API Key는 기본적으로 서버 DB에 저장하지 않습니다. 저장 옵션을 선택한 경우에도 `LLM_KEY_ENCRYPTION_SECRET` 기반 암호화 값과 마지막 4자리만 저장합니다.</p>
+          <p>관리자와 다른 사용자는 API Key 원문을 볼 수 없습니다. 공용 PC나 공동 계정 환경에서는 서버 저장과 브라우저 저장 옵션을 사용하지 마세요.</p>
+          <p>학생 개인정보, 성적, 생활기록부 원문, 상담 내용, 평가 문항 원본, 비공개 내부 자료는 입력하지 마세요.</p>
         </div>
       </section>
     </div>
@@ -58,42 +78,143 @@
       <div class="grid gap-4 md:grid-cols-2">
         <label class="block text-sm font-extrabold text-slate-950" for="provider">Provider
           <select class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-base" id="provider" name="provider" data-provider-select>
-            {% for provider in providers %}<option value="{{ provider.key }}" {% if selected_provider == provider.key %}selected{% endif %}>{{ provider.label }}</option>{% endfor %}
+            {% for provider in providers %}<option value="{{ provider.key }}" data-default-model="{{ provider.default_model }}" {% if selected_provider == provider.key %}selected{% endif %}>{{ provider.label }}</option>{% endfor %}
           </select>
         </label>
         <label class="block text-sm font-extrabold text-slate-950" for="selected_model">모델
-          <select class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-base" id="selected_model" name="selected_model">
+          <select class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-base disabled:cursor-wait disabled:bg-slate-100 disabled:text-slate-500" id="selected_model" name="selected_model" data-model-select>
             {% for model in model_options %}<option value="{{ model }}" {% if selected_model == model %}selected{% endif %}>{{ model }}</option>{% endfor %}
           </select>
+          <span class="mt-2 block text-xs font-bold text-slate-500" data-model-status aria-live="polite"></span>
         </label>
       </div>
       <label class="block text-sm font-extrabold text-slate-950" for="api_key">API Key
         <input class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 text-base focus:border-slate-950 focus:outline-none focus:ring-1 focus:ring-slate-950" id="api_key" name="api_key" type="password" autocomplete="off" placeholder="새 키를 입력하면 서버 저장 또는 테스트에 사용됩니다.">
       </label>
       <div class="flex flex-wrap gap-5 text-sm font-bold text-slate-700">
-        <label class="inline-flex items-center gap-2"><input class="h-4 w-4" type="checkbox" name="is_active" {% if not user_api_key or user_api_key.is_active %}checked{% endif %}> 이 Provider 활성화</label>
+        <label class="inline-flex items-center gap-2"><input class="h-4 w-4" type="checkbox" name="is_active" data-active-toggle {% if not user_api_key or user_api_key.is_active %}checked{% endif %}> 이 Provider 활성화</label>
         <label class="inline-flex items-center gap-2"><input class="h-4 w-4" type="checkbox" data-browser-save> 이 브라우저에 저장</label>
       </div>
       <div class="flex flex-wrap gap-3">
         <button class="gm-button-primary" type="submit">✓ 서버에 암호화 저장</button>
         <button class="gm-button-secondary" formaction="{{ url_for('settings.refresh_models') }}" formmethod="post" type="submit" data-single-submit>모델 목록 새로고침</button>
         <button class="gm-button-secondary" formaction="{{ url_for('settings.test_api_key') }}" formmethod="post" type="submit" data-single-submit>연결 테스트</button>
-        {% if user_api_key %}<button class="inline-flex min-h-12 items-center justify-center rounded-xl border border-red-200 bg-white px-5 text-sm font-extrabold text-red-700 hover:bg-red-50" formaction="{{ url_for('settings.delete_api_key') }}" formmethod="post" type="submit">키 삭제</button>{% endif %}
+        <button class="inline-flex min-h-12 items-center justify-center rounded-xl border border-red-200 bg-white px-5 text-sm font-extrabold text-red-700 hover:bg-red-50 disabled:hidden" formaction="{{ url_for('settings.delete_api_key') }}" formmethod="post" type="submit" data-delete-button {% if not user_api_key %}disabled{% endif %}>키 삭제</button>
       </div>
     </form>
   </section>
   <script>
     (function () {
       const provider = document.querySelector('[data-provider-select]');
+      const modelSelect = document.querySelector('[data-model-select]');
+      const modelStatus = document.querySelector('[data-model-status]');
       const keyInput = document.getElementById('api_key');
       const browserSave = document.querySelector('[data-browser-save]');
+      const activeToggle = document.querySelector('[data-active-toggle]');
+      const deleteButton = document.querySelector('[data-delete-button]');
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
       const storageKey = function () { return 'gpt-manager-api-key-' + provider.value; };
-      function loadKey() { const value = localStorage.getItem(storageKey()) || ''; keyInput.value = value; browserSave.checked = Boolean(value); }
-      provider.addEventListener('change', function () { window.location = '{{ url_for('settings.api_key') }}?provider=' + encodeURIComponent(provider.value); });
+      let modelAbort = null;
+      let modelRequestId = 0;
+
+      function providerOption() {
+        return Array.from(provider.options).find(function (option) { return option.value === provider.value; });
+      }
+
+      function providerCard() {
+        return Array.from(document.querySelectorAll('[data-provider-card]')).find(function (card) { return card.dataset.provider === provider.value; });
+      }
+
+      function setModelStatus(state, text) {
+        const classes = {
+          idle: 'mt-2 block text-xs font-bold text-slate-500',
+          loading: 'mt-2 block text-xs font-bold text-slate-500',
+          success: 'mt-2 block text-xs font-bold text-emerald-700',
+          warning: 'mt-2 block text-xs font-bold text-amber-700',
+          error: 'mt-2 block text-xs font-bold text-red-700'
+        };
+        modelStatus.className = classes[state] || classes.idle;
+        modelStatus.textContent = text || '';
+      }
+
+      function loadKey() {
+        const value = localStorage.getItem(storageKey()) || '';
+        keyInput.value = value;
+        browserSave.checked = Boolean(value);
+      }
+
+      function syncProviderState() {
+        document.querySelectorAll('[data-provider-card]').forEach(function (card) {
+          card.classList.toggle('ring-2', card.dataset.provider === provider.value);
+          card.classList.toggle('ring-slate-300', card.dataset.provider === provider.value);
+        });
+        const card = providerCard();
+        const hasKey = card?.dataset.providerHasKey === 'true';
+        activeToggle.checked = hasKey ? card.dataset.providerActive === 'true' : true;
+        if (deleteButton) deleteButton.disabled = !hasKey;
+      }
+
+      function replaceModelOptions(models, selectedModel) {
+        modelSelect.replaceChildren();
+        models.forEach(function (model) {
+          const option = document.createElement('option');
+          option.value = model;
+          option.textContent = model;
+          option.selected = model === selectedModel;
+          modelSelect.appendChild(option);
+        });
+        if (!modelSelect.value && modelSelect.options.length > 0) {
+          modelSelect.options[0].selected = true;
+        }
+      }
+
+      async function refreshModelsForProvider() {
+        if (modelAbort) modelAbort.abort();
+        modelAbort = new AbortController();
+        const requestId = ++modelRequestId;
+        const previousModel = modelSelect.value;
+        const formData = new FormData();
+        formData.append('provider', provider.value);
+        formData.append('selected_model', previousModel);
+        formData.append('api_key', keyInput.value || '');
+        formData.append('csrf_token', csrfToken);
+
+        modelSelect.disabled = true;
+        setModelStatus('loading', '모델 목록을 불러오는 중입니다.');
+        try {
+          const response = await fetch('{{ url_for('settings.refresh_models') }}', {
+            method: 'POST',
+            headers: { 'Accept': 'application/json', 'X-CSRFToken': csrfToken },
+            body: formData,
+            signal: modelAbort.signal
+          });
+          const data = await response.json().catch(function () { return {}; });
+          if (requestId !== modelRequestId) return;
+          if (!response.ok) throw new Error(data.message || '모델 목록을 불러오지 못했습니다.');
+          replaceModelOptions(data.models || [], data.selected_model || providerOption()?.dataset.defaultModel || '');
+          setModelStatus(data.status || 'success', data.message || '모델 목록을 갱신했습니다.');
+        } catch (error) {
+          if (error.name === 'AbortError' || requestId !== modelRequestId) return;
+          setModelStatus('error', error.message || '모델 목록을 불러오지 못했습니다. 모델 목록 새로고침 버튼으로 다시 시도하세요.');
+        } finally {
+          if (requestId === modelRequestId) {
+            modelSelect.disabled = false;
+            modelAbort = null;
+          }
+        }
+      }
+
+      provider.addEventListener('change', function () {
+        syncProviderState();
+        loadKey();
+        refreshModelsForProvider();
+        window.history.replaceState(null, '', '{{ url_for('settings.api_key') }}?provider=' + encodeURIComponent(provider.value));
+      });
       browserSave.addEventListener('change', function () { if (!browserSave.checked) localStorage.removeItem(storageKey()); });
       document.querySelector('[data-browser-key-form]').addEventListener('submit', function () { if (browserSave.checked && keyInput.value) localStorage.setItem(storageKey(), keyInput.value); });
       document.querySelectorAll('[data-single-submit]').forEach(function (button) { button.addEventListener('click', function () { setTimeout(function () { button.disabled = true; }, 0); }); });
       loadKey();
+      syncProviderState();
     })();
   </script>
 {% endblock %}

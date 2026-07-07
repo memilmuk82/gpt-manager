@@ -96,6 +96,7 @@ README는 프로젝트의 입구 역할을 합니다. 현재 상태는 PROJECT_S
 | [docs/ui/DESIGN_SYSTEM.md](docs/ui/DESIGN_SYSTEM.md) | 공통 UI 토큰과 컴포넌트를 볼 때 | color, type, spacing, radius, badge, table, form, accessibility 기준 |
 | [docs/ui/DESIGN_DECISIONS.md](docs/ui/DESIGN_DECISIONS.md) | 디자인 선택 이유를 볼 때 | Apple/Vercel/GitHub/Linear 등 참고 범위와 제외 기준 |
 | [docs/guides/CODEX_PHASE_1_PROMPT.md](docs/guides/CODEX_PHASE_1_PROMPT.md) | 초기 Codex 프롬프트를 참고할 때 | Phase 1 작업 지시문 기록 |
+| [docs/guides/BYOK_AI_USAGE_GUIDE.md](docs/guides/BYOK_AI_USAGE_GUIDE.md) | BYOK AI 사용 안내를 볼 때 | Provider 설정, 저장 방식, 비용 책임, 외부 전송, 입력 금지 항목 |
 | [docs/deployment/OCI_DEV_SERVER_SETUP.md](docs/deployment/OCI_DEV_SERVER_SETUP.md) | 서버 구축과 배포를 진행할 때 | OCI, Docker, Nginx, HTTPS 구성 절차 |
 | [docs/deployment/GOOGLE_OAUTH_REDIRECT_URI.md](docs/deployment/GOOGLE_OAUTH_REDIRECT_URI.md) | Google OAuth를 설정할 때 | Redirect URI, 승인 정책, 점검 방법 |
 | [docs/decisions/TECH_STACK_DECISIONS.md](docs/decisions/TECH_STACK_DECISIONS.md) | 기술 선택 배경을 볼 때 | Flask, SQLite, Tailwind, Docker, OCI 선택 이유 |
@@ -296,7 +297,7 @@ CSRF 토큰 기반 POST 요청 보호
 관리자는 공용 API Key를 제공하지 않으며 OpenRouter는 현재 지원하지 않습니다.
 API Key는 기본적으로 서버 DB에 저장하지 않고, 사용자가 선택한 경우에만 암호화 저장합니다.
 서버 저장 시 API Key 원문은 화면/관리자/로그/DB 조회에 노출하지 않고 마지막 4자리만 표시합니다.
-모델 선택, 모델 목록 새로고침, 연결 테스트, Provider별 활성/비활성 설정을 제공합니다. Anthropic Claude 기본 추천 모델은 Sonnet 4.6, Haiku 4.5, Opus 4.8 기준이며, 새로고침 시 Provider API에서 조회된 전체 모델을 표시합니다.
+모델 선택, Provider 변경 시 모델 select 자동 부분 갱신, 모델 목록 수동 새로고침, 연결 테스트, Provider별 활성/비활성 설정을 제공합니다. Anthropic Claude 기본 추천 모델은 Sonnet 4.6, Haiku 4.5, Opus 4.8 기준이며, 자동/수동 갱신 시 Provider API에서 조회된 전체 모델을 표시하고 실패 시 추천 목록으로 fallback합니다.
 BYOK 기반 AI 프롬프트 정리 결과 저장/조회
 프롬프트 정리 템플릿 선택 및 자동 채우기
 프롬프트 정리 결과 Markdown 다운로드
@@ -369,7 +370,7 @@ Google Cloud Console의 Authorized redirect URI와 `.env`의 `GOOGLE_REDIRECT_UR
 
 이 프로젝트는 BYOK 방식입니다. 관리자는 공용 API Key를 제공하지 않고, 지원 Provider는 OpenAI, Google Gemini, Anthropic Claude 3개로 제한합니다. OpenRouter는 현재 지원하지 않습니다.
 
-API Key는 기본적으로 서버 DB에 저장하지 않으며, 사용자가 서버 저장을 선택한 경우에도 `LLM_KEY_ENCRYPTION_SECRET` 기반 암호문과 마지막 4자리만 저장합니다. 세부 보안 원칙은 [docs/decisions/SECURITY_DECISIONS.md](docs/decisions/SECURITY_DECISIONS.md), Provider 결정은 [docs/adr/0004-byok-llm-provider-settings.md](docs/adr/0004-byok-llm-provider-settings.md)를 기준으로 합니다.
+API Key는 기본적으로 서버 DB에 저장하지 않으며, 사용자가 서버 저장을 선택한 경우에도 `LLM_KEY_ENCRYPTION_SECRET` 기반 암호문과 마지막 4자리만 저장합니다. 사용자는 Provider 계정, API Key 발급, 결제 수단, 사용량 한도를 직접 관리해야 하며, 프롬프트 정리 실행 시 입력 내용이 선택한 외부 Provider API로 전송될 수 있습니다. 상세 사용 안내는 [docs/guides/BYOK_AI_USAGE_GUIDE.md](docs/guides/BYOK_AI_USAGE_GUIDE.md), 세부 보안 원칙은 [docs/decisions/SECURITY_DECISIONS.md](docs/decisions/SECURITY_DECISIONS.md), Provider 결정은 [docs/adr/0004-byok-llm-provider-settings.md](docs/adr/0004-byok-llm-provider-settings.md)를 기준으로 합니다.
 
 ## 💻 로컬 실행
 
