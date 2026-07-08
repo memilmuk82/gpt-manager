@@ -41,7 +41,7 @@ Students can study:
 - deployment with Gunicorn, Nginx, HTTPS, and an OCI Linux server
 - documentation, maintenance notes, and architecture decisions
 
-Generative AI tools such as ChatGPT and Codex are used as development assistants in this project, but they do not replace human judgment. Generated code is expected to be reviewed, understood, tested, and documented before it becomes part of the project.
+Generative AI tools such as ChatGPT, Codex, Claude, and Claude CLI are used as development assistants in this project, but they do not replace human judgment. Generated code is expected to be reviewed, understood, tested, and documented before it becomes part of the project.
 
 ## Project Status
 
