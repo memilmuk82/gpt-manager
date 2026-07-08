@@ -4,7 +4,7 @@
 
 GPT Manager is a Flask-based school operations application for managing shared access to generative AI accounts in an educational setting.
 
-The project was created in the context of the AI and Computer Science curriculum at Jongno Industrial Information School in Korea. It addresses a concrete school workflow: when teachers or staff share limited generative AI resources, the school needs a clear way to reserve time slots, prevent conflicts, record usage, support responsible prompting, and provide basic administrative oversight.
+The project was created in the context of the AI and Computer Science curriculum at Jongno Polytechnic High School in Korea. It addresses a concrete school workflow: when teachers or staff share limited generative AI resources, the school needs a clear way to reserve time slots, prevent conflicts, record usage, support responsible prompting, and provide basic administrative oversight.
 
 This project is not presented as a widely adopted open-source project yet. Its current impact comes from solving real operational problems in schools and serving as a practical educational reference for students learning backend software development.
 
